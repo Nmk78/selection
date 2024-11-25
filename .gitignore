@@ -35,6 +35,8 @@ yarn-error.log*
 # vercel
 .vercel
 
+/public/untrack/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
