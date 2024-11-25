@@ -10,8 +10,8 @@ const candidates: Candidate[] = [
     weight: '130 lbs',
     intro: 'Passionate about technology and community service',
     hobbies: ['Coding', 'Volunteering', 'Photography'],
-    imageUrls: ['/Myat1.jpg', '/myat.jpg', '/myat1.jpg'],
-    profilePic: '/Myat.jpg',
+    imageUrls: ['/untrack/myat1.jpg', '/untrack/myat.jpg', '/untrack/myat1.jpg'],
+    profilePic: '/untrack/myat.jpg',
   },
   {
     id: '2',
@@ -21,8 +21,8 @@ const candidates: Candidate[] = [
     weight: '160 lbs',
     intro: 'Aspiring entrepreneur with a love for campus activities',
     hobbies: ['Basketball', 'Public Speaking', 'Chess'],
-    imageUrls: ['/Myat1.jpg', '/myat.jpg', '/myat1.jpg'],
-    profilePic: '/Myat.jpg',
+    imageUrls: ['/untrack/myat1.jpg', '/untrack/myat.jpg', '/untrack/myat1.jpg'],
+    profilePic: '/untrack/myat.jpg',
   },
   // Add more candidates as needed
 ]

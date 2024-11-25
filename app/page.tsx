@@ -5,12 +5,12 @@ import Footer from "@/components/Footer";
 export default function Home() {
 
   const imgs = [
-    '/myat.jpg',
-    '/myat1.jpg',
-    '/myat.jpg',
-    '/myat1.jpg',
-    '/myat.jpg',
-    '/myat1.jpg'
+    '/untrack/myat.jpg',
+    '/untrack/myat1.jpg',
+    '/untrack/myat.jpg',
+    '/untrack/myat1.jpg',
+    '/untrack/myat.jpg',
+    '/untrack/myat1.jpg'
   ];
   return (
     <div className="space-y-4 max-w-7xl">

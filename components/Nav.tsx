@@ -37,7 +37,7 @@ export default function Nav({ isAdmin }: NavbarProps) {
 
   return (
     <nav className="bg-background w-full shadow-lg sticky top-0 z-50">
-      <div className="md:max-w-7xl mx-auto">
+      <div className="md:max-w-7xl mx-auto px-6 md:px-0">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">

@@ -10,12 +10,12 @@ const candidateData = {
   intro: "Rose is a passionate advocate for environmental causes and dreams of creating a sustainable kingdom. With her charming smile and kind heart, she hopes to win the hearts of the people and make a positive impact on the realm.",
   hobbies: ["Gardening", "Hiking", "Poetry writing", "Volunteering"],
   imageUrls: [
-    "/myat.jpg",
-    "/myat1.jpg",
-    "/myat.jpg",
-    "/myat1.jpg"
+    "/untrack/myat.jpg",
+    "/untrack/myat1.jpg",
+    "/untrack/myat.jpg",
+    "/untrack/myat1.jpg"
   ],
-  profilePic: "/myat.jpg",
+  profilePic: "/untrack/myat.jpg",
   votes: 1024
 }
 
