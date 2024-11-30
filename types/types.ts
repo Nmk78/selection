@@ -1,6 +1,7 @@
 export interface Candidate {
     id: string;
     name: string;
+    gender: "male" | "female";
     major: string;
     height: string;
     weight: string;

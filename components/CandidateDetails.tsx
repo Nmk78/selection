@@ -168,10 +168,10 @@ export default function CandidateDetails({
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] border-Cprimary">
             <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
-              <DialogDescription>
+              <DialogTitle>Vote</DialogTitle>
+              {/* <DialogDescription>
                 Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
+              </DialogDescription> */}
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Input
@@ -182,7 +182,7 @@ export default function CandidateDetails({
               />
             </div>
             <DialogFooter>
-              <Button className="bg-Caccent hover:bg-Caccent/90 text-white" type="submit">Save changes</Button>
+              <Button className="bg-Caccent hover:bg-Caccent/90 text-white" type="submit">Vote</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

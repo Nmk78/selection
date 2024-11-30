@@ -5,6 +5,7 @@ const candidates: Candidate[] = [
   {
     id: '1',
     name: 'Emma Johnson',
+    gender: "female",
     major: 'Computer Science',
     height: '5\'6"',
     weight: '130 lbs',
@@ -16,6 +17,7 @@ const candidates: Candidate[] = [
   {
     id: '2',
     name: 'Michael Chen',
+    gender: "female",
     major: 'Business Administration',
     height: '5\'10"',
     weight: '160 lbs',

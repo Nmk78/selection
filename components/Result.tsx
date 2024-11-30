@@ -31,7 +31,7 @@ export default function Results({ results }: ResultsProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {results.map((candidate) => (
           <div key={candidate.title} className="flex flex-col items-center">
-            <div className="relative w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 mb-4">
+            <div className="relative w-48 h-48 md:w-60 md:h-60 lg:w-72 lg:h-72 mb-4">
               <Image
                 src={candidate.imageUrl}
                 alt={`${candidate.title} ${candidate.name}`}

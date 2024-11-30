@@ -47,6 +47,7 @@ export default function CandidateForm({onSubmit}:any) {
     setFormData({
       name: "",
       major: "",
+      //TODO Need Gender
       height: "",
       weight: "",
       intro: "",
