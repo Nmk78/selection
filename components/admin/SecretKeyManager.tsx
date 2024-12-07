@@ -85,7 +85,7 @@ export default function SecretKeyManager() {
           onClick={triggerFileUpload}
           className="flex flex-grow flex-col text-blue-500 justify-center items-center flex-1 border-dashed border p-4 border-blue-300 rounded-md"
         >
-          <Upload className="w-10 h-10 mb-5" />
+          <Upload className="w-8 h-8 mb-4" />
           {fileName ? fileName : "Upload CSV"}
         </button>
       </div>

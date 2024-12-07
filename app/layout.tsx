@@ -1,4 +1,11 @@
 import localFont from "next/font/local";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 import "./globals.css";
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
@@ -28,14 +35,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    <ClerkProvider>
+
     <html lang="en">
       <body
-        className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} antialiased bg-background flex flex-col items-center `}
+        className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center `}
       >
         <Nav isAdmin={true}/>
         {children}
         <Toaster />
       </body>
     </html>
+    </ClerkProvider>
   );
 }

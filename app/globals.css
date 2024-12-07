@@ -92,7 +92,6 @@ body {
   }
 } */
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -150,7 +149,6 @@ body {
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -177,7 +175,6 @@ body {
   font-weight: bold;
   background: linear-gradient(
     90deg,
-
     #ff7eb3,
     #ff758c,
     #ff9173,
@@ -185,7 +182,6 @@ body {
     #93f9b9,
     #009688,
     #45a7ff,
-
     #ff5722,
     #e91e63,
     #3f51b5,
@@ -195,4 +191,19 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradient-animation 15s ease infinite;
+}
+.text-gradient-1 {
+  background: linear-gradient(90deg, #93f9b9, #45a7ff, #ffc107);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 3s ease infinite;
+}
+
+.text-gradient-2 {
+  background: linear-gradient(90deg, #ff5722, #e91e63, #3f51b5, #ffc107);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-animation 3s ease infinite;
 }

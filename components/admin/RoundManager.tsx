@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Lock, Unlock, Users, Trophy, Crown } from "lucide-react";
-import { ScrollArea } from "../scroll-area";
+import { ScrollArea } from "../ui/scroll-area";
 
 type RoundState = "closed" | "first" | "second" | "results";
 
@@ -73,10 +73,10 @@ export default function RoundManager() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-col-reverse md:flex-row justify-around">
-        <div className="space-y-4 flex flex-col justify-around mt-3">
-          <div className="space-y-4">
+        <div className="space-y-4 md:w-[50%] flex flex-col justify-start mt-5 md:mt-0">
+          <div className="space-y-2">
           {/* <h3 className="text-lg font-semibold mb-4"></h3> */}
 
             <div className="flex items-center justify-between">
@@ -111,7 +111,7 @@ export default function RoundManager() {
             </div>
           </div>
           <Button
-            className=" mt-10 text-xs md:text-lg md:w-auto"
+            className=" mt-10 md:mt-0 text-xs md:w-auto"
             onClick={advanceRound}
           >
             {roundState === "results"
@@ -122,17 +122,17 @@ export default function RoundManager() {
           </Button>
         </div>
 
-        <div className="w-full md:w-1/2">
+        <div className="w-full md:w-[45%]">
           {/* <h3 className="text-lg font-semibold mb-4">Candidate Display</h3> */}
           {roundState === "closed" ? (
-            <div className="flex flex-grow p-2 items-center justify-center h-40 bg-gray-100 rounded-lg">
+            <div className="flex flex-grow p-2 items-center justify-center h-32 bg-gray-100 rounded-lg">
               <Lock className="w-12 h-12 text-gray-400" />
               <span className="ml-2 text-gray-500 text-center">
                 Voting is currently closed
               </span>
             </div>
           ) : (
-            <div className="flex flex-grow h-40 items-center justify-between bg-gray-100 p-2 rounded-lg">
+            <div className="flex flex-grow h-32 items-center justify-between bg-gray-100 p-2 rounded-lg">
               <div className="flex  items-center space-x-4">
                 {getStateIcon(roundState)}
                 <span className="text-lg font-semibold capitalize">

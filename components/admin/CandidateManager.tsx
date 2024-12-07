@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { ScrollArea } from "../scroll-area";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface Candidate {
   id: string;
@@ -50,7 +50,7 @@ export default function CandidateManager({setActiveModal, classes}:CandidateMana
     <Card className={` md:overflow-hidden ${classes}`}>
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <span>Candidate Management</span>
+          <span>Candidates</span>
           <Button
             onClick={() => setActiveModal(true)}
             className="w-10 h-10"

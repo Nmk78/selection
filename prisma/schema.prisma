@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Metadata {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
+  title       String
+  description String
+  round       Round
+}
+
+model Candidate {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
+  roomId        String
+  name          String
+  gender        Gender
+  major         String
+  profileImage  String
+  carouselImages String[]  // Array of strings for image URLs
+  height        Int
+  weight        Int
+  hobbies       String[]  // Array of strings for hobbies
+}
+
+model SecretKey {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
+  adminId           String
+  secretKey         String
+  firstRoundMale    Boolean  @default(false)
+  firstRoundFemale  Boolean  @default(false)
+  secondRoundMale   Boolean  @default(false)
+  secondRoundFemale Boolean  @default(false)
+}
+
+model SpecialSecretKey {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
+  adminId           String
+  specialSecretKey  String
+  used              Boolean  @default(false)
+  ratings           Json // Store ratings as an array of embedded objects
+}
+
+model Vote {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
+  roomId      String
+  candidateId String
+  totalVotes  Int      @default(0)
+  totalRating Int      @default(0)
+}
+
+model Rating {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
+  candidateId String
+  rating      Int
+}
+
+enum Round {
+  preview
+  first
+  second
+  result
+}
+
+enum Gender {
+  male
+  female
+}
