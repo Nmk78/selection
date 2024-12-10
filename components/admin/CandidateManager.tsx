@@ -21,11 +21,14 @@ interface Candidate {
 }
 
 interface CandidateManagerProps {
-    setActiveModal: (praam:boolean)=>void;
-    classes: string
+  setActiveModal: (praam: boolean) => void;
+  classes: string;
 }
-export default function CandidateManager({setActiveModal, classes}:CandidateManagerProps) {
-//   const [activeModal, setActiveModal] = useState<string | null>(null);
+export default function CandidateManager({
+  setActiveModal,
+  classes,
+}: CandidateManagerProps) {
+  //   const [activeModal, setActiveModal] = useState<string | null>(null);
 
   const dummyCandidates: Candidate[] = [
     { id: "1", name: "Alice Johnson", major: "Computer Science" },
@@ -51,36 +54,29 @@ export default function CandidateManager({setActiveModal, classes}:CandidateMana
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>Candidates</span>
-          <Button
-            onClick={() => setActiveModal(true)}
-            className="w-10 h-10"
-          >
+          <Button onClick={() => setActiveModal(true)} className="w-10 h-10">
             <Plus className="w-6 h-6" />
           </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
-        <ScrollArea className="h-[38vh] w-full relative">
-
-          <TableHeader className="sticky bg-white top-0 right-0">
-            <TableRow>
-              {/* <TableHead>ID</TableHead> */}
-              <TableHead className="">Name</TableHead>
-              <TableHead className="">Major</TableHead>
-            </TableRow>
-          </TableHeader>
+          <ScrollArea className="max-h-[38vh] overflow-y-auto w-full">
+            <TableHeader className="sticky top-0 bg-white z-10">
+              <TableRow>
+                <TableHead className="px-4 py-2">Name</TableHead>
+                <TableHead className="px-4 py-2">Major</TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
               {dummyCandidates.map((candidate) => (
-                <TableRow className="w-full" key={candidate.id}>
-                  {/* <TableCell>{candidate.id}</TableCell> */}
-                  <TableCell className="">{candidate.name}</TableCell>
-                  <TableCell className="">{candidate.major}</TableCell>
+                <TableRow key={candidate.id}>
+                  <TableCell className="px-4 py-2">{candidate.name}</TableCell>
+                  <TableCell className="px-4 py-2">{candidate.major}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            </ScrollArea>
-
+          </ScrollArea>
         </Table>
       </CardContent>
     </Card>

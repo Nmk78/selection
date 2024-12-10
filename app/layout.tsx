@@ -1,15 +1,10 @@
 import localFont from "next/font/local";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs'
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
-
+import ReactQueryProvider from "./providers";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 // Import fonts
 const quindelia = localFont({
   src: "./fonts/quindelia.regular.ttf",
@@ -28,7 +23,6 @@ const geistSans = localFont({
   weight: "100 900",
 });
 
-// Export layout
 export default function RootLayout({
   children,
 }: {
@@ -36,16 +30,20 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-
-    <html lang="en">
-      <body
-        className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center `}
-      >
-        <Nav isAdmin={true}/>
-        {children}
-        <Toaster />
-      </body>
-    </html>
+      <ReactQueryProvider>
+        <html lang="en">
+          <body
+            className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
+          >
+            <Nav isAdmin={true} />
+            {children}
+            <Toaster />
+            {process.env.NODE_ENV !== "production" && (
+              <ReactQueryDevtools initialIsOpen={false} />
+            )}
+          </body>
+        </html>
+      </ReactQueryProvider>
     </ClerkProvider>
   );
 }

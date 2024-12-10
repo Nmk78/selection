@@ -36,19 +36,19 @@ export default function Nav({ isAdmin }: NavbarProps) {
   ];
 
   // Fetch archives from backend
-  useEffect(() => {
-    const fetchArchives = async () => {
-      try {
-        const response = await fetch("/api/archives"); // Replace with your backend endpoint
-        const data = await response.json();
-        setArchives(data); // Assuming the backend sends an array of { href, label }
-      } catch (error) {
-        console.error("Failed to fetch archives:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchArchives = async () => {
+  //     try {
+  //       const response = await fetch("/api/archives"); // Replace with your backend endpoint
+  //       const data = await response.json();
+  //       setArchives(data); // Assuming the backend sends an array of { href, label }
+  //     } catch (error) {
+  //       console.error("Failed to fetch archives:", error);
+  //     }
+  //   };
 
-    fetchArchives();
-  }, []);
+  //   fetchArchives();
+  // }, []);
 
   return (
     <nav className="bg-background w-full shadow-lg sticky top-0 z-50">

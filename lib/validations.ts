@@ -3,6 +3,7 @@ import { z } from "zod";
 const metadataSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string(), 
+  // active: z.boolean().default(true),
   round: z.enum(["preview", "first", "second", "result"], {
     message:
       "Invalid round state. Allowed values are: 'preview', 'first', 'second', 'result'.",

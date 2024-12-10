@@ -10,6 +10,7 @@ datasource db {
 model Metadata {
   id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
   title       String
+  active      Boolean  @default(true)
   description String
   round       Round
 }

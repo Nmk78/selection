@@ -39,18 +39,18 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
     { id: "14", name: "Nathan Carter", votes: 295, judgeScore: 80 },
   ]);
 
-  useEffect(() => {
-    // Fetch candidates data from your API
-    const fetchCandidates = async () => {
-      // Replace this with your actual API call
-      const response = await fetch("/api/candidates");
-      const data = await response.json();
-      setCandidates(data);
-    };
-    console.log("🚀 ~ CurrentResults ~ visible:", visible)
+  // useEffect(() => {
+  //   // Fetch candidates data from your API
+  //   const fetchCandidates = async () => {
+  //     // Replace this with your actual API call
+  //     const response = await fetch("/api/candidates");
+  //     const data = await response.json();
+  //     setCandidates(data);
+  //   };
+  //   console.log("🚀 ~ CurrentResults ~ visible:", visible)
 
-    fetchCandidates();
-  }, [visible]);
+  //   fetchCandidates();
+  // }, [visible]);
 
   return (
     <Table>

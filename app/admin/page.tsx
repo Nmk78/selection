@@ -36,8 +36,8 @@ export default function AdminPage() {
                   onClick={() => {
                     setVisable(false);
                   }}
-                  w-6
-                  h-6
+                  className="w-6
+                  h-6"
                 />
               ) : (
                 <Eye

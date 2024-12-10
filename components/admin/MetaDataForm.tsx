@@ -38,6 +38,7 @@ export default function MetadataForm({ closeModal }: any) {
         // Show error toast notification if something goes wrong
         toast({
           title: "Error",
+          //@ts-ignore
           description: err?.message || "Failed to save metadata.",
         });
       }
