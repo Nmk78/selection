@@ -45,6 +45,7 @@ export interface Metadata {
 export interface Candidate {
   roomId: string;
   name: string;
+  intro: string;
   gender: "male" | "female";
   major: string;
   profileImage: string; // URL of the profile image

@@ -1,20 +1,24 @@
+import { getAllCandidateImages } from "@/actions/metadata";
 import CandidateSelection from "@/components/CandidateCardContainer";
-import Carousel from "@/components/Carousel";
+import CarouselComponent from "@/components/Carousel";
 import Footer from "@/components/Footer";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
 
-  const imgs = [
-    '/untrack/myat.jpg',
-    '/untrack/myat1.jpg',
-    '/untrack/myat.jpg',
-    '/untrack/myat1.jpg',
-    '/untrack/myat.jpg',
-    '/untrack/myat1.jpg'
-  ];
+  // const imgs = [
+  //   '/untrack/myat.jpg',
+  //   '/untrack/myat1.jpg',
+  //   '/untrack/myat.jpg',
+  //   '/untrack/myat1.jpg',
+  //   '/untrack/myat.jpg',
+  //   '/untrack/myat1.jpg'
+  // ];
+
+
   return (
     <div className="space-y-4 max-w-7xl">
-      <Carousel images={imgs}/>
+      <CarouselComponent/>
 
       <a href="/results" id="results" className="block text-Caccent font-quindelia text-2xl text-center mx-auto">
         Check results

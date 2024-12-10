@@ -104,3 +104,36 @@ export async function setActiveMetadata(id: string) {
     throw new Error("Unable to set active metadata.");
   }
 }
+
+export const getAllCandidateImages = async () => {
+  const activeMetadata = await prisma.metadata.findMany({
+    where: { active: true },
+  });
+  if (!activeMetadata) {
+    throw new Error("Metadata ID (roomId) is required");
+  }
+
+  try {
+    // Fetch candidates belonging to the given roomId
+    const candidates = await prisma.candidate.findMany({
+      where: {
+        roomId: activeMetadata[0].id,
+      },
+      select: {
+        // profileImage: true,
+        carouselImages: true,
+      },
+    });
+
+    // Collect all images
+    const allImages = candidates.flatMap(candidate => [
+      // candidate.profileImage,
+      ...candidate.carouselImages,
+    ]);
+
+    return allImages;
+  } catch (error) {
+    console.error("Error fetching candidate images:", error);
+    throw new Error("Failed to fetch candidate images");
+  }
+};
