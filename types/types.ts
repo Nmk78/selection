@@ -39,14 +39,13 @@ export interface Metadata {
   title: string;
   active: boolean;
   description: string;
-  round: Round;
+  round: "preview" | "first" | "second" | "result";
 }
 
 export interface Candidate {
-  id: string; // ObjectId as a string
   roomId: string;
   name: string;
-  gender: Gender;
+  gender: "male" | "female";
   major: string;
   profileImage: string; // URL of the profile image
   carouselImages: string[]; // Array of URLs for carousel images

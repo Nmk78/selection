@@ -8,11 +8,11 @@ import CurrentResults from "@/components/admin/CurrentResult";
 import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
-import CandidateForm from "@/components/admin/CandidateForm";
 import { Eye, EyeClosed, EyeClosedIcon, EyeOff, Plus, X } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
+import CandidateForm from "@/components/admin/CandidateForm";
 
 export default function AdminPage() {
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
@@ -77,7 +77,7 @@ export default function AdminPage() {
             <SecretKeyManager />
           </CardContent>
         </Card>
-        <Card className="md:col-span-2 row-span-3 md:row-span-4">
+        <Card className="md:col-span-2 row-span-3 md:row-span-4 ">
           <CardHeader>
             <CardTitle>Judge Keys</CardTitle>
           </CardHeader>
@@ -88,7 +88,7 @@ export default function AdminPage() {
       </div>
       {activeModal && (
         <Modal title="Add New Candidate" onClose={closeModal}>
-          <CandidateForm onSubmit={closeModal} />
+          <CandidateForm closeModal={closeModal} />
         </Modal>
       )}{" "}
       {metaDataModal && (
@@ -108,8 +108,8 @@ interface ModalProps {
 
 function Modal({ title, onClose, children }: ModalProps) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-lg w-full">
+    <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-3xl w-full">
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-xl font-semibold">{title}</h2>
           <Button variant="ghost" onClick={onClose}>

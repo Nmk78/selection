@@ -6,42 +6,52 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { addMetadata } from "@/actions/metadata";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function MetadataForm({ closeModal }: any) {
   const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent the default form submission
+  const {mutate} = useMutation({
+    mutationFn: async (formData: FormData) => {
+      // Your API call for adding metadata
+      await addMetadata(formData);
+    },
+    onSuccess: () => {
+      // Show success toast notification
+      toast({
+        title: "Success",
+        description: "Metadata saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["metadata"] });
 
-    // Ensure e.currentTarget is not null
+
+      // Close the modal after success
+      closeModal();
+    },
+    onError: (err: { message: any; }) => {
+      // Show error toast notification
+      toast({
+        title: "Error",
+        //@ts-ignore
+        description: err?.message || "Failed to save metadata.",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent default form submission
+
     if (!e.currentTarget) {
       toast({ title: "Error", description: "Form submission failed." });
       return;
     }
+
     const formData = new FormData(e.currentTarget);
 
-    // Wrap your async operation inside startTransition for smooth updates
-    startTransition(async () => {
-      try {
-        // Add metadata logic
-        await addMetadata(formData);
-
-        // Show success toast notification
-        toast({
-          title: "Success",
-          description: "Metadata saved successfully.",
-        });
-
-        // Close the modal after success
-        closeModal();
-      } catch (err) {
-        // Show error toast notification if something goes wrong
-        toast({
-          title: "Error",
-          //@ts-ignore
-          description: err?.message || "Failed to save metadata.",
-        });
-      }
+    // Wrap the mutation call inside startTransition for smooth UI updates
+    startTransition(() => {
+      mutate(formData);
     });
   };
 

@@ -13,12 +13,15 @@ model Metadata {
   active      Boolean  @default(true)
   description String
   round       Round
+  createdAt   DateTime @default(now()) // Automatically set on creation
+  updatedAt   DateTime @updatedAt      // Automatically updated
 }
 
 model Candidate {
   id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
   roomId        String
   name          String
+  intro          String
   gender        Gender
   major         String
   profileImage  String

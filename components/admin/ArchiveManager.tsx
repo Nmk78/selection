@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
+import { Span } from "next/dist/trace";
 // import { getActiveMetadata } from "@/actions/metadata";
 
 interface ArchiveYear {
@@ -68,7 +69,6 @@ export default function ArchiveManager({
       // Invalidate and refetch "metadata" query
       queryClient.invalidateQueries({ queryKey: ["metadata"] });
       toast({ title: "Success", description: "Archive set active." });
-
     },
     onError: (error) => {
       console.error("Failed to set active metadata:", error);
@@ -119,8 +119,18 @@ export default function ArchiveManager({
         )}
         {error && (
           <span className="mt-20 text-center text-red-400">
-            Something went wrong!
+            {error.message || "Something went wrong!"}
           </span>
+        )}
+
+        {archives?.length === 0 && (
+          <Button
+            onClick={() => setMetaDataModal(true)}
+            className="bg-transparent p-0 shadow-none hover:bg-transparent mt-20 text-center text-blue-600"
+          >
+            <span className="">Add new</span>
+            <Plus className="w-20 h-20 text-blue-800" />
+          </Button>
         )}
         <ScrollArea className="h-full w-full" ref={scrollAreaRef}>
           {archives?.map((archive: Metadata) => (
@@ -130,7 +140,7 @@ export default function ArchiveManager({
               className="flex items-center space-x-3 p-1 rounded-lg transition-colors hover:bg-gray-100"
             >
               <AlertDialog>
-                <AlertDialogTrigger className="w-auto h-auto p-0 m-0 flex space-x-2 items-center mx-4 py-1">
+                <AlertDialogTrigger disabled={archive.active} className="w-auto h-auto p-0 m-0 flex space-x-2 items-center mx-4 py-1">
                   {archive.active ? (
                     <Crown className="w-5 h-5 text-Caccent flex-shrink-0" />
                   ) : (

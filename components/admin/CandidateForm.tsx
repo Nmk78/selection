@@ -1,35 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
+import { Card, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { MultiImageUploader } from "../MultiImageUploader";
+import { ImageUploader } from "../ImageUploader";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createCandidate } from "@/actions/candidate";
+import { getActiveMetadata } from "@/actions/metadata";
 
 interface CandidateFormProps {
-  onSubmit: (formData: FormData) => void;
+  closeModal: () => void;
 }
 
-export default function CandidateForm({ onSubmit }: CandidateFormProps) {
-  const [formData, setFormData] = useState({
+export default function CandidateForm({ closeModal }: CandidateFormProps) {
+  const queryClient = useQueryClient();
+
+  const [formData, setFormData] = useState<{
+    name: string;
+    gender: "male" | "female"; // Union type
+    major: string;
+    height: string; // Still a string because it's captured from input
+    weight: string; // Same reason
+    intro: string;
+    hobbies: string[];
+    profileImage: string | null; // Nullable until set
+    carouselImages: string[]; // Array of strings
+  }>({
     name: "",
-    gender: "",
+    gender: "male", // Default value
     major: "",
     height: "",
     weight: "",
     intro: "",
-    hobbies: "",
-    profilePic: null as File | null,
-    additionalImages: [] as File[],
+    hobbies: [],
+    profileImage: null,
+    carouselImages: [],
   });
 
-  const [previewUrls, setPreviewUrls] = useState({
-    profilePic: "",
-    additionalImages: [] as string[],
-  });
+  const [newHobby, setNewHobby] = useState("");
+  const profileImageUploaderRef = useRef(null);
+  const uploaderRef = useRef(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -38,216 +55,280 @@ export default function CandidateForm({ onSubmit }: CandidateFormProps) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
-    if (files) {
-      if (name === "profilePic") {
-        setFormData((prev) => ({ ...prev, profilePic: files[0] }));
-        setPreviewUrls((prev) => ({
-          ...prev,
-          profilePic: URL.createObjectURL(files[0]),
-        }));
-      } else if (name === "additionalImages") {
-        const fileArray = Array.from(files);
-        setFormData((prev) => ({ ...prev, additionalImages: fileArray }));
-        setPreviewUrls((prev) => ({
-          ...prev,
-          additionalImages: fileArray.map((file) => URL.createObjectURL(file)),
-        }));
-      }
+  const handleAddHobby = () => {
+    if (newHobby.trim()) {
+      setFormData((prev) => ({
+        ...prev,
+        hobbies: [...prev.hobbies, newHobby.trim()],
+      }));
+      setNewHobby("");
     }
   };
 
+  const handleRemoveHobby = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      hobbies: prev.hobbies.filter((_, i) => i !== index),
+    }));
+  };
+
+
+  const { mutate } = useMutation({
+    mutationFn: async (formData: {
+      name: string;
+      gender: "male" | "female";
+      major: string;
+      height: number;
+      weight: number;
+      intro: string;
+      hobbies: string[];
+      profileImage: string; // Adjust as per your backend requirements
+      carouselImages: string[]; // Adjust as per your backend requirements
+      roomId: string;
+    }) => {
+      // Your API call for adding metadata
+      await createCandidate(formData);
+    },
+    onSuccess: () => {
+      // Show success toast notification
+      toast({
+        title: "Success",
+        description: "Candidate saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+    },
+    onError: (err: { message: any }) => {
+      // Show error toast notification
+      toast({
+        title: "Error",
+        description: err?.message || "Failed to save candidate.",
+      });
+    },
+  });
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === "additionalImages") {
-        (value as File[]).forEach((file) => {
-          formDataToSend.append("additionalImages", file);
+
+    console.log("✅✅✅✅ Form Submitting");
+
+    if (!uploaderRef.current || !profileImageUploaderRef.current) {
+      console.error(
+        "Uploader refs are not set. Ensure uploaderRef and profileImageUploaderRef are properly assigned."
+      );
+      return;
+    }
+
+    console.log("Preparing to upload images...");
+
+    try {
+      // Upload profile image
+      //@ts-ignore
+      const profileRes = await profileImageUploaderRef.current.startUpload();
+      // Upload additional images
+      //@ts-ignore
+      const imgRes = await uploaderRef.current.startUpload();
+
+      if (!profileRes || profileRes.length === 0) {
+        toast({
+          title: "Error",
+          description: "Failed to upload profile image. Please try again.",
         });
-      } else if (key === "profilePic" && value) {
-        formDataToSend.append(key, value as File);
-      } else {
-        formDataToSend.append(key, value as string);
+        return;
       }
-    });
 
-    onSubmit(formDataToSend);
+      if (!imgRes || imgRes.length === 0) {
+        toast({
+          title: "Error",
+          description: "Failed to upload additional images. Please try again.",
+        });
+        return;
+      }
 
-    toast({
-      title: "Candidate Added",
-      description: `${formData.name} has been successfully added as a candidate.`,
-    });
+      // Fetch currently active room metadata
+      const currentlyActiveRoom = await getActiveMetadata();
+      if (!currentlyActiveRoom || currentlyActiveRoom.length === 0) {
+        toast({
+          title: "Error",
+          description: "No active room found. Please check and try again.",
+        });
+        return;
+      }
 
-    // Reset form after submission
-    setFormData({
-      name: "",
-      gender: "",
-      major: "",
-      height: "",
-      weight: "",
-      intro: "",
-      hobbies: "",
-      profilePic: null,
-      additionalImages: [],
-    });
-    setPreviewUrls({
-      profilePic: "",
-      additionalImages: [],
-    });
+      // Submit data via mutation
+      mutate({
+        ...formData,
+        height: parseInt(formData.height, 10), // Convert to number
+        weight: parseInt(formData.weight, 10), // Convert to number
+        profileImage: profileRes[0].url,
+        carouselImages: imgRes.map((image: { url: string }) => image.url),
+        roomId: currentlyActiveRoom[0].id,
+      });
+
+      console.log(
+        "🚀 Submission Successful ~ ProfileRes:",
+        profileRes,
+        "ImgRes:",
+        imgRes
+      );
+
+      // Close modal and reset form
+      closeModal();
+      setFormData({
+        name: "",
+        gender: "male",
+        major: "",
+        height: "",
+        weight: "",
+        intro: "",
+        hobbies: [],
+        profileImage: null,
+        carouselImages: [],
+      });
+      setNewHobby("");
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred during image upload. Please try again.",
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-            aria-required="true"
-          />
-        </div>
-        <div>
-          <Label htmlFor="gender">Gender</Label>
-          <RadioGroup
-            name="gender"
-            value={formData.gender}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, gender: value }))
-            }
-            required
-            aria-required="true"
-            className="flex space-x-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="male" id="male" />
-              <Label htmlFor="male">Male</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="female" id="female" />
-              <Label htmlFor="female">Female</Label>
-            </div>
-          </RadioGroup>
-        </div>
-        <div>
-          <Label htmlFor="major">Major</Label>
-          <Input
-            id="major"
-            name="major"
-            value={formData.major}
-            onChange={handleInputChange}
-            required
-            aria-required="true"
-          />
-        </div>
-        <div>
-          <Label htmlFor="height">Height (cm)</Label>
-          <Input
-            id="height"
-            name="height"
-            type="number"
-            min="0"
-            value={formData.height}
-            onChange={handleInputChange}
-            required
-            aria-required="true"
-          />
-        </div>
-        <div>
-          <Label htmlFor="weight">Weight (kg)</Label>
-          <Input
-            id="weight"
-            name="weight"
-            type="number"
-            min="0"
-            step="0.1"
-            value={formData.weight}
-            onChange={handleInputChange}
-            required
-            aria-required="true"
-          />
-        </div>
-        <div>
-          <Label htmlFor="hobbies">Hobbies (comma-separated)</Label>
-          <Input
-            id="hobbies"
-            name="hobbies"
-            value={formData.hobbies}
-            onChange={handleInputChange}
-            required
-            aria-required="true"
-          />
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="intro">Introduction</Label>
-        <Textarea
-          id="intro"
-          name="intro"
-          value={formData.intro}
-          onChange={handleInputChange}
-          required
-          aria-required="true"
-          rows={4}
-        />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="profilePic">Profile Picture</Label>
-          <Input
-            id="profilePic"
-            name="profilePic"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-            aria-required="true"
-          />
-          {previewUrls.profilePic && (
-            <div className="mt-2">
-              <Image
-                src={previewUrls.profilePic}
-                alt="Profile picture preview"
-                width={100}
-                height={100}
-                className="rounded-md"
+    <div className="w-full max-w-7xl mx-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full h-[550px] overflow-y-scroll scroll-area space-y-4 grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="major">Major</Label>
+            <Input
+              id="major"
+              name="major"
+              value={formData.major}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="gender">Gender</Label>
+            <RadioGroup
+              name="gender"
+              value={formData.gender}
+              onValueChange={(value) => {
+                if (value === "male" || value === "female") {
+                  setFormData((prev) => ({ ...prev, gender: value }));
+                } else {
+                  console.error("Invalid gender value:", value);
+                }
+              }}
+              required
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="male" id="male" />
+                <Label htmlFor="male">Male</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="female" id="female" />
+                <Label htmlFor="female">Female</Label>
+              </div>
+            </RadioGroup>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="height">Height (cm)</Label>
+              <Input
+                id="height"
+                name="height"
+                type="number"
+                min="0"
+                value={formData.height}
+                onChange={handleInputChange}
+                required
               />
             </div>
-          )}
+            <div className="space-y-2">
+              <Label htmlFor="weight">Weight (kg)</Label>
+              <Input
+                id="weight"
+                name="weight"
+                type="number"
+                min="0"
+                step="0.1"
+                value={formData.weight}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="intro">Introduction</Label>
+            <Textarea
+              id="intro"
+              name="intro"
+              value={formData.intro}
+              onChange={handleInputChange}
+              required
+              rows={4}
+            />
+          </div>
         </div>
-        <div>
-          <Label htmlFor="additionalImages">Additional Images</Label>
-          <Input
-            id="additionalImages"
-            name="additionalImages"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileChange}
-          />
-          {previewUrls.additionalImages.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {previewUrls.additionalImages.map((url, index) => (
-                <Image
-                  key={index}
-                  src={url}
-                  alt={`Additional image preview ${index + 1}`}
-                  width={50}
-                  height={50}
-                  className="rounded-md"
-                />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="hobbies">Hobbies</Label>
+            <div className="flex space-x-2">
+              <Input
+                id="newHobby"
+                name="newHobby"
+                value={newHobby}
+                onChange={(e) => setNewHobby(e.target.value)}
+                placeholder="Enter a hobby"
+              />
+              <Button type="button" onClick={handleAddHobby}>
+                Add
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {formData.hobbies.map((hobby, index) => (
+                <Badge key={index} variant="secondary" className="px-3 py-1">
+                  {hobby}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveHobby(index)}
+                    className="ml-2 text-xs font-bold"
+                  >
+                    ×
+                  </button>
+                </Badge>
               ))}
             </div>
-          )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="profilePic">Profile Picture</Label>
+            <ImageUploader ref={profileImageUploaderRef} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="additionalImages">Additional Images</Label>
+            <MultiImageUploader ref={uploaderRef} />
+          </div>
         </div>
-      </div>
-      <Button type="submit" className="w-full">Add Candidate</Button>
-    </form>
+        <Button type="submit" className="w-full lg:col-span-2 mt-0">
+          Add Candidate
+        </Button>
+      </form>
+    </div>
   );
 }
-

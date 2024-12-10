@@ -2,15 +2,14 @@
 
 import { metadataSchema } from "@/lib/validations";
 import { cookies } from "next/headers";
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from "next";
 import { Metadata } from "@/types/types";
 import { NextResponse } from "next/server";
-
-const prisma = require("@prisma/client");
-const db = new prisma.PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function addMetadata(data: FormData) {
-  "use server"
+  "use server";
   const sessionToken = (await cookies()).get("__session"); // Clerk's session cookie
 
   if (!sessionToken) {
@@ -27,7 +26,7 @@ export async function addMetadata(data: FormData) {
 
   const { title, description } = parsedData.data;
 
-  await db.metadata.updateMany({
+  await prisma.metadata.updateMany({
     where: {
       active: true, // Ensure you're only updating metadata that is currently active
     },
@@ -35,9 +34,9 @@ export async function addMetadata(data: FormData) {
       active: false, // Set active to false for all active metadata entries
     },
   });
-  
+
   // Automatically set  default round
-  const metadata = await db.metadata.create({
+  const metadata = await prisma.metadata.create({
     data: {
       title,
       description,
@@ -50,14 +49,14 @@ export async function addMetadata(data: FormData) {
   return metadata;
 }
 
-
-
 export const getMetadata = async () => {
   try {
-    const metadata = await db.metadata.findMany({
-      // where: { active: true },
+    const metadata = await prisma.metadata.findMany({
+      orderBy: {
+        updatedAt: "desc", // Sort by creation date, latest first
+      },
     });
-    console.log("🚀 ~ getMetadata ~ metadata:", metadata)
+    console.log("🚀 ~ getMetadata ~ metadata:", metadata);
     return metadata;
   } catch (err) {
     console.error("Error fetching metadata:", err);
@@ -65,8 +64,19 @@ export const getMetadata = async () => {
   }
 };
 
-
-export async function setActiveMetadata(id:string) {
+export const getActiveMetadata = async () => {
+  try {
+    const activeMetadata = await prisma.metadata.findMany({
+      where: { active: true },
+    });
+    console.log("🚀 ~ getActiveMetadata ~ Activemetadata:", activeMetadata);
+    return activeMetadata;
+  } catch (err) {
+    console.error("Error fetching activeMetadata:", err);
+    throw new Error("Failed to fetch activeMetadata.");
+  }
+};
+export async function setActiveMetadata(id: string) {
   // Check if the user is authenticated
   const sessionToken = (await cookies()).get("__session"); // Clerk's session cookie
   if (!sessionToken) {
@@ -75,13 +85,13 @@ export async function setActiveMetadata(id:string) {
 
   try {
     // Deactivate all existing active metadata
-    await db.metadata.updateMany({
+    await prisma.metadata.updateMany({
       where: { active: true },
       data: { active: false },
     });
 
     // Activate the specified metadata
-    const updatedMetadata = await db.metadata.update({
+    const updatedMetadata = await prisma.metadata.update({
       where: { id: id },
       data: { active: true },
     });
