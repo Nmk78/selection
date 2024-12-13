@@ -11,7 +11,7 @@ const nextConfig = {
         hostname: "**", // Allow all HTTP domains
       },
     ],
-    domains: ["localhost"], // Add localhost to support local images
+    domains: ["localhost", "utfs"], // Add localhost to support local images
   },
 };
 

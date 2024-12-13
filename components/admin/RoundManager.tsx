@@ -1,130 +1,166 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Lock, Unlock, Users, Trophy, Crown } from "lucide-react";
-import { ScrollArea } from "../ui/scroll-area";
-
-type RoundState = "closed" | "first" | "second" | "results";
-
-interface Candidate {
-  id: string;
-  name: string;
-  votes: number;
-}
-
-// Mock data for candidates
-const mockCandidates: Candidate[] = [
-  { id: "1", name: "Alice", votes: 120 },
-  { id: "2", name: "Bob", votes: 110 },
-  { id: "3", name: "Charlie", votes: 100 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-  { id: "4", name: "Diana", votes: 95 },
-];
+import { Lock, Unlock, Users, Trophy, Crown, LoaderCircle } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getMetadata, updateRound } from "@/actions/metadata";
+import { Metadata, Round } from "@prisma/client";
 
 export default function RoundManager() {
-  const [roundState, setRoundState] = useState<RoundState>("closed");
+  const [round, setRoundState] = useState<Round>("preview");
+  const [updating, setUpdating] = useState(false);
+  const queryClient = useQueryClient();
 
-  const toggleRound = (newState: RoundState) => {
-    setRoundState(newState);
-    toast({
-      title: `Round State Changed`,
-      description: `The selection is now in the ${newState} state.`,
-      variant: "round",
-    });
+  const {
+    data: metadata,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["metadata"],
+    queryFn: async () => {
+      const response = await getMetadata();
+      return Array.isArray(response) && response.length > 0
+        ? response[0]
+        : null;
+    },
+  });
+
+  const isValidRound = (round: any): round is Round => {
+    const validRounds: Round[] = ["preview", "first", "second", "result"];
+    return validRounds.includes(round);
   };
+
+  useEffect(() => {
+    if (metadata && isValidRound(metadata.round)) {
+      setRoundState(metadata.round);
+    }
+  }, [metadata]);
+
+  const { mutate: updateRoundState } = useMutation({
+    mutationFn: async ({ id, round }: { id: string; round: Round }) => {
+      setUpdating(true);
+      await updateRound({ id, round });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Round state updated successfully.",
+      });
+      // setRoundState(newState);
+      queryClient.invalidateQueries({ queryKey: ["metadata"] });
+      setUpdating(false);
+    },
+    onError: (error) => {
+      console.error("Failed to update round state:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update the round state. Try again.",
+      });
+      setUpdating(false);
+    },
+  });
 
   const advanceRound = () => {
-    const nextState: Record<RoundState, RoundState> = {
-      closed: "first",
+    const nextState: Record<Round, Round> = {
+      preview: "first",
       first: "second",
-      second: "results",
-      results: "closed",
+      second: "result",
+      result: "preview",
     };
-    toggleRound(nextState[roundState]);
+    if (metadata) {
+      const newState = nextState[round];
+      updateRoundState({ id: metadata.id, round: newState });
+    }
   };
 
-  const getStateIcon = (state: RoundState) => {
+  const getStateIcon = (state: Round) => {
     switch (state) {
-      case "closed":
+      case "preview":
         return <Lock className="w-12 h-12 text-gray-500" />;
       case "first":
         return <Users className="w-12 h-12 text-blue-500" />;
       case "second":
         return <Trophy className="w-12 h-12 text-yellow-500" />;
-      case "results":
+      case "result":
         return <Crown className="w-12 h-12 text-purple-500" />;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-60 w-full">
+        <LoaderCircle className="w-10 h-10 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-60 w-full text-red-500">
+        Failed to load metadata. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col-reverse md:flex-row justify-around">
         <div className="space-y-4 md:w-[50%] flex flex-col justify-start mt-5 md:mt-0">
           <div className="space-y-2">
-          {/* <h3 className="text-lg font-semibold mb-4"></h3> */}
-
             <div className="flex items-center justify-between">
               <Label htmlFor="first-round">First Round</Label>
               <Switch
+                className=" cursor-not-allowed"
                 id="first-round"
-                checked={roundState === "first"}
-                onCheckedChange={() =>
-                  toggleRound(roundState === "first" ? "closed" : "first")
-                }
+                checked={round === "first"}
+                // onCheckedChange={() =>
+                //   toggleRound(metadata, round === "first" ? "preview" : "first")
+                // }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="second-round">Second Round</Label>
               <Switch
+                className=" cursor-not-allowed"
                 id="second-round"
-                checked={roundState === "second"}
-                onCheckedChange={() =>
-                  toggleRound(roundState === "second" ? "first" : "second")
-                }
+                checked={round === "second"}
+                // onCheckedChange={() =>
+                //   toggleRound(metadata, round === "second" ? "first" : "second")
+                // }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="show-results">Show Results</Label>
               <Switch
+                className=" cursor-not-allowed"
                 id="show-results"
-                checked={roundState === "results"}
-                onCheckedChange={() =>
-                  toggleRound(roundState === "results" ? "second" : "results")
-                }
+                checked={round === "result"}
+                // onCheckedChange={() =>
+                //   // toggleRound(metadata, round === "result" ? "preview" : "result")
+                // }
               />
             </div>
           </div>
           <Button
-            className=" mt-10 md:mt-0 text-xs md:w-auto"
+            className="mt-10 md:mt-0 text-xs md:w-auto"
             onClick={advanceRound}
           >
-            {roundState === "results"
+            {updating
+              ? "Updating"
+              : round === "result"
               ? "Close Voting"
-              : roundState === "closed"
+              : round === "preview"
               ? "Open First Round"
               : "Advance to Next Round"}
           </Button>
         </div>
 
         <div className="w-full md:w-[45%]">
-          {/* <h3 className="text-lg font-semibold mb-4">Candidate Display</h3> */}
-          {roundState === "closed" ? (
+          {round === "preview" ? (
             <div className="flex flex-grow p-2 items-center justify-center h-32 bg-gray-100 rounded-lg">
               <Lock className="w-12 h-12 text-gray-400" />
               <span className="ml-2 text-gray-500 text-center">
@@ -133,10 +169,10 @@ export default function RoundManager() {
             </div>
           ) : (
             <div className="flex flex-grow h-32 items-center justify-between bg-gray-100 p-2 rounded-lg">
-              <div className="flex  items-center space-x-4">
-                {getStateIcon(roundState)}
+              <div className="flex items-center space-x-4">
+                {getStateIcon(round)}
                 <span className="text-lg font-semibold capitalize">
-                  {roundState === "results" ? roundState : roundState + "Round"}
+                  {round === "result" ? round : `${round} Round`}
                 </span>
               </div>
             </div>

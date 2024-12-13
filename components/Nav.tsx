@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, Crown, Menu, X, Archive } from "lucide-react";
+import { Home, Crown, Menu, X, Archive, Check, TicketCheck } from "lucide-react";
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 
 interface NavbarProps {
@@ -24,6 +24,7 @@ export default function Nav({ isAdmin }: NavbarProps) {
 
   const menuItems = [
     { href: "/", icon: <Home className="w-5 h-5" />, label: "Home" },
+    { href: "/check", icon: <TicketCheck className="w-5 h-5" />, label: "Check" },
     ...(isAdmin
       ? [
           {

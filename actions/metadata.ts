@@ -2,21 +2,37 @@
 
 import { metadataSchema } from "@/lib/validations";
 import { cookies } from "next/headers";
-import { NextApiRequest, NextApiResponse } from "next";
-import { Metadata } from "@/types/types";
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { Round } from "@prisma/client";
 
 export async function addMetadata(data: FormData) {
   "use server";
-  const sessionToken = (await cookies()).get("__session"); // Clerk's session cookie
 
+  // Authentication
+  const sessionToken = (await cookies()).get("__session"); // Clerk's session cookie
   if (!sessionToken) {
     throw new Error("User not authenticated");
   }
+
+  // Parse FormData to an object
   const formValues = Object.fromEntries(data.entries());
-  const parsedData = metadataSchema.safeParse(formValues);
+  console.log("🚀 ~ addMetadata ~ formValues:", formValues);
+
+  // Convert specific fields to integers
+  const formValuesWithParsedInts = {
+    ...formValues,
+    maleForSecondRound: parseInt(formValues.maleForSecondRound as string, 10),
+    femaleForSecondRound: parseInt(formValues.femaleForSecondRound as string, 10),
+  };
+
+  console.log(
+    "🚀 ~ addMetadata ~ formValuesWithParsedInts:",
+    formValuesWithParsedInts
+  );
+
+  // Validate using the schema
+  const parsedData = metadataSchema.safeParse(formValuesWithParsedInts);
+  console.log("🚀 ~ addMetadata ~ parsedData:", parsedData);
 
   if (!parsedData.success) {
     throw new Error(
@@ -24,30 +40,36 @@ export async function addMetadata(data: FormData) {
     );
   }
 
-  const { title, description } = parsedData.data;
+  const { title, description, maleForSecondRound, femaleForSecondRound } =
+    parsedData.data;
 
+  // Set previous active metadata entries to inactive
   await prisma.metadata.updateMany({
     where: {
-      active: true, // Ensure you're only updating metadata that is currently active
+      active: true,
     },
     data: {
-      active: false, // Set active to false for all active metadata entries
+      active: false,
     },
   });
 
-  // Automatically set  default round
+  // Create new metadata entry
   const metadata = await prisma.metadata.create({
     data: {
       title,
       description,
+      maleForSecondRound,
+      femaleForSecondRound,
       active: true,
       round: "preview", // Default round
     },
   });
+
   console.log("⚙️ ~ Action ~ metadata:", metadata);
 
   return metadata;
 }
+
 
 export const getMetadata = async () => {
   try {
@@ -56,8 +78,8 @@ export const getMetadata = async () => {
         updatedAt: "desc", // Sort by creation date, latest first
       },
     });
-    console.log("🚀 ~ getMetadata ~ metadata:", metadata);
-    return metadata;
+    // console.log("🚀 ~ getMetadata ~ metadata:", [...metadata]);
+    return [...metadata];
   } catch (err) {
     console.error("Error fetching metadata:", err);
     throw new Error("Failed to fetch metadata.");
@@ -137,3 +159,29 @@ export const getAllCandidateImages = async () => {
     throw new Error("Failed to fetch candidate images");
   }
 };
+
+
+type UpdateRoundInput = {
+  id: string; // Metadata ID
+  round: Round; // New Round Value
+};
+
+export async function updateRound({ id, round }: UpdateRoundInput) {
+  if (!id || !round) {
+    throw new Error("Invalid inputs to updateRound.");
+  }
+
+  console.log("⚠️⚠️⚠️⚠️⚠️⚠️ ~ updateRound ~ id, round:", id, round);
+
+  try {
+    const updatedMetadata = await prisma.metadata.update({
+      where: { id: id },
+      data: { round },
+    });
+
+    return updatedMetadata;
+  } catch (error) {
+    console.error("Failed to update round:", error);
+    throw error; // Let the error propagate to the caller
+  }
+}

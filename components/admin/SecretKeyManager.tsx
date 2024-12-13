@@ -1,95 +1,138 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import { Upload } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { useMutation } from "@tanstack/react-query";
+import { insertSecretKeys } from "@/actions/secretKey";
+import { toast } from "@/hooks/use-toast";
+import { parse } from "papaparse";
 
-export default function SecretKeyManager() {
-  const [secretKeys, setSecretKeys] = useState<string[]>([]);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [usedSecretKeys, setUsedSecretKeys] = useState<string[]>([]); // Track used secret keys
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export default function SecretKeyManager({ userId }: { userId: string }) {
+  const [uploadStatus, setUploadStatus] = useState<
+    "idle" | "processing" | "success" | "error"
+  >("idle");
+  const [progress, setProgress] = useState(0);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-    setFileName(file.name)
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        const keys = content
-          .split("\n")
-          .map((key) => key.trim())
-          .filter((key) => key !== "");
-        setSecretKeys((prevKeys) => [...prevKeys, ...keys]);
-        toast({
-          title: "Secret Keys Uploaded",
-          description: `${keys.length} secret keys have been added from the CSV file.`,
-        });
-      };
-      reader.readAsText(file);
-    }
-  };
+  // Define mutation for inserting secret keys
+  const { mutate } = useMutation({
+    mutationFn: async ({
+      userId,
+      keys,
+    }: {
+      userId: string;
+      keys: string[];
+    }) => {
+      // Directly calling the server action `insertSecretKeys` instead of API call
+      const response = await insertSecretKeys(userId, keys);
+      if (!response.success) {
+        throw new Error(response.message || "Unknown error occurred.");
+      }
+      return response;
+    },
+  });
 
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
-  };
+  // Handle file drop
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      setUploadStatus("processing");
+      setProgress(0);
 
-  const downloadKeys = () => {
-    const blob = new Blob([secretKeys.join("\n")], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "secret_keys.txt";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+      const file = acceptedFiles[0];
 
-  // Function to mark secret key as used
-  const markKeyAsUsed = (key: string) => {
-    if (!usedSecretKeys.includes(key)) {
-      setUsedSecretKeys((prevUsed) => [...prevUsed, key]);
-    }
-  };
+      parse(file, {
+        header: false,
+        skipEmptyLines: true,
+        delimiter: ",",
+        complete: async (results: { data: string[][] }) => {
+          console.log("Parsed Results:", results);
+
+          const rows = results.data as string[][];
+          if (!rows.length || !rows[0].length) {
+            toast({
+              title: "Invalid CSV Format",
+              description: "The CSV file should not be empty.",
+              variant: "destructive",
+            });
+            setUploadStatus("error");
+            return;
+          }
+
+          const keys = rows.flat();
+          setProgress(50);
+
+          mutate(
+            { userId, keys },
+            {
+              onSuccess: (response) => {
+                toast({
+                  title: "Upload Successful",
+                  description: response.message,
+                });
+                setUploadStatus("success");
+                setProgress(100);
+              },
+              onError: (error: any) => {
+                console.error("Mutation Error:", error);
+                toast({
+                  title: "Upload Failed",
+                  description: error.message || "Unknown error.",
+                  variant: "destructive",
+                });
+                setUploadStatus("error");
+                setProgress(100);
+              },
+            }
+          );
+        },
+        error: (error: Error) => {
+          console.error("CSV Parsing Error:", error);
+          toast({
+            title: "CSV Parsing Error",
+            description: `Failed to parse CSV: ${error.message}`,
+            variant: "destructive",
+          });
+          setUploadStatus("error");
+        },
+      });
+    },
+    [mutate, toast, userId]
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div className="space-y-4 w-full h-full">
-      {/* Total Section */}
-      <div className="grid grid-cols-2 gap-2">
-        {" "}
-        <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-          <h3 className="text-lg font-semibold">Total</h3>
-          <div className="text-sm text-gray-500">{secretKeys.length}</div>
-        </div>
-        {/* Used Section */}
-        <div className="bg-gray-100 w-3/7 p-4 rounded-lg shadow-sm space-y-2">
-          <h3 className="text-lg font-semibold">Used</h3>
-          <div className="space-y-2">
-            <div className="text-sm text-gray-500">{usedSecretKeys.length}</div>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          className="hidden"
-          ref={fileInputRef}
-        />
-        <button
-          onClick={triggerFileUpload}
-          className="flex flex-grow flex-col text-blue-500 justify-center items-center flex-1 border-dashed border p-4 border-blue-300 rounded-md"
-        >
-          <Upload className="w-8 h-8 mb-4" />
-          {fileName ? fileName : "Upload CSV"}
-        </button>
+    <div>
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-md p-3 text-center cursor-pointer ${
+          isDragActive ? "border-primary" : "border-gray-300"
+        }`}
+      >
+        <input {...getInputProps()} />
+        <Upload className="mx-auto h-8 w-8 text-gray-400" />
+        <p className="mt-2">Drag 'n' drop a CSV file here.</p>
+        <p className="text-sm text-red-500 mt-1">
+          CSV should not end with comma!
+        </p>
       </div>
 
+      {uploadStatus !== "idle" && uploadStatus !== "success" && (
+        <div className="mt-2">
+          <Progress value={progress} className="w-full" />
+        </div>
+      )}
+
+      <Button
+        className="mt-4 w-full"
+        disabled={uploadStatus === "processing"}
+        onClick={() => document.querySelector("input")?.click()}
+      >
+        {uploadStatus === "processing" ? "Processing..." : "Select CSV File"}
+      </Button>
     </div>
   );
 }

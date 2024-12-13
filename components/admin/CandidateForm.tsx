@@ -26,6 +26,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
     name: string;
     gender: "male" | "female"; // Union type
     major: string;
+    age: string; // Still a string because it's captured from input
     height: string; // Still a string because it's captured from input
     weight: string; // Same reason
     intro: string;
@@ -36,6 +37,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
     name: "",
     gender: "male", // Default value
     major: "",
+    age: "",
     height: "",
     weight: "",
     intro: "",
@@ -45,6 +47,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
   });
 
   const [newHobby, setNewHobby] = useState("");
+  const [loading, setLoading] = useState(false)
   const profileImageUploaderRef = useRef(null);
   const uploaderRef = useRef(null);
 
@@ -72,12 +75,12 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
     }));
   };
 
-
   const { mutate } = useMutation({
     mutationFn: async (formData: {
       name: string;
       gender: "male" | "female";
       major: string;
+      age: number;
       height: number;
       weight: number;
       intro: string;
@@ -87,10 +90,12 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
       roomId: string;
     }) => {
       // Your API call for adding metadata
+      setLoading(true)
       await createCandidate(formData);
     },
     onSuccess: () => {
       // Show success toast notification
+      setLoading(false)
       toast({
         title: "Success",
         description: "Candidate saved successfully.",
@@ -99,6 +104,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
     },
     onError: (err: { message: any }) => {
       // Show error toast notification
+      setLoading(false)
       toast({
         title: "Error",
         description: err?.message || "Failed to save candidate.",
@@ -106,9 +112,9 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
     },
   });
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true)
 
     console.log("✅✅✅✅ Form Submitting");
 
@@ -128,7 +134,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
       // Upload additional images
       //@ts-ignore
       const imgRes = await uploaderRef.current.startUpload();
-
+      
       if (!profileRes || profileRes.length === 0) {
         toast({
           title: "Error",
@@ -158,6 +164,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
       // Submit data via mutation
       mutate({
         ...formData,
+        age: parseInt(formData.age, 10), // Convert to number
         height: parseInt(formData.height, 10), // Convert to number
         weight: parseInt(formData.weight, 10), // Convert to number
         profileImage: profileRes[0].url,
@@ -172,12 +179,15 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
         imgRes
       );
 
+      setLoading(false)
+
       // Close modal and reset form
       closeModal();
       setFormData({
         name: "",
         gender: "male",
         major: "",
+        age: "",
         height: "",
         weight: "",
         intro: "",
@@ -187,11 +197,14 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
       });
       setNewHobby("");
     } catch (error) {
+      setLoading(false)
       console.error("Image upload failed:", error);
       toast({
         title: "Error",
         description: "An error occurred during image upload. Please try again.",
       });
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -222,30 +235,45 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="gender">Gender</Label>
-            <RadioGroup
-              name="gender"
-              value={formData.gender}
-              onValueChange={(value) => {
-                if (value === "male" || value === "female") {
-                  setFormData((prev) => ({ ...prev, gender: value }));
-                } else {
-                  console.error("Invalid gender value:", value);
-                }
-              }}
-              required
-              className="flex space-x-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="male" id="male" />
-                <Label htmlFor="male">Male</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="female" id="female" />
-                <Label htmlFor="female">Female</Label>
-              </div>
-            </RadioGroup>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <Label htmlFor="gender">Gender</Label>
+              <RadioGroup
+                name="gender"
+                value={formData.gender}
+                onValueChange={(value) => {
+                  if (value === "male" || value === "female") {
+                    setFormData((prev) => ({ ...prev, gender: value }));
+                  } else {
+                    console.error("Invalid gender value:", value);
+                  }
+                }}
+                required
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="male" id="male" />
+                  <Label htmlFor="male">Male</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="female" id="female" />
+                  <Label htmlFor="female">Female</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="height">Age</Label>
+              <Input
+                id="age"
+                name="age"
+                type="number"
+                min="16"
+                value={formData.age}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -325,8 +353,8 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
             <MultiImageUploader ref={uploaderRef} />
           </div>
         </div>
-        <Button type="submit" className="w-full lg:col-span-2 mt-0">
-          Add Candidate
+        <Button disabled={loading} type="submit" className="w-full lg:col-span-2 mt-0">
+          {loading ? "Submitting" : "Submit"}
         </Button>
       </form>
     </div>

@@ -1,16 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Crown,
-  Archive,
-  Plus,
-  MessageCircleHeart,
-  LoaderIcon,
-} from "lucide-react";
+import { Crown, Archive, Plus, LoaderIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
 import { Metadata } from "@/types/types";
@@ -28,7 +21,6 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { Span } from "next/dist/trace";
 // import { getActiveMetadata } from "@/actions/metadata";
 
 interface ArchiveYear {
@@ -48,17 +40,21 @@ export default function ArchiveManager({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const {
-    data: archives,
+    data: archives = [], // Ensure archives is always an array, default to an empty array
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["metadata"], // Caching key
+    queryKey: ["archive"],
     queryFn: async () => {
-      const response = getMetadata();
-      console.log("🚀 ~ queryFn: ~ response:", response);
-      return response;
+      const metadata = await getMetadata();
+      // console.log("🚀 ~ metadata returned from getMetadata:", metadata);
+
+      // Check and ensure the data is always an array before returning
+      return Array.isArray(metadata) ? metadata : [];
     },
   });
+
+  console.log("🚀 ~ archives:", archives);
 
   const { mutate: mutateSetActiveArchive } = useMutation({
     mutationFn: async (id: string) => {
@@ -67,7 +63,7 @@ export default function ArchiveManager({
     },
     onSuccess: () => {
       // Invalidate and refetch "metadata" query
-      queryClient.invalidateQueries({ queryKey: ["metadata"] });
+      queryClient.invalidateQueries({ queryKey: ["archive", "metadata"] });
       toast({ title: "Success", description: "Archive set active." });
     },
     onError: (error) => {
@@ -80,26 +76,6 @@ export default function ArchiveManager({
     console.error("🚀 ~ error:", error);
   }
 
-  // useEffect(() => {
-  //   const fetchAndScroll = async () => {
-  //     const activeMetadata = await getActiveMetadata();
-  //     setArchives(activeMetadata);
-
-  //     if (scrollAreaRef.current) {
-  //       const activeElement = scrollAreaRef.current.querySelector(
-  //         `#archive-${activeYear}`
-  //       );
-  //       if (activeElement) {
-  //         activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  //       }
-  //     }
-  //   };
-
-  //   fetchAndScroll(); // Call the async function
-  //   console.log("🚀 ~ archive:", archives)
-
-  // }, [activeYear]);
-
   return (
     <Card className={`w-full h-full ${classes}`}>
       <CardHeader className="pb-2">
@@ -111,9 +87,9 @@ export default function ArchiveManager({
           >
             <Plus className="w-20 h-20 text-blue-800" />
           </Button>
-        </CardTitle>{" "}
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-0 h-[calc(100%-4rem)]  flex flex-col justify-center items-center">
+      <CardContent className="p-0 h-[calc(100%-4rem)] flex flex-col justify-center items-center">
         {isLoading && (
           <LoaderIcon className=" animate-spin mt-20" width={40} height={40} />
         )}
@@ -133,60 +109,65 @@ export default function ArchiveManager({
           </Button>
         )}
         <ScrollArea className="h-full w-full" ref={scrollAreaRef}>
-          {archives?.map((archive: Metadata) => (
-            // {archives?.slice(0, 4).map((archive) => (
-            <div
-              key={archive.title}
-              className="flex items-center space-x-3 p-1 rounded-lg transition-colors hover:bg-gray-100"
-            >
-              <AlertDialog>
-                <AlertDialogTrigger disabled={archive.active} className="w-auto h-auto p-0 m-0 flex space-x-2 items-center mx-4 py-1">
-                  {archive.active ? (
-                    <Crown className="w-5 h-5 text-Caccent flex-shrink-0" />
-                  ) : (
-                    <Archive className="w-5 h-5 text-Cprimary flex-shrink-0" />
-                  )}
-                  <Label
-                    htmlFor={`archive-${archive.title}`}
-                    className={`text-base flex-grow cursor-pointer ${
-                      archive.active
-                        ? "text-Caccent font-semibold"
-                        : "text-Cprimary"
-                    }`}
+          {archives.length > 0 && (
+            archives.map((archive: Metadata) => (
+              <div
+                key={archive.id} // Changed key to use `id` instead of `title` for better uniqueness
+                className="flex items-center space-x-3 p-1 rounded-lg transition-colors hover:bg-gray-100"
+              >
+                <AlertDialog>
+                  <AlertDialogTrigger
+                    disabled={archive.active}
+                    className="w-auto h-auto p-0 m-0 flex space-x-2 items-center mx-4 py-1"
                   >
-                    {typeof archive.title === "string"
-                      ? archive.title.replace("_", " ")
-                      : `${archive.title} Selection`}
-                  </Label>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Set{" "}
-                      <span className="font-bold text-Cprimary">
-                        {archive.title}
-                      </span>{" "}
-                      to active?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>No</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        mutateSetActiveArchive(archive.id);
-                      }}
+                    {archive.active ? (
+                      <Crown className="w-5 h-5 text-Caccent flex-shrink-0" />
+                    ) : (
+                      <Archive className="w-5 h-5 text-Cprimary flex-shrink-0" />
+                    )}
+                    <Label
+                      htmlFor={`archive-${archive.title}`}
+                      className={`text-base flex-grow cursor-pointer ${
+                        archive.active
+                          ? "text-Caccent font-semibold"
+                          : "text-Cprimary"
+                      }`}
                     >
-                      Yes
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          ))}
+                      {typeof archive.title === "string"
+                        ? archive.title.replace("_", " ")
+                        : `${archive.title} Selection`}
+                    </Label>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Set{" "}
+                        <span className="font-bold text-Cprimary">
+                          {archive.title}
+                        </span>{" "}
+                        to active?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>No</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          mutateSetActiveArchive(archive.id);
+                        }}
+                      >
+                        Yes
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            ))
+          )}
         </ScrollArea>
       </CardContent>
     </Card>

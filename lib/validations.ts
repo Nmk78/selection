@@ -2,12 +2,20 @@ import { z } from "zod";
 
 const metadataSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  description: z.string(), 
+  description: z.string(),
+  maleForSecondRound: z
+    .number()
+    .min(2, { message: "It should be atleast 2 male for second round" }),
+  femaleForSecondRound: z
+    .number()
+    .min(2, { message: "It should be atleast 2 female for second round" }),
   // active: z.boolean().default(true),
-  round: z.enum(["preview", "first", "second", "result"], {
-    message:
-      "Invalid round state. Allowed values are: 'preview', 'first', 'second', 'result'.",
-  }).default("preview"),
+  round: z
+    .enum(["preview", "first", "second", "result"], {
+      message:
+        "Invalid round state. Allowed values are: 'preview', 'first', 'second', 'result'.",
+    })
+    .default("preview"),
 });
 
 const candidateSchema = z.object({
@@ -22,6 +30,10 @@ const candidateSchema = z.object({
   carouselImages: z
     .array(z.string().url({ message: "Each image must be a valid URL" }))
     .optional(),
+  age: z
+    .number()
+    .min(16, { message: "age must be at least 16" })
+    .max(30, { message: "age must be less than or equal to 30" }),
   height: z
     .number()
     .min(50, { message: "Height must be at least 50 cm" })
@@ -40,6 +52,7 @@ const candidateSchema = z.object({
 
 const secretKeySchema = z.object({
   adminId: z.string().min(1, { message: "Admin ID is required" }),
+  roomId: z.string().min(1, { message: "Room ID is required" }),
   secretKey: z.string().min(1, { message: "Secret Key is required" }),
   firstRoundMale: z.boolean().default(false),
   firstRoundFemale: z.boolean().default(false),
@@ -49,6 +62,7 @@ const secretKeySchema = z.object({
 
 const specialSecretKeySchema = z.object({
   adminId: z.string().min(1, { message: "Admin ID is required" }),
+  roomId: z.string().min(1, { message: "Room ID is required" }),
   specialSecretKey: z
     .string()
     .min(1, { message: "Special Secret Key is required" }),
@@ -69,10 +83,16 @@ const specialSecretKeySchema = z.object({
 });
 
 const voteSchema = z.object({
-  roomid:z.string(),
+  roomid: z.string(),
   candidateId: z.string().min(1, { message: "Candidate ID is required" }), // Candidate being voted for
   totalVotes: z.number().default(0), // Total votes for the candidate in this round
   totalRating: z.number().default(0), // Cumulative rating (used in second round with special keys)
 });
 
-export {metadataSchema, candidateSchema, secretKeySchema, specialSecretKeySchema, voteSchema}
+export {
+  metadataSchema,
+  candidateSchema,
+  secretKeySchema,
+  specialSecretKeySchema,
+  voteSchema,
+};

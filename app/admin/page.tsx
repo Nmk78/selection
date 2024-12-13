@@ -8,22 +8,36 @@ import CurrentResults from "@/components/admin/CurrentResult";
 import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
-import { Eye, EyeClosed, EyeClosedIcon, EyeOff, Plus, X } from "lucide-react";
+import {
+  Eye,
+  EyeClosed,
+  EyeClosedIcon,
+  EyeOff,
+  Loader2,
+  Plus,
+  X,
+} from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
 import CandidateForm from "@/components/admin/CandidateForm";
+import { useAuth } from "@clerk/nextjs";
+import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
 
 export default function AdminPage() {
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
   const [metaDataModal, setmetaDataModal] = useState<boolean | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
+  const { userId } = useAuth();
 
   const closeModal = () => setActiveModal(null);
   const closeMetaDataModal = () => setmetaDataModal(null);
 
   return (
     <div className="container max-w-7xl h-[82vh] mx-auto p-4 select-none">
+      {!userId ||
+        userId === undefined ||
+        (userId === null && <Loader2 className="w-12 h-12" />)}
       {/* <h1 className="text-3xl font-bold text-primary mb-6">Admin Dashboard</h1> */}
       {/* <div className="grid grid-cols-1 md:grid-cols-7 grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)]"> */}
       <div className="h-full flex flex-col md:flex-none md:grid grid-cols-1 md:grid-cols-7 md:grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)] w-full">
@@ -44,8 +58,7 @@ export default function AdminPage() {
                   onClick={() => {
                     setVisable(true);
                   }}
-                  w-6
-                  h-6
+                  className="w-6 h-6"
                 />
               )}
             </CardTitle>
@@ -67,14 +80,20 @@ export default function AdminPage() {
           classes="h-full md:col-span-2 row-span-3 md:row-span-5"
           setActiveModal={setActiveModal}
         />
-        <ArchiveManager setMetaDataModal={setmetaDataModal} classes="h-full md:col-span-1 row-span-1 md:row-span-5" />{" "}
+        <ArchiveManager
+          setMetaDataModal={setmetaDataModal}
+          classes="h-full md:col-span-1 row-span-1 md:row-span-5"
+        />{" "}
         {/* </div> */}
         <Card className="md:col-span-2 row-span-3 md:row-span-4">
           <CardHeader>
-            <CardTitle>Secret Keys</CardTitle>
+            <CardTitle className="flex justify-between">
+              <span>Secret Keys</span>{" "}
+              {userId && <SecretKeyPrintBtn userId={userId} />}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <SecretKeyManager />
+            {userId && <SecretKeyManager userId={userId} />}
           </CardContent>
         </Card>
         <Card className="md:col-span-2 row-span-3 md:row-span-4 ">

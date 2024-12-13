@@ -50,6 +50,7 @@ export interface Candidate {
   major: string;
   profileImage: string; // URL of the profile image
   carouselImages: string[]; // Array of URLs for carousel images
+  age: number;
   height: number;
   weight: number;
   hobbies: string[]; // Array of hobbies
