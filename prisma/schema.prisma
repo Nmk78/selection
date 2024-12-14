@@ -48,7 +48,7 @@ model SecretKey {
 model SpecialSecretKey {
   id          String   @id @map("_id") @default(auto()) @db.ObjectId // Specify ObjectId type
   adminId           String
-  specialSecretKey  String
+  specialSecretKey  String  @unique()
   roomId            String
   used              Boolean  @default(false)
   ratings           Json // Store ratings as an array of embedded objects
@@ -71,7 +71,10 @@ model Rating {
 enum Round {
   preview
   first
+  firstVotingClosed
+  secondPreview
   second
+  secondVotingClosed
   result
 }
 

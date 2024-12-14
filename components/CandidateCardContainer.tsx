@@ -46,7 +46,6 @@
 //   },
 // });
 
-
 // if (isLoading) {
 //   return (
 //     <div className="flex items-center justify-center h-[60vh]">
@@ -100,6 +99,8 @@ export default async function CandidateSelection() {
       </div>
     );
   }
+
+  candidates = candidates.sort(() => Math.random() - 0.5);
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">

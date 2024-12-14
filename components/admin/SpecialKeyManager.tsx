@@ -1,67 +1,133 @@
-'use client'
+"use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import {
+  addSpecialSecretKey,
+  getAllSpecialSecretKeys,
+} from "@/actions/secretKey";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { toast } from '@/hooks/use-toast'
+export default function SpecialKeyManager({ userId }: { userId: string }) {
+  const [specialKey, setSpecialKey] = useState("");
 
-export default function SpecialKeyManager() {
-  const [specialKey, setSpecialKey] = useState('')
-  const [generatedKeys, setGeneratedKeys] = useState<string[]>([])
+  const {
+    data: specialKeys = [],
+    error,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["specialKeys"],
+    queryFn: async () => {
+      const specialKeys = await getAllSpecialSecretKeys();
+      console.log("🚀 ~ queryFn: ~ specialKeys:", specialKeys);
+      return Array.isArray(specialKeys.data) ? specialKeys.data : [];
+    },
+  });
 
-  const generateJudgeKey = () => {
-    const key = 'JUDGE-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-    setSpecialKey(key)
-  }
+  const addJudgeKey = async () => {
+    if (!specialKey) {
+      toast({
+        title: "No Key Entered",
+        description: "Please enter a judge key before adding.",
+      });
+      return;
+    }
 
-  const addJudgeKey = () => {
-    if (specialKey) {
-      setGeneratedKeys(prev => [...prev, specialKey])
-      setSpecialKey('')
+    //@ts-ignore
+    if (specialKeys.includes(specialKey)) {
+      toast({
+        title: "Duplicate Key",
+        description: "This judge key has already been added.",
+      });
+      return;
+    }
+
+    try {
+      await addSpecialSecretKey(userId, specialKey);
+      setSpecialKey("");
+      refetch(); // Refetch the list of keys after adding a new one
       toast({
         title: "Judge Key Added",
-        description: "The judge key has been added to the list.",
-      })
+        description: "The judge key has been successfully added to the list.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while adding the key.",
+      });
     }
-  }
-
-  const downloadKeys = () => {
-    const blob = new Blob([generatedKeys.join('\n')], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'judge_keys.txt'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
+  };
 
   return (
-    <div className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
-        {" "}
-        <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-          <h3 className="text-lg font-semibold">Total</h3>
-          <div className="text-sm text-gray-500">{specialKey?.length}</div>
-        </div>
-        {/* Used Section */}
-        <div className="bg-gray-100 w-3/7 p-4 rounded-lg shadow-sm space-y-2">
-          <h3 className="text-lg font-semibold">Used</h3>
-          <div className="space-y-2">
-            <div className="text-sm text-gray-500">{specialKey?.length}</div>
-          </div>
-        </div>
-      </div>
-      <Input value={specialKey} onChange={(e) => setSpecialKey(e.target.value)} placeholder="Judge Key" />
-      <div className="flex space-x-2">
-        <Button onClick={generateJudgeKey} className="flex-1">Generate</Button>
-        <Button onClick={addJudgeKey} className="flex-1">Add</Button>
-      </div>
-      {generatedKeys.length > 0 && (
-        <Button onClick={downloadKeys} className="w-full">Download Keys ({generatedKeys.length})</Button>
-      )}
-    </div>
-  )
-}
+    <Card className="md:col-span-2 row-span-3 md:row-span-4 ">
+      <CardHeader>
+        <CardTitle className="w-full flex justify-between items-center">
+          <span>Judge Keys</span>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className=" p-2 text-blue-500 rounded-md">
+                View ({specialKeys.length})
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Special Keys</DialogTitle>
+              </DialogHeader>
+              <ScrollArea className="h-[300px] w-full rounded-md border p-4">
+                {specialKeys.map((key, index) => (
+                  <div key={index} className="py-2 border-b last:border-b-0">
+                    {key}
+                  </div>
+                ))}
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4 h-full">
+          {/* <div className="grid grid-cols-2 gap-2"> */}
+            <div className="bg-gray-100 p-4 flex items-center rounded-lg shadow-sm space-x-3">
+              <h3 className="text-lg font-bold text-end ">Total</h3>
+              <div className="text-sm text-gray-500 font-semibold text-end">{specialKeys.length}</div>
+            </div>
+            {/* <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
+              <h3 className="text-lg font-semibold">Used</h3>
+              <div className="text-sm text-gray-500">{specialKeys.length}</div>
+            </div> */}
+          {/* </div> */}
 
+          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <Input
+              value={specialKey}
+              onChange={(e) => setSpecialKey(e.target.value)}
+              placeholder="Enter Special Secret Key"
+              className="w-full"
+            />
+            <Button
+              onClick={addJudgeKey}
+              className="w-full"
+              disabled={!specialKey}
+            >
+              Add Special Key
+            </Button>
+          </form>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

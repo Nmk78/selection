@@ -10,17 +10,16 @@
 //     imageUrls: string[];
 //     profilePic: string;
 //   }
-  
-  export type winnerCandidate = {
-    id: string;
-    name: string;
-    title: "King" | "Queen" | "Prince" | "Princess";
-    imageUrl: string;
-    votes: number;
-  }
-  
 
-  // Enums
+export type winnerCandidate = {
+  id: string;
+  name: string;
+  title: "King" | "Queen" | "Prince" | "Princess";
+  profileImage: string;
+  votes: number;
+};
+
+// Enums
 export enum Round {
   PREVIEW = "preview",
   FIRST = "first",
@@ -39,7 +38,14 @@ export interface Metadata {
   title: string;
   active: boolean;
   description: string;
-  round: "preview" | "first" | "second" | "result";
+  round:
+    | "preview"
+    | "first"
+    | "firstVotingClosed"
+    | "secondPreview"
+    | "second"
+    | "secondVotingClosed"
+    | "result";
 }
 
 export interface Candidate {

@@ -7,19 +7,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { stat } from "fs";
 
 interface KeyStatusProps {
   status: {
     isValid: boolean;
-    maleVoteFirstRound: boolean;
-    femaleVoteFirstRound: boolean;
-    maleVoteSecondRound: boolean;
-    femaleVoteSecondRound: boolean;
+    maleVoteFirstRound?: boolean;
+    femaleVoteFirstRound?: boolean;
+    maleVoteSecondRound?: boolean;
+    femaleVoteSecondRound?: boolean;
   };
 }
 
 export function KeyStatus({ status }: KeyStatusProps) {
-  const StatusIcon = ({ isActive }: { isActive: boolean }) =>
+  const StatusIcon = ({ isActive }: { isActive: boolean | undefined }) =>
     isActive ? (
       <XCircle className="text-red-500" />
     ) : (
@@ -37,40 +38,53 @@ export function KeyStatus({ status }: KeyStatusProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="font-medium text-Cprimary">Key Validity</span>
-            {status.isValid ? (
-              <CheckCircle className="text-green-500" />
-            ) : (
-              <XCircle className="text-red-500" />
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h3 className="font-semibold text-Cprimary">First Round</h3>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-Cprimary">Male Vote</span>
-                <StatusIcon isActive={status.maleVoteFirstRound} />
+        
+          {status.isValid ? (
+            <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-Cprimary">Key Validity</span>
+              {status.isValid ? (
+                <CheckCircle className="text-green-500" />
+              ) : (
+                <XCircle className="text-red-500" />
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-Cprimary">First Round</h3>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-Cprimary">Male Vote</span>
+                  <StatusIcon isActive={status.maleVoteFirstRound} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-Cprimary">Female Vote</span>
+                  <StatusIcon isActive={status.femaleVoteFirstRound} />
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-Cprimary">Female Vote</span>
-                <StatusIcon isActive={status.femaleVoteFirstRound} />
+              <div className="space-y-2">
+                <h3 className="font-semibold text-Cprimary">Second Round</h3>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-Cprimary">Male Vote</span>
+                  <StatusIcon isActive={status.maleVoteSecondRound} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-Cprimary">Female Vote</span>
+                  <StatusIcon isActive={status.femaleVoteSecondRound} />
+                </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-Cprimary">Second Round</h3>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-Cprimary">Male Vote</span>
-                <StatusIcon isActive={status.maleVoteSecondRound} />
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-Cprimary">Female Vote</span>
-                <StatusIcon isActive={status.femaleVoteSecondRound} />
-              </div>
             </div>
-          </div>
-        </div>
+
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-Cprimary">Key Validity</span>
+              {status.isValid ? (
+                <CheckCircle className="text-green-500" />
+              ) : (
+                <XCircle className="text-red-500" />
+              )}
+            </div>
+          )}
       </CardContent>
     </Card>
   );

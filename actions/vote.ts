@@ -5,6 +5,7 @@ import { getCandidatesForSecondRound } from "./candidate";
 
 export async function voteForCandidate(candidateId: string, secretKey: string) {
   try {
+    secretKey = secretKey.toLowerCase().trim();
     // Fetch the secret key details
     const secretKeyRecord = await prisma.secretKey.findUnique({
       where: { secretKey },
@@ -112,11 +113,7 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
     } else if (round === "second") {
       try {
         // Fetch eligible candidates for the second round
-        let res = await getCandidatesForSecondRound(
-          roomId,
-          maleForSecondRound,
-          femaleForSecondRound
-        );
+        let res = await getCandidatesForSecondRound();
         console.log("🚀 ~ voteForCandidate ~ res:", res);
 
         const { eligibleCandidates, topMales, topFemales } = res;

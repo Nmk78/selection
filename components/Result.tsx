@@ -33,7 +33,7 @@ export default function Results({ results }: ResultsProps) {
           <div key={candidate.title} className="flex flex-col items-center">
             <div className="relative w-48 h-48 md:w-60 md:h-60 lg:w-72 lg:h-72 mb-4">
               <Image
-                src={candidate.imageUrl}
+                src={candidate.profileImage}
                 alt={`${candidate.title} ${candidate.name}`}
                 layout="fill"
                 objectFit="cover"

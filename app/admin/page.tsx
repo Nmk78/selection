@@ -67,14 +67,7 @@ export default function AdminPage() {
             <CurrentResults visible={visable} />
           </CardContent>
         </Card>
-        <Card className="row-span-4 md:col-span-3 md:row-span-3">
-          <CardHeader>
-            <CardTitle>Selection Rounds</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RoundManager />
-          </CardContent>
-        </Card>
+        <RoundManager />
         {/* <div className="flex md:col-span-3 row-span-4 md:row-span-5 gap-5"> */}
         <CandidateManager
           classes="h-full md:col-span-2 row-span-3 md:row-span-5"
@@ -96,14 +89,9 @@ export default function AdminPage() {
             {userId && <SecretKeyManager userId={userId} />}
           </CardContent>
         </Card>
-        <Card className="md:col-span-2 row-span-3 md:row-span-4 ">
-          <CardHeader>
-            <CardTitle>Judge Keys</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SpecialKeyManager />
-          </CardContent>
-        </Card>
+        
+            {userId && <SpecialKeyManager userId={userId} />}
+          
       </div>
       {activeModal && (
         <Modal title="Add New Candidate" onClose={closeModal}>
@@ -111,7 +99,7 @@ export default function AdminPage() {
         </Modal>
       )}{" "}
       {metaDataModal && (
-        <Modal title="Add New Candidate" onClose={closeMetaDataModal}>
+        <Modal title="Add New Room" onClose={closeMetaDataModal}>
           <MetadataForm closeModal={closeMetaDataModal} />
         </Modal>
       )}
