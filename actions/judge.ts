@@ -9,13 +9,22 @@ export const addRatingsToVotes = async (ratings: any, secretKey: any) => {
     }
 
     const SpecialSecretKey = secretKey.toLowerCase().trim();
-    console.log("🚀 ~ addRatingsToVotes ~ SpecialSecretKey:", SpecialSecretKey);
+    const activeMetadata = await prisma.metadata.findFirst({
+      where: { active: true },
+    });
+
+    if (!activeMetadata) {
+      throw new Error("No active room!");
+    }
+
+    //@ts-ignore
+    const { id } = activeMetadata;
 
     const totalSecretKeys = await prisma.specialSecretKey.count();
 
     // Fetch the special secret key record from the database
     const secretKeyRecord = await prisma.specialSecretKey.findUnique({
-      where: { specialSecretKey: SpecialSecretKey }, // Use camelCase field name
+      where: { specialSecretKey: SpecialSecretKey, roomId: id }, // Use camelCase field name
     });
 
     // Handle case where the secret key is not valid

@@ -5,10 +5,28 @@ import { getCandidatesForSecondRound } from "./candidate";
 
 export async function voteForCandidate(candidateId: string, secretKey: string) {
   try {
+    // Fetch the current metadata (active room and round)
+    const currentRoom = await prisma.metadata.findFirst({
+      where: { active: true },
+    });
+
+    if (!currentRoom) {
+      throw new Error("No active round found.");
+    }
+
+    const { round, maleForSecondRound, femaleForSecondRound, id } = currentRoom;
+
+    if (round !== "first" && round !== "second") {
+      throw new Error("Voting is closed.");
+    };
+    
     secretKey = secretKey.toLowerCase().trim();
     // Fetch the secret key details
     const secretKeyRecord = await prisma.secretKey.findUnique({
-      where: { secretKey },
+      where: {
+        secretKey,
+        roomId: id, // Make sure it belongs to the active room
+      },
     });
 
     if (!secretKeyRecord) {
@@ -23,20 +41,7 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
       secondRoundFemale,
     } = secretKeyRecord;
 
-    // Fetch the current metadata (active room and round)
-    const currentRoom = await prisma.metadata.findFirst({
-      where: { active: true },
-    });
 
-    if (!currentRoom) {
-      throw new Error("No active round found.");
-    }
-
-    const { round, maleForSecondRound, femaleForSecondRound } = currentRoom;
-
-    if (round !== "first" && round !== "second") {
-      throw new Error("Voting is closed.");
-    }
 
     // Check the candidate's gender
     const candidate = await prisma.candidate.findUnique({

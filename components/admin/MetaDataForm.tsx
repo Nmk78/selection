@@ -164,7 +164,7 @@ export default function MetadataForm({
         title: "Success",
         description: "Metadata saved successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ["metadata"] });
+      queryClient.invalidateQueries({ queryKey: ["metadata", "archive"] });
       closeModal();
     },
     onError: (err: { message: any }) => {

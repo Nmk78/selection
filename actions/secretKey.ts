@@ -66,8 +66,21 @@ export async function insertSecretKeys(userId: string, keys: string[]) {
 
 export async function getAllSecretKeys() {
   try {
+    const activeMetadata = await prisma.metadata.findFirst({
+      where: { active: true },
+    });
+
+    if (!activeMetadata) {
+      throw new Error("No active room!");
+    }
+
+    //@ts-ignore
+    const { id } = activeMetadata;
     // Query the `SecretKey` model to get only the `secretKey` field
     const secretKeys = await prisma.secretKey.findMany({
+      where: {
+        roomId: id, // Filter by the current room ID
+      },
       select: {
         secretKey: true, // Only select the `secretKey` field
       },
@@ -104,10 +117,10 @@ export async function addSpecialSecretKey(
       throw new Error("No active room!");
     }
 
-    specialSecretKey = specialSecretKey.toLowerCase().trim()
+    specialSecretKey = specialSecretKey.toLowerCase().trim();
     // Check if the secret key already exists
     const existingKey = await prisma.specialSecretKey.findFirst({
-      where: { specialSecretKey },
+      where: { specialSecretKey, roomId: activeMetadata.id },
     });
 
     if (existingKey) {
@@ -135,8 +148,21 @@ export async function addSpecialSecretKey(
 
 export async function getAllSpecialSecretKeys() {
   try {
+    const activeMetadata = await prisma.metadata.findFirst({
+      where: { active: true },
+    });
+
+    if (!activeMetadata) {
+      throw new Error("No active room!");
+    }
+
+    //@ts-ignore
+    const { id } = activeMetadata;
     // Query the `SecretKey` model to get only the `secretKey` field
     const secretKeys = await prisma.specialSecretKey.findMany({
+      where: {
+        roomId: id,
+      },
       select: {
         specialSecretKey: true, // Only select the `secretKey` field
       },
@@ -167,11 +193,24 @@ interface KeyStatus {
 
 export async function validateKey(key: string): Promise<KeyStatus> {
   console.log("🚀 ~ validateKey ~ key:", key);
-  // This is a mock implementation. In a real application, you would validate the key against a database.
 
+  const activeMetadata = await prisma.metadata.findFirst({
+    where: { active: true },
+  });
+  console.log("🚀 ~ validateKey ~ activeMetadata:", activeMetadata);
+
+  if (!activeMetadata) {
+    throw new Error("No active room!");
+  }
+
+  //@ts-ignore
+  const { id } = activeMetadata;
   // For demonstration, we'll consider keys starting with 'valid' as valid
   const secretKeyRecord = await prisma.secretKey.findUnique({
-    where: { secretKey: key.toLowerCase().trim() },
+    where: {
+      secretKey: key.toLowerCase().trim(), // Normalize the key
+      roomId: id, // Make sure it belongs to the active room
+    },
   });
 
   if (!secretKeyRecord) {

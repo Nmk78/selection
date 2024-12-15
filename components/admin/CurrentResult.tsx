@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { getCandidatesWithStats } from "@/actions/candidate";
+import { Skeleton } from "../ui/skeleton";
 
 interface Candidate {
   id: string;
@@ -35,15 +36,11 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
     },
   });
 
-  if (isLoading) {
-    return <div>Loading candidates...</div>;
-  }
-
   if (error) {
     return <div>Failed to load candidates. Please try again.</div>;
   }
 
-  console.log("🚀 ~ CurrentResults ~ candidates:", candidates)
+  console.log("🚀 ~ CurrentResults ~ candidates:", candidates);
 
   return (
     <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
@@ -78,6 +75,24 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {isLoading &&
+                Array.from({ length: 4 }).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell colSpan={5}>
+                      {" "}
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
+                    <TableCell colSpan={1} className="text-center">
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
+                    <TableCell colSpan={1} className="text-center">
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
+                    <TableCell colSpan={1} className="text-center">
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
+                  </TableRow>
+                ))}
               {candidates.map((candidate) => (
                 <TableRow key={candidate.id}>
                   <TableCell colSpan={5}>{candidate.name}</TableCell>

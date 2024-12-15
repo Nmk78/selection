@@ -2,11 +2,12 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { LoaderCircle } from 'lucide-react';
 import { useQuery } from "@tanstack/react-query";
 import { getAllCandidateImages } from "@/actions/metadata";
-import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Skeleton } from "./ui/skeleton";
+import { Card, CardContent } from "./ui/card";
 
 export default function CarouselComponent() {
   const {
@@ -25,49 +26,72 @@ export default function CarouselComponent() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-60 w-full">
-        <LoaderCircle className="w-10 h-10 animate-spin" />
-      </div>
+      <Card className="w-full max-w-7xl md:mt-10 mx-auto overflow-hidden">
+        <CardContent className="p-0">
+          <Carousel className="w-full">
+            <CarouselContent>
+              {[...Array(3)].map((_, index) => (
+                <CarouselItem key={index} className="relative pl-0 md:basis-1/2 lg:basis-1/5">
+                  <div className="aspect-[3/4] w-full relative">
+                    <Skeleton className="w-full h-full absolute inset-0" />
+                  </div>
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
+                    <Skeleton className="w-16 h-6" />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </CardContent>
+      </Card>
     );
   }
 
   if (error || !images || images.length === 0) {
     return (
-      <div className="flex items-center justify-center h-60 w-full text-red-500">
-        Failed to load images. Please try again.
-      </div>
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardContent className="flex items-center justify-center h-60 text-red-500">
+          Failed to load images. Please try again.
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <Carousel
-      plugins={[plugin.current]}
-      className="w-full overflow-hidden"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
-    >
-      <CarouselContent>
-        {images.map((url, index) => (
-          <CarouselItem key={index} className="relative -pl-1">
-            <div className="aspect-[3/4] w-full relative">
-              <Image
-                src={url}
-                alt={`Full-body Image ${index + 1}`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                style={{ objectFit: "cover" }}
-                className=""
-              />
-            </div>
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-              <span className="text-white font-bold text-sm sm:text-base relative inline-block px-2 py-1 bg-black bg-opacity-50 ">
-                {index + 1} of {images.length}
-              </span>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
+    <Card className="w-full max-w-7xl md:mt-10 mx-auto overflow-hidden">
+      <CardContent className="p-0">
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full"
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+        >
+          <CarouselContent>
+            {images.map((url, index) => (
+              <CarouselItem key={index} className="relative pl-0 md:basis-1/2 lg:basis-1/5">
+                <div className="aspect-[3/4] w-full relative">
+                  <Image
+                    src={url}
+                    alt={`Full-body Image ${index + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    style={{ objectFit: "cover" }}
+                    className=""
+                  />
+                </div>
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
+                  <span className="text-white font-thin font-quindelia text-sm sm:text-base relative inline-block px-2 py-1 bg-gray-600 bg-opacity-20 rounded">
+                    {index + 1} of {images.length}
+                  </span>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
+        </Carousel>
+      </CardContent>
+    </Card>
   );
 }
 

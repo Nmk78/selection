@@ -38,6 +38,8 @@ export interface Metadata {
   title: string;
   active: boolean;
   description: string;
+  maleForSecondRound: number;
+  femaleForSecondRound: number;
   round:
     | "preview"
     | "first"

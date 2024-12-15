@@ -5,6 +5,7 @@ import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
 import ReactQueryProvider from "./providers";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Metadata } from "next";
 // Import fonts
 const quindelia = localFont({
   src: "./fonts/quindelia.regular.ttf",
@@ -22,6 +23,36 @@ const geistSans = localFont({
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
+export const metadata: Metadata = {
+  title: 'PU Selection',
+  description: 'The PU Selection App allows users to vote and select students for various positions, including king, queen, prince, and princess. The app features two rounds of voting based on different criteria for each position.',
+  
+  // Open Graph Tags for social media sharing
+  openGraph: {
+    title: 'PU Selection App',
+    description: 'A platform for university students to vote and select the king, queen, prince, and princess. Participate in the first and second rounds of voting!',
+    url: process.env.BASE_URL,
+    // image: 'URL_to_image.jpg',
+    type: 'website',
+  },
+
+  // Twitter Card Tags
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PU Selection App',
+    description: 'Vote for the king, queen, prince, and princess in the PU Selection App!',
+    // image: 'URL_to_image.jpg',
+  },
+
+  // Favicon
+  icons: {
+    icon: '/favicon.ico',
+  },
+
+  // Canonical URL
+  // canonical: process.env.BASE_URL,
+};
 
 export default function RootLayout({
   children,

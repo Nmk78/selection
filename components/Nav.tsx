@@ -4,8 +4,18 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, Crown, Menu, X, Archive, Check, TicketCheck } from "lucide-react";
+import {
+  Home,
+  Crown,
+  Menu,
+  X,
+  Archive,
+  Check,
+  TicketCheck,
+} from "lucide-react";
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
+import { useQuery } from "@tanstack/react-query";
+import { archiveMetadata } from "@/actions/archive";
 
 interface NavbarProps {
   isAdmin: boolean;
@@ -14,17 +24,36 @@ interface NavbarProps {
 export default function Nav({ isAdmin }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false); // State for archive dropdown
-  const [archives, setArchives] = useState<{ href: string; label: string }[]>([
-    { href: "/2023", label: "2023" },
-    { href: "/2024", label: "2024" },
-  ]); // State to store fetched archives
+  const [archives, setArchives] = useState<{ href: string; label: string }[]>(
+    []
+  ); // State to store fetched archives
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["nonActiveMetadata"], // Unique key for caching
+    queryFn: async () => {
+      const fetchedData = await archiveMetadata();
+      console.log("🚀 ~ queryFn: ~ fetchedData:", fetchedData)
+      //@ts-ignore
+      const formattedArchives = fetchedData.data.map((item: any) => ({
+        href: `/${item.id}`, // Example of generating a URL
+        label: item.title || "Untitled", // Use the title or fallback to "Untitled"
+      }));
+
+      setArchives(formattedArchives);
+    }, 
+    refetchOnWindowFocus: false,
+  });
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleArchive = () => setArchiveOpen(!archiveOpen);
 
   const menuItems = [
     { href: "/", icon: <Home className="w-5 h-5" />, label: "Home" },
-    { href: "/check", icon: <TicketCheck className="w-5 h-5" />, label: "Check" },
+    {
+      href: "/check",
+      icon: <TicketCheck className="w-5 h-5" />,
+      label: "Check",
+    },
     ...(isAdmin
       ? [
           {
@@ -95,7 +124,7 @@ export default function Nav({ isAdmin }: NavbarProps) {
                       {archives.map((item) => (
                         <li key={item.href}>
                           <Link
-                          onClick={toggleArchive}
+                            onClick={toggleArchive}
                             href={`/archive${item.href}`}
                             className="block px-4 py-2 text-Cprimary hover:bg-gray-100 transition"
                           >

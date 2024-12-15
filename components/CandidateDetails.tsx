@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import { Heart } from "lucide-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useState } from "react";
 
@@ -15,23 +14,23 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Candidate as BaseCandidate } from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { voteForCandidate } from "@/actions/vote";
 import { Candidate } from "@prisma/client";
+import { Badge } from "./ui/badge";
 
 export default function CandidateDetails({
   id,
   name,
   major,
   age,
+  gender,
   height,
   weight,
   intro,
@@ -51,7 +50,7 @@ export default function CandidateDetails({
       candidateId: string;
       secretKey: string;
     }) => {
-      setVoting(true)
+      setVoting(true);
       // Ensure voteForCandidate is returning the expected result
       const res = await voteForCandidate(candidateId, secretKey);
       console.log("🚀 ~ res:", res); // Log the response for debugging
@@ -59,7 +58,7 @@ export default function CandidateDetails({
         title: res.success ? "Succeed" : "Failed",
         description: res.message,
       });
-      setVoting(false)
+      setVoting(false);
       return res;
     },
     onError: (error) => {
@@ -105,33 +104,52 @@ export default function CandidateDetails({
           </div>
 
           {/* Right Section */}
-          <div className="w-full md:w-1/2 space-y-4">
-            <h1 className="text-2xl md:text-3xl font-semibold text-romantic-Cprimary">
-              {name}
-            </h1>
-            <p className="text-romantic-text">
-              <span className="font-semibold">Major:</span> {major}
-            </p>
-            <p className="text-romantic-text">
-              <span className="font-semibold">Age:</span> {age}
-            </p>
-            <p className="text-romantic-text">
-              <span className="font-semibold">Height:</span> {height}
-            </p>
-            <p className="text-romantic-text">
-              <span className="font-semibold">Weight:</span> {weight}
-            </p>
-            <div>
-              <h2 className="text-xl font-semibold text-romantic-Cprimary mb-2">
+          <div className="w-full md:w-1/2 space-y-6">
+            {/* Name and Age in one row */}
+            <div className="flex items-center justify-between space-x-4">
+              <h1
+                className={`text-2xl md:text-3xl font-semibold ${
+                  gender === "male" ? "text-Cprimary" : "text-Caccent"
+                }`}
+              >
+                {name}
+              </h1>
+              <p className="text-Cprimary">
+                <span className="font-semibold">Age:</span> {age}
+              </p>
+            </div>
+
+            {/* Major in its own row */}
+            <div className="space-y-2">
+              <p className="text-Cprimary">
+                <span className="font-semibold">Major:</span> {major}
+              </p>
+            </div>
+
+            {/* Weight and Height in one row */}
+            <div className="flex items-center justify-between">
+              <p className="text-Cprimary">
+                <span className="font-semibold">Height:</span> {height}
+              </p>
+              <p className="text-Cprimary">
+                <span className="font-semibold">Weight:</span> {weight}
+              </p>
+            </div>
+
+            {/* About Section */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-Cprimary mb-2">
                 About {name.split(" ")[0]}
               </h2>
-              <p className="text-romantic-text text-sm md:text-base">{intro}</p>
+              <p className="text-Cprimary text-sm md:text-base">{intro}</p>
             </div>
-            <div>
+
+            {/* Hobbies Section */}
+            <div className="space-y-2">
               <h2 className="text-xl font-semibold text-romantic-Cprimary mb-2">
                 Hobbies
               </h2>
-              <ul className="list-disc list-inside text-romantic-text text-sm md:text-base">
+              <ul className="list-disc list-inside text-Cprimary text-sm md:text-base">
                 {hobbies.map((hobby, index) => (
                   <li key={index}>{hobby}</li>
                 ))}
@@ -155,14 +173,14 @@ export default function CandidateDetails({
                 key={index}
                 className=" -pl-1 md:basis-1/2 lg:basis-1/3"
               >
-                <div className="aspect-potriate relative rounded-lg overflow-hidden">
+                <div className="aspect-potriate relative overflow-hidden">
                   <Image
                     src={url}
                     alt={`Full-body Image ${index + 1} of ${name}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     style={{ objectFit: "cover" }}
-                    className="rounded-lg"
+                    className=""
                   />
                 </div>
               </CarouselItem>

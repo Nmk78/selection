@@ -5,33 +5,6 @@
 // import { getAllCandidates } from "@/actions/candidate";
 // import { LoaderCircle } from "lucide-react";
 
-// // const candidates: Candidate[] = [
-// //   {
-// //     id: '1',
-// //     name: 'Emma Johnson',
-// //     gender: "female",
-// //     major: 'Computer Science',
-// //     height: '5\'6"',
-// //     weight: '130 lbs',
-// //     intro: 'Passionate about technology and community service',
-// //     hobbies: ['Coding', 'Volunteering', 'Photography'],
-// //     imageUrls: ['/untrack/myat1.jpg', '/untrack/myat.jpg', '/untrack/myat1.jpg'],
-// //     profilePic: '/untrack/myat.jpg',
-// //   },
-// //   {
-// //     id: '2',
-// //     name: 'Michael Chen',
-// //     gender: "female",
-// //     major: 'Business Administration',
-// //     height: '5\'10"',
-// //     weight: '160 lbs',
-// //     intro: 'Aspiring entrepreneur with a love for campus activities',
-// //     hobbies: ['Basketball', 'Public Speaking', 'Chess'],
-// //     imageUrls: ['/untrack/myat1.jpg', '/untrack/myat.jpg', '/untrack/myat1.jpg'],
-// //     profilePic: '/untrack/myat.jpg',
-// //   },
-// //   // Add more candidates as needed
-// // ]
 // export default function CandidateSelection() {
 
 // const {
@@ -73,26 +46,93 @@
 //     </div>
 //   )
 // }
-
-//SSR
+// INFO SSR
 import CandidateCard from "./CandidateCard";
-import { getAllCandidates } from "@/actions/candidate"; // Import your action
+import {
+  getAllCandidates,
+  getCandidatesForSecondRound,
+} from "@/actions/candidate";
+import { getMetadata } from "@/actions/metadata";
 import { Candidate as BaseCandidate } from "@/types/types";
+import FilterDropdown from "./FilterDropDown";
+import { Metadata } from "@prisma/client";
 
 export interface Candidate extends BaseCandidate {
   id: string; // Add the ID property
 }
 
-export default async function CandidateSelection() {
+interface Props {
+  searchParams?: { filter?: string };
+}
+
+export default async function CandidateSelection({ searchParams }: Props) {
+  const filter = searchParams?.filter || "mix"; // Default to 'mix'
+  console.log("🚀 ~ CandidateSelection ~ filter:", filter);
   let candidates: Candidate[] = [];
+  let topMale: any[] = [];
+  let topFemale: any[] = [];
+  let eligibleCandidates: Candidate[] = [];
+  let isSecondRound = false;
 
   try {
-    candidates = await getAllCandidates(); // Fetch data using your action
+    // Fetch metadata to determine the current round
+    const metadata: Metadata[] = await getMetadata();
+    isSecondRound = metadata[0].round === "second";
+
+    let secondRoundData;
+    if (isSecondRound) {
+      try {
+        secondRoundData = await getCandidatesForSecondRound();
+      } catch (error) {
+        console.error("Error fetching candidates for second round:", error);
+        // Handle fallback or retry logic if necessary
+      }
+      if (!secondRoundData) {
+        return;
+      }
+
+      topMale = secondRoundData.topMales;
+      topFemale = secondRoundData.topFemales;
+
+      // Apply filtering logic for second round
+      if (filter === "male-first") {
+        eligibleCandidates = [...topMale, ...topFemale];
+        console.log("🚀 Male first", eligibleCandidates);
+      } else if (filter === "female-first") {
+        eligibleCandidates = [...topFemale, ...topMale];
+        console.log("🚀 female first", eligibleCandidates);
+      } else {
+        eligibleCandidates = [...topMale, ...topFemale];
+        eligibleCandidates = eligibleCandidates.sort(() => Math.random() - 0.5); // Randomize order
+      }
+      console.log(
+        "🚀 ~ CandidateSelection ~ eligibleCandidates:",
+        eligibleCandidates
+      );
+    } else {
+      const allCandidates = await getAllCandidates();
+      const males = allCandidates.filter(
+        (candidate) => candidate.gender === "male"
+      );
+      const females = allCandidates.filter(
+        (candidate) => candidate.gender === "female"
+      );
+      // Apply filtering logic for first round
+      if (filter === "male-first") {
+        candidates = [...males, ...females]
+      } else if (filter === "female-first") {
+        candidates = [...females, ...males]
+
+      } else {
+         candidates = allCandidates.sort(() => Math.random() - 0.5);
+      }
+    }
   } catch (error) {
-    console.error("Error fetching candidates:", error);
+    console.error("Error fetching candidates or metadata:", error);
   }
 
-  if (!candidates || candidates.length === 0) {
+  // Handle no candidates found for first or second round
+  if (!isSecondRound && (!candidates || candidates.length === 0)) {
     return (
       <div className="flex items-center justify-center h-[60vh] text-red-500">
         No candidates found. Please try again later.
@@ -100,15 +140,28 @@ export default async function CandidateSelection() {
     );
   }
 
-  candidates = candidates.sort(() => Math.random() - 0.5);
+  if (isSecondRound && eligibleCandidates.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[60vh] text-red-500">
+        No second-round candidates found. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
       <h1 className="text-3xl sm:text-4xl font-bold text-Cprimary mb-6 text-center font-quindelia">
         PU Selection
       </h1>
-      <div className="space-y-6 sm:space-y-8">
-        {candidates.map((candidate) => (
+
+      {/* Filter Dropdown */}
+      <div className="flex justify-end mb-6">
+        <FilterDropdown defaultValue={filter} />
+      </div>
+
+      {/* Render candidates based on current round and filter */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+        {(isSecondRound ? eligibleCandidates : candidates).map((candidate) => (
           <CandidateCard key={candidate.id} candidate={candidate} />
         ))}
       </div>

@@ -114,44 +114,6 @@ export const getCandidatesWithStats = async () => {
       ])
       .toArray();
 
-    // console.log("🚀 ~ candidatesWithStats:", candidatesWithStats);
-
-    // const candidatesWithStats = await db
-    //   .collection("Candidate")
-    //   .aggregate([
-    //     { $match: { roomId: activMetadata[0].id } }, // Filter by roomId
-    //     {
-    //       $lookup: {
-    //         from: "Vote", // Join with the Vote collection
-    //         let: { candidateId: { $toString: "$_id" } }, // Convert ObjectId to string
-    //         pipeline: [
-    //           { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } }, // Compare with Vote.candidateId
-    //         ],
-    //         as: "voteDetails", // Store the joined data in this field
-    //       },
-    //     },
-    //     {
-    //       $addFields: {
-    //         totalVotes: {
-    //           $ifNull: [{ $toInt: { $size: "$voteDetails" } }, 0],
-    //         },
-    //         totalRating: { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] }, // Sum the ratings
-    //       },
-    //     },
-    //     {
-    //       $project: {
-    //         id: { $toString: "$_id" }, // Convert _id to string
-    //         name: 1,
-    //         gender: 1,
-    //         major: 1,
-    //         totalVotes: 1,
-    //         totalRating: 1,
-    //       },
-    //     },
-    //   ])
-    //   .toArray();
-    // console.log("🚀 ~ candidatesWithStats:", candidatesWithStats);
-
     return candidatesWithStats;
   } catch (error) {
     console.error("Error fetching candidates with stats:", error);
@@ -166,13 +128,12 @@ export const getCandidatesForSecondRound = async () => {
     const activMetadata = await prisma.metadata.findMany({
       where: { active: true },
     });
-    // console.log("🚀 ~ activMetadata:", activMetadata);
-
-    const { id, maleForSecondRound, femaleForSecondRound } = activMetadata[0];
 
     if (activMetadata.length === 0) {
-      throw Error("No active room!");
+      throw new Error("No active room!");
     }
+
+    const { id, maleForSecondRound, femaleForSecondRound } = activMetadata[0];
 
     await client.connect();
     const db = client.db("selectionv2");
@@ -184,15 +145,9 @@ export const getCandidatesForSecondRound = async () => {
         {
           $lookup: {
             from: "Vote", // Join with the Vote collection
-            let: { candidateId: "$_id" }, // Let candidateId remain as ObjectId
+            let: { candidateId: { $toString: "$_id" } }, // Convert ObjectId to string
             pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ["$candidateId", "$$candidateId"], // Compare ObjectId with ObjectId
-                  },
-                },
-              },
+              { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } }, // Compare with Vote.candidateId
             ],
             as: "voteDetails", // Store the joined data in this field
           },
@@ -200,15 +155,15 @@ export const getCandidatesForSecondRound = async () => {
         {
           $addFields: {
             totalVotes: {
-              $ifNull: [{ $size: "$voteDetails" }, 0], // Count the number of votes (size of the voteDetails array)
-            },
-            totalRating: {
-              $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0], // Sum the ratings
-            },
+              $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
+            }, // Count the number of votes
+            totalRating: { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
             combinedScore: {
               $add: [
-                { $ifNull: [{ $size: "$voteDetails" }, 0] }, // Add the total number of votes
-                { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] }, // Add the total rating
+                {
+                  $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
+                },
+                { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
               ],
             },
           },
@@ -218,10 +173,19 @@ export const getCandidatesForSecondRound = async () => {
             _id: 0,
             id: { $toString: "$_id" }, // Convert _id to string for consistency
             name: 1,
+            intro: 1,
             gender: 1,
+            roomId: 1,
+            height: 1,
+            age: 1,
+            weight: 1,
+            hobbies: 1,
             major: 1,
-            totalVotes: 1,
-            totalRating: 1,
+            profileImage: 1,
+            carouselImages: 1,
+            // totalVotes: 1, // Ensure these fields are included
+            // totalRating: 1,
+            combinedScore: 1,
           },
         },
         {
@@ -264,10 +228,6 @@ export const getCandidatesForSecondRound = async () => {
       ...topFemales.map((v) => v.id),
     ];
 
-    // console.log("🚀 ~ getCandidatesForSecondRound ~ topMales:", topMales);
-    // console.log("🚀 ~ getCandidatesForSecondRound ~ topFemales:", topFemales);
-    // console.log("🚀 ~ getCandidatesForSecondRound ~ eligibleCandidates:", eligibleCandidates);
-
     return { topMales, topFemales, eligibleCandidates };
   } catch (error) {
     console.error("Error fetching candidates for second round:", error);
@@ -276,6 +236,7 @@ export const getCandidatesForSecondRound = async () => {
     await client.close();
   }
 };
+
 
 export const getCandidatesForJudge = async () => {
   try {
@@ -300,9 +261,9 @@ export const getCandidatesForJudge = async () => {
         {
           $lookup: {
             from: "Vote", // Join with the Vote collection
-            let: { candidateId: { $toObjectId: "$_id" } }, // Convert ObjectId to string
+            let: { candidateId: { $toString: "$_id" } }, // Convert ObjectId to string
             pipeline: [
-              { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } }, // Match votes by candidateId
+              { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } }, // Compare with Vote.candidateId
             ],
             as: "voteDetails", // Store the joined data in this field
           },
@@ -330,6 +291,8 @@ export const getCandidatesForJudge = async () => {
         },
       ])
       .toArray();
+      
+      console.log("🚀 ~ getCandidatesForJudge ~ candidatesWithStats:", candidatesWithStats)
 
     // Separate candidates by gender
     const maleCandidates = candidatesWithStats.filter(
@@ -434,136 +397,6 @@ export async function deleteCandidate(id: string) {
   });
 }
 
-// export const getTopCandidates = async () => {
-//   try {
-//     await client.connect();
-//     const db = client.db("selectionv2");
-
-//     const votesCollection = db.collection("Vote");
-//     const candidatesCollection = db.collection("Candidate");
-
-//     const activMetadata = await prisma.metadata.findMany({
-//       where: { active: true },
-//     });
-//     // console.log("🚀 ~ activMetadata:", activMetadata);
-
-//     if (activMetadata.length === 0) {
-//       throw Error("No active room!");
-//     }
-
-//     const { id, maleForSecondRound, femaleForSecondRound } = activMetadata[0];
-
-//     // Aggregate the votes and ratings
-//     const votesCount = await votesCollection.countDocuments();
-//     console.log("Total votes count:", votesCount);
-
-//     const candidatesWithVotes = await db
-//       .collection("Candidate")
-//       .aggregate([
-//         { $match: { roomId: id } }, // Filter by roomId
-//         {
-//           $lookup: {
-//             from: "Vote", // Join with the Vote collection
-//             let: { candidateId: "$_id" }, // Let candidateId remain as ObjectId
-//             pipeline: [
-//               {
-//                 $match: {
-//                   $expr: {
-//                     $eq: ["$candidateId", "$$candidateId"], // Compare ObjectId with ObjectId
-//                   },
-//                 },
-//               },
-//             ],
-//             as: "voteDetails", // Store the joined data in this field
-//           },
-//         },
-//         {
-//           $addFields: {
-//             totalVotes: {
-//               $ifNull: [{ $size: "$voteDetails" }, 0], // Count the number of votes (size of the voteDetails array)
-//             },
-//             totalRating: {
-//               $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0], // Sum the ratings
-//             },
-//             combinedScore: {
-//               $add: [
-//                 { $ifNull: [{ $size: "$voteDetails" }, 0] }, // Add the total number of votes
-//                 { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] }, // Add the total rating
-//               ],
-//             },
-//           },
-//         },
-//         {
-//           $project: {
-//             _id: 0,
-//             id: { $toString: "$_id" }, // Convert _id to string for consistency
-//             name: 1,
-//             gender: 1,
-//             major: 1,
-//           },
-//         },
-//         {
-//           $sort: { combinedScore: -1 }, // Sort by combinedScore in descending order
-//         },
-//       ])
-//       .toArray();
-
-//     // Log the candidate details
-//     console.log("🚀 ~ candidatesWithStats:", candidatesWithVotes);
-
-//     // If you want to log each candidate's individual details:
-//     candidatesWithVotes.forEach((candidate) => {
-//       console.log(`Candidate: ${candidate.name}`);
-//       console.log(`Gender: ${candidate.gender}`);
-//       console.log(`Major: ${candidate.major}`);
-//       console.log(`Total Votes: ${candidate.totalVotes}`);
-//       console.log(`Total Rating: ${candidate.totalRating}`);
-//       console.log(`Combined Score: ${candidate.combinedScore}`);
-//     });
-
-//     // Separate candidates by gender
-//     const males = candidatesWithVotes.filter(
-//       (candidate) => candidate.gender === "male"
-//     );
-//     const females = candidatesWithVotes.filter(
-//       (candidate) => candidate.gender === "female"
-//     );
-
-//     // Sort candidates by combined score (totalVotes + totalRating)
-//     const sortCandidates = (candidates: any[]) => {
-//       return candidates.sort((a, b) => {
-//         const totalA = a.totalVotes + a.totalRating;
-//         const totalB = b.totalVotes + b.totalRating;
-//         return totalB - totalA;
-//       });
-//     };
-
-//     const sortedMales = sortCandidates(males);
-//     const sortedFemales = sortCandidates(females);
-
-//     // Get top 2 from each gender
-//     const topMales = sortedMales.slice(0, 2);
-//     const topFemales = sortedFemales.slice(0, 2);
-
-//     console.log("🚀 ~ getTopCandidates ~ topMales:", topMales);
-//     console.log("🚀 ~ getTopCandidates ~ topFemales:", topFemales);
-
-//     // Return the top 2 males and top 2 females as the winners
-//     return {
-//       king: topMales[0],
-//       prince: topMales[1],
-//       queen: topFemales[0],
-//       princess: topFemales[1],
-//     };
-//   } catch (error) {
-//     console.error("Error fetching top candidates:", error);
-//     throw new Error("Failed to fetch top candidates.");
-//   } finally {
-//     await client.close();
-//   }
-// };
-
-
 export const getTopCandidates = async () => {
   try {
     await client.connect();
@@ -603,16 +436,6 @@ export const getTopCandidates = async () => {
         },
         {
           $addFields: {
-            // totalVotes: { $size: "$voteDetails" }, // Count the number of votes
-            // totalRating: {
-            //   $sum: { $ifNull: ["$voteDetails.totalRating", 0] }, // Sum the ratings
-            // },
-            // combinedScore: {
-            //   $add: [
-            //     { $size: "$voteDetails" }, // Total votes
-            //     { $sum: { $ifNull: ["$voteDetails.totalRating", 0] } }, // Total ratings
-            //   ],
-            // },
             totalVotes: {
               $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
             },

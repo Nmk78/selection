@@ -8,21 +8,14 @@ import CurrentResults from "@/components/admin/CurrentResult";
 import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
-import {
-  Eye,
-  EyeClosed,
-  EyeClosedIcon,
-  EyeOff,
-  Loader2,
-  Plus,
-  X,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, X } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
 import CandidateForm from "@/components/admin/CandidateForm";
 import { useAuth } from "@clerk/nextjs";
 import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
@@ -86,12 +79,60 @@ export default function AdminPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {userId && <SecretKeyManager userId={userId} />}
+            {userId ? (
+              <SecretKeyManager userId={userId} />
+            ) : (
+              <div className="relative">
+                {/* Skeleton Loader for the entire Upload Area */}
+                <div
+                  className={`border-2 border-dashed rounded-md p-3 text-center cursor-pointer`}
+                >
+                  {/* Skeleton for the icon */}
+                  <div className="mx-auto h-8 w-12 animate-pulse bg-gray-300"></div>
+
+                  {/* Skeleton for instruction text */}
+                  <p className="mt-2 text-gray-300 bg-gray-200 w-1/2 mx-auto h-4 animate-pulse"></p>
+
+                  {/* Skeleton for error message */}
+                  <p className="text-sm text-red-500 mt-1 bg-gray-200 w-2/3 mx-auto h-4 animate-pulse"></p>
+                </div>
+                {/* Skeleton for Progress Bar */}
+                {/* Skeleton for Button */}
+                <div className="mt-4 w-full h-10 bg-gray-300 rounded-md animate-pulse"></div>{" "}
+                {/* Skeleton for button */}
+              </div>
+            )}
           </CardContent>
         </Card>
-        
-            {userId && <SpecialKeyManager userId={userId} />}
-          
+        {userId ? (
+          <SpecialKeyManager userId={userId} />
+        ) : (
+          <Card className="md:col-span-2 row-span-3 md:row-span-4 ">
+            <CardHeader>
+              <CardTitle className="w-full flex justify-between items-center">
+                <span>Judge Keys</span>
+                <span className="w-10 h-5 animate-pulse bg-gray-200"></span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="relative">
+                {/* Skeleton Loader for the entire Upload Area */}
+
+                  {/* Skeleton for the icon */}
+                  <div className="mt-4 w-full h-14 bg-gray-300 rounded-md animate-pulse"></div>{" "}
+
+                  {/* Skeleton for instruction text */}
+
+                  {/* Skeleton for error message */}
+                  <div className="mt-4 w-full h-8 bg-gray-200 rounded-md border-gray-500 animate-pulse"></div>{" "}
+                  {/* Skeleton for Progress Bar */}
+                {/* Skeleton for Button */}
+                <div className="mt-4 w-full h-10 bg-gray-300 rounded-md animate-pulse"></div>{" "}
+                {/* Skeleton for button */}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
       {activeModal && (
         <Modal title="Add New Candidate" onClose={closeModal}>

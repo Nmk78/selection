@@ -219,6 +219,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMetadata, updateRound } from "@/actions/metadata";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Round } from "@prisma/client";
+import { Skeleton } from "../ui/skeleton";
 
 export default function RoundManager() {
   const [round, setRoundState] = useState<Round>("preview");
@@ -323,8 +324,23 @@ export default function RoundManager() {
           <CardTitle>Selection Rounds</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center w-full">
-            <LoaderCircle className="w-10 h-10 animate-spin" />
+          <div className="space-y-4">
+            <div className="flex flex-col-reverse md:flex-row justify-around">
+              <div className="space-y-4 md:w-[50%] flex flex-col justify-start mt-5 md:mt-0">
+                <div className="space-y-2">
+                  {[...Array(3)].map((_, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-5 w-10" />
+                    </div>
+                  ))}
+                </div>
+                <Skeleton className="h-9 w-full" />
+              </div>
+              <div className="w-full md:w-[45%]">
+                <Skeleton className="h-32 w-full rounded-lg" />
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
