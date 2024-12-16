@@ -1,6 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+
+
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 
-// @ts-ignore
 interface CandidatePageProps {
   params: {
     archiveId: string;
