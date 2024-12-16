@@ -1,13 +1,12 @@
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 
 interface CandidatePageProps {
-  params: {
-    archiveId: string;
-    id: string;
-  };
+  params: Promise<{ archiveId: string; id: string }>;
 }
 
-export default function CandidatePage({ params }: CandidatePageProps) {
-  const { archiveId, id } = params;
+export default async function CandidatePage({ params }: CandidatePageProps) {
+  const resolvedParams = await params;
+  const { archiveId, id } = resolvedParams;
+
   return <ArchiveCandidateDetailPage archiveId={archiveId} id={id} />;
 }
