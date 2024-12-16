@@ -1,10 +1,11 @@
-"use client";
+'use client'; // Ensure this is a client-side component
 
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { getCandidatesWithStatsAndTitles } from "@/actions/archive";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { getCandidatesWithStatsAndTitles } from '@/actions/archive';
 
 // Define the Candidate type
 interface Candidate {
@@ -15,23 +16,30 @@ interface Candidate {
   details: string;
 }
 
-export default function YearArchivePage({
-  params,
-}: {
-  params: { archiveId: string };
-}) {
+export default function YearArchivePage() {
+  const router = useRouter();
+  const { archiveId } = router.query; // Get the archiveId from the URL query
+
   const [pastCandidates, setPastCandidates] = useState<Candidate[]>([]);
 
-  //TODO to use useQuery
   useEffect(() => {
-    const fetchCandidates = async () => {
-      const res = await getCandidatesWithStatsAndTitles(params.archiveId);
-      if (res.success) {
-        setPastCandidates(res.data); // Set the candidates data into state
-      }
-    };
-    fetchCandidates();
-  }, [params.archiveId]); // Fetch candidates when archiveId changes
+    // Fetch candidates data once archiveId is available
+    if (archiveId) {
+      const fetchCandidates = async () => {
+        const res = await getCandidatesWithStatsAndTitles(String(archiveId)); // Ensure archiveId is a string
+        if (res.success) {
+          //@ts-expect-error //Error
+          setPastCandidates(res.data);
+        }
+      };
+      fetchCandidates();
+    }
+  }, [archiveId]);
+
+  // Handle the loading state
+  if (!archiveId) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
@@ -74,11 +82,10 @@ export default function YearArchivePage({
                       {candidate.details}
                     </p>
                     <p className="text-sm sm:text-base mb-4">
-                      {/* Additional details */}
                       This is some extra hidden text that will appear on hover.
                     </p>
                     <Link
-                      href={`/archive/${params.archiveId}/${candidate.id}`}
+                      href={`/archive/${archiveId}/${candidate.id}`}
                       className="inline-flex items-center text-romantic-accent hover:text-romantic-primary transition-all duration-300 font-semibold text-lg"
                     >
                       More
