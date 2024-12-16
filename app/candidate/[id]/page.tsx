@@ -94,18 +94,14 @@ import { getCandidateById } from "@/actions/candidate";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 // Define the type for the page props with params
-interface CandidatePageProps {
-  params: {
-    id: string;
-  };
-}
+type Params = Promise<{ id: string }>;
 
-export default async function CandidatePage({ params }: CandidatePageProps) {
-  const { id } = params; // Destructure id from params
-  const candidateData = await getCandidateById(id); // Fetch candidate data
+export default async function CandidatePage({ params }: { params: Params }) {
+  const { id } = await params;
+  const candidateData = await getCandidateById(id); // Fetch the candidate data
 
   if (!candidateData) {
-    notFound(); // Redirect to the 404 page if no candidate is found
+    notFound(); // Redirect to a 404 page if no candidate is found
   }
 
   return (
