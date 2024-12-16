@@ -1,7 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-
-
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 
 interface CandidatePageProps {
@@ -11,6 +7,7 @@ interface CandidatePageProps {
   };
 }
 
-export default function CandidatePage({ params: { archiveId, id } }: CandidatePageProps) {
+export default function CandidatePage({ params }: CandidatePageProps) {
+  const { archiveId, id } = params;
   return <ArchiveCandidateDetailPage archiveId={archiveId} id={id} />;
 }
