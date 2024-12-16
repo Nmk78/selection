@@ -1,3 +1,4 @@
+"use client"
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { ArchiveCandidateDetailPage } from '@/components/ArchiveCandidateDetails';
