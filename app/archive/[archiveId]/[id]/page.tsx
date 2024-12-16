@@ -1,10 +1,27 @@
-import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
+// Import the useRouter hook from Next.js
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { ArchiveCandidateDetailPage } from '@/components/ArchiveCandidateDetails';
 
-type Params = Promise<{ archiveId: string; id: string }>;
+export default function CandidatePage() {
+  // Get the router object with useRouter hook
+  const router = useRouter();
+  const { archiveId, id } = router.query; // Destructure params from the query object
 
-export default async function CandidatePage({ params }: { params: Params }) {
-  const resolvedParams = await params; // Await the promise to get the resolved values
-  const { archiveId, id } = resolvedParams;
+  // Optional: Set up state to handle loading or fallback UI
+  const [loading, setLoading] = useState(true);
 
-  return <ArchiveCandidateDetailPage id={id} archiveId={archiveId} />;
+  useEffect(() => {
+    if (archiveId && id) {
+      setLoading(false); // Once the params are available, stop loading
+    }
+  }, [archiveId, id]); // Re-run when the params change
+
+  // If params are not available yet, you can show a loading message or spinner
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Pass the params to the ArchiveCandidateDetailPage component
+  return <ArchiveCandidateDetailPage archiveId={String(archiveId)} id={String(id)} />;
 }
