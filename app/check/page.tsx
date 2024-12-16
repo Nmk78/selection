@@ -4,13 +4,19 @@ import { validateKey } from "@/actions/secretKey";
 import { KeyStatus } from "@/components/key/KeyStatus";
 import { KeyInputForm } from "@/components/key/Secretkeyform";
 
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
 export default async function KeyStatusPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: SearchParams;
 }) {
+  const resolvedSearchParams = await searchParams;
   const key =
-    typeof searchParams.key === "string" ? searchParams.key : undefined;
+    typeof resolvedSearchParams.key === "string"
+      ? resolvedSearchParams.key
+      : undefined;
+
   const status = key ? await validateKey(key) : null;
 
   return (
@@ -28,7 +34,6 @@ export default async function KeyStatusPage({
           </Suspense>
         )}
       </div>
-
     </div>
   );
 }
