@@ -8,19 +8,18 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Metadata } from "next";
 
 const quindelia = localFont({
-  src: "/fonts/quindelia.regular.ttf",
+  src: "./fonts/quindelia.regular.ttf", // Correct lowercase
   variable: "--font-quindelia",
 });
 
-const geistMono = localFont({
-  src: "/fonts/geistMonoVF.woff",
-  variable: "--font-geist-mono",
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
   weight: "100 900",
 });
-
-const geistSans = localFont({
-  src: "/fonts/geistVF.woff",
-  variable: "--font-geist-sans",
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
   weight: "100 900",
 });
 
