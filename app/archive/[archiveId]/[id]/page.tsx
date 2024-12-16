@@ -1,3 +1,5 @@
+"use client"
+
 // Import the useRouter hook from Next.js
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
