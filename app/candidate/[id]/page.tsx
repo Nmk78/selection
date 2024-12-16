@@ -90,7 +90,6 @@
 import { notFound } from "next/navigation";
 import CandidateDetails from "@/components/CandidateDetails";
 import { getCandidateById } from "@/actions/candidate";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 interface CandidatePageProps {
   params: {
