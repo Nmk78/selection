@@ -87,10 +87,13 @@
 //   );
 // }
 
+
 import { notFound } from "next/navigation";
 import CandidateDetails from "@/components/CandidateDetails";
 import { getCandidateById } from "@/actions/candidate";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
+// Define the type for the page props with params
 interface CandidatePageProps {
   params: {
     id: string;
@@ -98,7 +101,8 @@ interface CandidatePageProps {
 }
 
 export default async function CandidatePage({ params }: CandidatePageProps) {
-  const candidateData = await getCandidateById(params.id);
+  const { id } = params; // Destructure id from params
+  const candidateData = await getCandidateById(id); // Fetch candidate data
 
   if (!candidateData) {
     notFound(); // Redirect to the 404 page if no candidate is found
@@ -107,9 +111,14 @@ export default async function CandidatePage({ params }: CandidatePageProps) {
   return (
     <div className="w-full min-h-screen bg-Cbackground px-0 py-0 sm:px-6 lg:px-8">
       <main className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center">
-        <div className="w-full max-w-4xl mx-auto bg-Cbackground rounded-none shadow-lg md:my-5">
-          <CandidateDetails {...candidateData} />
-        </div>
+        <Card className="w-full max-w-4xl mx-auto bg-Cbackground rounded-none shadow-lg">
+          <CardContent className="p-4 md:p-6">
+            <CandidateDetails {...candidateData} />
+          </CardContent>
+          <CardFooter className="flex justify-center p-4 md:p-6 bg-romantic-Csecondary bg-opacity-30">
+            {/* Add any footer content here */}
+          </CardFooter>
+        </Card>
       </main>
     </div>
   );
