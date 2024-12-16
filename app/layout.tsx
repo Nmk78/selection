@@ -6,20 +6,20 @@ import { Toaster } from "@/components/ui/toaster";
 import ReactQueryProvider from "./providers";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Metadata } from "next";
-// Import fonts
+
 const quindelia = localFont({
-  src: "./fonts/quindelia.regular.ttf",
+  src: "/fonts/quindelia.regular.ttf",
   variable: "--font-quindelia",
 });
 
 const geistMono = localFont({
-  src: "./fonts/geistMonoVF.woff",
+  src: "/fonts/geistMonoVF.woff",
   variable: "--font-geist-mono",
-  weight: "100 900", // Specify weights if the font is variable
+  weight: "100 900",
 });
 
 const geistSans = localFont({
-  src: "./fonts/geistVF.woff",
+  src: "/fonts/geistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
