@@ -70,7 +70,6 @@
 
 // export default CandidateCard;
 
-import { Crown } from 'lucide-react';
 import Image from "next/image";
 import Link from "next/link";
 import { Candidate as BaseCandidate } from "@/types/types";

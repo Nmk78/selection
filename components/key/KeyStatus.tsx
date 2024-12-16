@@ -6,8 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
-import { stat } from "fs";
 
 interface KeyStatusProps {
   status: {

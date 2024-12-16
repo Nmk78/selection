@@ -167,6 +167,7 @@ export default function MetadataForm({
       queryClient.invalidateQueries({ queryKey: ["metadata", "archive"] });
       closeModal();
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: { message: any }) => {
       toast({
         title: "Error",

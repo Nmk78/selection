@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
-import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MultiImageUploader } from "../MultiImageUploader";
 import { ImageUploader } from "../ImageUploader";
@@ -102,6 +101,7 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["candidates"] });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: { message: any }) => {
       // Show error toast notification
       setLoading(false)
@@ -129,10 +129,10 @@ export default function CandidateForm({ closeModal }: CandidateFormProps) {
 
     try {
       // Upload profile image
-      //@ts-ignore
+      //@ts-expect-error //it was showing error 
       const profileRes = await profileImageUploaderRef.current.startUpload();
       // Upload additional images
-      //@ts-ignore
+      //@ts-expect-error //it was showing error
       const imgRes = await uploaderRef.current.startUpload();
       
       if (!profileRes || profileRes.length === 0) {

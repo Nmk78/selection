@@ -1,5 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 const f = createUploadthing();
 
@@ -21,7 +22,7 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
       // This code runs on your server before upload
-      const user = await auth(req);
+      const user = auth(req);
 
       // If you throw, the user will not be able to upload
       if (!user) throw new UploadThingError("Unauthorized");

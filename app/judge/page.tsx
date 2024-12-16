@@ -1,23 +1,23 @@
-import { getCandidatesForJudge, getCandidatesForSecondRound } from "@/actions/candidate";
+import { getCandidatesForJudge } from "@/actions/candidate";
 import { getMetadata } from "@/actions/metadata";
 import JudgeVoting from "@/components/JudgeVoting";
 
-interface Candidate {
+type Candidate = {
   id: string;
   name: string;
-  intro: string;
+  age: number;
   gender: "male" | "female";
-  major: string;
-  profileImage: string; 
-  carouselImages: string[];
   height: number;
-  age: number; 
   weight: number;
-  hobbies: string[]; 
-}
+  major: string;
+  intro: string;
+  hobbies: string[]; // Array of hobbies as strings
+  profileImage: string; // URL to the profile image
+  carouselImages: string[]; // Array of image URLs for the carousel
+};
 
 export default async function JudgeVotingPage() {
-  let candidates: any[] = [];
+  let candidates: Candidate[] = [];
   let round: string | null = null;
 
   try {
@@ -31,7 +31,6 @@ export default async function JudgeVotingPage() {
       const { topMales, topFemales } = await getCandidatesForJudge(); // Adjust parameters as needed
       // const { topMales, topFemales } = await getCandidatesForSecondRound(); // Adjust parameters as needed
       candidates = [...topMales, ...topFemales]; // Combine and flatten male and female candidates
-      console.log("🚀 ~ JudgeVotingPage ~ candidates:", candidates)
     }
   } catch (error) {
     console.error("Failed to fetch data:", error);

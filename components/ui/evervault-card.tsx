@@ -1,9 +1,16 @@
 "use client";
-import { useMotionValue } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import { MotionValue, useMotionValue } from "framer-motion";
+import { useState, useEffect, SVGProps } from "react";
 import { useMotionTemplate, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+
+// Define more specific types instead of `any`
+interface MouseEventProps {
+  currentTarget: HTMLElement;
+  clientX: number;
+  clientY: number;
+}
 
 export const EvervaultCard = ({
   text,
@@ -12,19 +19,20 @@ export const EvervaultCard = ({
   text?: string;
   className?: string;
 }) => {
-  let mouseX = useMotionValue(0);
-  let mouseY = useMotionValue(0);
-  let path = usePathname();
+  // Use const instead of let for values that don't change
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const path = usePathname();
 
-  const [randomString, setRandomString] = useState("");
+  const [randomString, setRandomString] = useState<string>("");
 
   useEffect(() => {
-    let str = generateRandomString(10000);
+    const str = generateRandomString(10000);
     setRandomString(str);
   }, []);
 
-  function onMouseMove({ currentTarget, clientX, clientY }: any) {
-    let { left, top } = currentTarget.getBoundingClientRect();
+  function onMouseMove({ currentTarget, clientX, clientY }: MouseEventProps) {
+    const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
 
@@ -61,7 +69,7 @@ export const EvervaultCard = ({
         </div>
         {path === "/auth/signup" && (
           <span className=" text-nowrap mt-5 text-sm text-center w-full text-red-500">
-            Signing up isn't allowed! Contact{" "}
+            Signing up isn&apos;t allowed! Contact{" "}
             <a
               href="mailto:naymyokhant78@gmail.com"
               className="underline hover:text-red-700"
@@ -80,9 +88,15 @@ export const EvervaultCard = ({
   );
 };
 
-export function CardPattern({ mouseX, mouseY, randomString }: any) {
-  let maskImage = useMotionTemplate`radial-gradient(250px at ${mouseX}px ${mouseY}px, white, transparent)`;
-  let style = { maskImage, WebkitMaskImage: maskImage };
+interface CardPatternProps {
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
+  randomString: string;
+}
+
+export function CardPattern({ mouseX, mouseY, randomString }: CardPatternProps) {
+  const maskImage = useMotionTemplate`radial-gradient(250px at ${mouseX}px ${mouseY}px, white, transparent)`;
+  const style = { maskImage, WebkitMaskImage: maskImage };
 
   return (
     <div id="cardPattern" className="pointer-events-none text-wrap">
@@ -95,7 +109,6 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
         className="absolute inset-0 rounded-none text-wrap opacity-0 mix-blend-overlay  group-hover/card:opacity-100"
         style={style}
       >
-        {/* <p className="absolute inset-x-0 text-sm text-wrap w-full h-full break-words whitespace-pre-wrap text-gradient-1 font-mono font-bold transition duration-500"> */}
         <p
           className="absolute inset-x-0 w-full h-full break-all text-gradient-1 font-mono font-bold transition duration-500"
           style={{ lineHeight: "1.5" }}
@@ -109,22 +122,15 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
 
 const characters = "Polytechnic University Myeik Fresher Welcome";
 // "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-export const generateRandomString = (length: number) => {
+export const generateRandomString = (length: number): string => {
   let result = "";
   for (let i = 0; i < length; i++) {
     result += " " + characters;
   }
   return result;
 };
-//export const generateRandomString = (length: number) => {
-//   let result = "";
-//   for (let i = 0; i < length; i++) {
-//     result += characters.charAt(Math.floor(Math.random() * characters.length));
-//   }
-//   return result;
-// };
 
-export const Icon = ({ className, ...rest }: any) => {
+export const Icon = ({ className, ...rest }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

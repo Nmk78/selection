@@ -17,9 +17,6 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // Modal visibility state
 
-  if (!userId) {
-    return;
-  }
   const handlePrint = () => {
     const printableContent = document.getElementById("printable-content"); // Select the printable content
     if (printableContent) {
@@ -83,17 +80,23 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
         setError("Failed to load secret keys.");
       }
     } catch (error) {
+      console.log("🚀 ~ loadSecretKeys ~ error:", error);
       setError("An error occurred while loading secret keys.");
     } finally {
       setLoading(false);
     }
   };
 
+  // UseEffect will only run if userId is available
   useEffect(() => {
-    if(userId){
+    if (userId) {
       loadSecretKeys();
     }
   }, [userId]);
+
+  if (!userId) {
+    return null; // Return null instead of early return to ensure hooks are still called
+  }
 
   return (
     <div className="relative">
@@ -104,7 +107,6 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
           onClick={() => {
             setIsModalVisible(true);
           }}
-          // onClick={handlePrint}
           disabled={!isLoaded || loading}
         >
           {loading ? (

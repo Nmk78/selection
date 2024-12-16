@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Crown, Archive, Plus, LoaderIcon } from "lucide-react";
+import { Crown, Archive, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
 import { Metadata } from "@/types/types";
@@ -22,7 +22,6 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { arch } from "os";
 
 export default function ArchiveManager({
   classes,

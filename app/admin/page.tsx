@@ -15,7 +15,6 @@ import MetadataForm from "@/components/admin/MetaDataForm";
 import CandidateForm from "@/components/admin/CandidateForm";
 import { useAuth } from "@clerk/nextjs";
 import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
   const [activeModal, setActiveModal] = useState<boolean | null>(null);

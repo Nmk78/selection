@@ -47,16 +47,15 @@ const LivelyBackground: React.FC = () => {
 
     function animate() {
       if (!ctx) return;
-      //@ts-ignore
+      //@ts-expect-error //it was showing error
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        //@ts-ignore
-
+        //@ts-expect-error  //it was showing error
         if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
-        //@ts-ignore
+        //@ts-expect-error //it was showing error
         if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
 
         ctx.beginPath();

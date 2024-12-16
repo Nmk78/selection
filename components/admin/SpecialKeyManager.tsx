@@ -44,7 +44,6 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
       return;
     }
 
-    //@ts-ignore
     if (specialKeys.includes(specialKey)) {
       toast({
         title: "Duplicate Key",
@@ -79,9 +78,11 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
           <span>Judge Keys</span>
           <Dialog>
             <DialogTrigger asChild>
-              <button className=" p-2 text-blue-500 rounded-md">
-                View ({specialKeys.length})
-              </button>
+              {!error && !isLoading && (
+                <button className=" p-2 text-blue-500 rounded-md">
+                  View ({specialKeys.length})
+                </button>
+              )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
@@ -101,11 +102,13 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
       <CardContent>
         <div className="space-y-4 h-full">
           {/* <div className="grid grid-cols-2 gap-2"> */}
-            <div className="bg-gray-100 p-4 flex items-center rounded-lg shadow-sm space-x-3">
-              <h3 className="text-lg font-bold text-end ">Total</h3>
-              <div className="text-sm text-gray-500 font-semibold text-end">{specialKeys.length}</div>
+          <div className="bg-gray-100 p-4 flex items-center rounded-lg shadow-sm space-x-3">
+            <h3 className="text-lg font-bold text-end ">Total</h3>
+            <div className="text-sm text-gray-500 font-semibold text-end">
+              {isLoading ? "Loading.." : specialKeys.length}
             </div>
-            {/* <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
+          </div>
+          {/* <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
               <h3 className="text-lg font-semibold">Used</h3>
               <div className="text-sm text-gray-500">{specialKeys.length}</div>
             </div> */}

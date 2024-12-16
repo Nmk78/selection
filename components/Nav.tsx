@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,16 +10,34 @@ import {
   Menu,
   X,
   Archive,
-  Check,
   TicketCheck,
+  Loader2,
 } from "lucide-react";
-import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { archiveMetadata } from "@/actions/archive";
 
 interface NavbarProps {
   isAdmin: boolean;
 }
+type RoundData = {
+  id: string;
+  title: string;
+  description: string;
+  active: boolean;
+  round:
+    | "preview"
+    | "first"
+    | "firstVotingClosed"
+    | "secondPreview"
+    | "second"
+    | "secondVotingClosed"
+    | "result"; // Enum for known round states
+  maleForSecondRound: number;
+  femaleForSecondRound: number;
+  createdAt: Date; // Use `Date` type for date fields
+  updatedAt: Date; // Include this if necessary
+};
 
 export default function Nav({ isAdmin }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,19 +46,19 @@ export default function Nav({ isAdmin }: NavbarProps) {
     []
   ); // State to store fetched archives
 
-  const { data, isLoading, error } = useQuery({
+  const { isLoading, error } = useQuery({
     queryKey: ["nonActiveMetadata"], // Unique key for caching
     queryFn: async () => {
       const fetchedData = await archiveMetadata();
-      console.log("🚀 ~ queryFn: ~ fetchedData:", fetchedData)
-      //@ts-ignore
-      const formattedArchives = fetchedData.data.map((item: any) => ({
+      //@ts-expect-error  //it was showing error
+      const formattedArchives = fetchedData.data.map((item: RoundData) => ({
         href: `/${item.id}`, // Example of generating a URL
         label: item.title || "Untitled", // Use the title or fallback to "Untitled"
       }));
 
       setArchives(formattedArchives);
-    }, 
+      return formattedArchives;
+    },
     refetchOnWindowFocus: false,
   });
 
@@ -121,6 +139,7 @@ export default function Nav({ isAdmin }: NavbarProps) {
                     transition={{ duration: 0.3 }}
                   >
                     <ul className="py-2">
+                      {!error && isLoading && <Loader2 className="w-5 h-5" />}
                       {archives.map((item) => (
                         <li key={item.href}>
                           <Link

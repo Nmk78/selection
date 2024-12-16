@@ -61,6 +61,23 @@ export interface Candidate extends BaseCandidate {
   id: string; // Add the ID property
 }
 
+type topCandidate = {
+  id: string;
+  name: string;
+  age: number;
+  gender: "male" | "female";
+  height: number;
+  weight: number;
+  hobbies: string[];
+  major: string;
+  intro: string;
+  profileImage: string;
+  carouselImages: string[];
+  combinedScore: number;
+  roomId: string;
+};
+
+
 interface Props {
   searchParams?: { filter?: string };
 }
@@ -69,8 +86,8 @@ export default async function CandidateSelection({ searchParams }: Props) {
   const filter = searchParams?.filter || "mix"; // Default to 'mix'
   console.log("🚀 ~ CandidateSelection ~ filter:", filter);
   let candidates: Candidate[] = [];
-  let topMale: any[] = [];
-  let topFemale: any[] = [];
+  let topMale: topCandidate[] = [];
+  let topFemale: topCandidate[] = [];
   let eligibleCandidates: Candidate[] = [];
   let isSecondRound = false;
 
@@ -91,8 +108,40 @@ export default async function CandidateSelection({ searchParams }: Props) {
         return;
       }
 
-      topMale = secondRoundData.topMales;
-      topFemale = secondRoundData.topFemales;
+
+      // Assuming secondRoundData.topMales and topFemales are Document[]:
+      topMale = secondRoundData.topMales.map((male) => ({
+        id: male.id.toString(), // Convert MongoDB ObjectId to string
+        name: male.name,
+        age: male.age,
+        gender: male.gender,
+        height: male.height,
+        weight: male.weight,
+        hobbies: male.hobbies,
+        major: male.major,
+        intro: male.intro,
+        profileImage: male.profileImage,
+        carouselImages: male.carouselImages,
+        combinedScore: male.combinedScore,
+        roomId: male.roomId,
+      }));
+      
+      topFemale = secondRoundData.topFemales.map((female) => ({
+        id: female.id.toString(),
+        name: female.name,
+        age: female.age,
+        gender: female.gender,
+        height: female.height,
+        weight: female.weight,
+        hobbies: female.hobbies,
+        major: female.major,
+        intro: female.intro,
+        profileImage: female.profileImage,
+        carouselImages: female.carouselImages,
+        combinedScore: female.combinedScore,
+        roomId: female.roomId,
+      }));
+      
 
       // Apply filtering logic for second round
       if (filter === "male-first") {
@@ -119,14 +168,14 @@ export default async function CandidateSelection({ searchParams }: Props) {
       );
       // Apply filtering logic for first round
       if (filter === "male-first") {
-        candidates = [...males, ...females]
+        candidates = [...males, ...females];
       } else if (filter === "female-first") {
-        candidates = [...females, ...males]
-
+        candidates = [...females, ...males];
       } else {
-         candidates = allCandidates.sort(() => Math.random() - 0.5);
+        candidates = allCandidates.sort(() => Math.random() - 0.5);
       }
     }
+    console.log("🚀 ~ CandidateSelection ~ topMale:", topMale);
   } catch (error) {
     console.error("Error fetching candidates or metadata:", error);
   }

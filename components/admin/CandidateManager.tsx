@@ -101,7 +101,6 @@
 
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
@@ -114,7 +113,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LoaderIcon, Plus, AlertCircle } from 'lucide-react';
+import { Plus, AlertCircle } from 'lucide-react';
 import { getAllCandidates } from "@/actions/candidate";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "../ui/skeleton";

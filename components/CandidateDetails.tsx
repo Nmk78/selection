@@ -23,7 +23,6 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { voteForCandidate } from "@/actions/vote";
 import { Candidate } from "@prisma/client";
-import { Badge } from "./ui/badge";
 
 export default function CandidateDetails({
   id,

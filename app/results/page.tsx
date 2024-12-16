@@ -3,7 +3,7 @@ import { getTopCandidates } from "@/actions/candidate";
 import { getMetadata } from "@/actions/metadata";
 import Results from "@/components/Result";
 import { winnerCandidate } from "@/types/types";
-import { Crown, Loader2 } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import Confetti from '@/components/Confetti';
 

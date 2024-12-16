@@ -12,13 +12,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getCandidatesWithStats } from "@/actions/candidate";
 import { Skeleton } from "../ui/skeleton";
 
-interface Candidate {
-  id: string;
-  name: string;
-  totalVotes: number; // Ensure this matches your API response
-  totalRating: number; // Ensure this matches your API response
-}
-
 interface CurrentResultsProps {
   visible: boolean;
 }

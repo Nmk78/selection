@@ -3,7 +3,6 @@ import { LoaderCircle } from "lucide-react";
 import { validateKey } from "@/actions/secretKey";
 import { KeyStatus } from "@/components/key/KeyStatus";
 import { KeyInputForm } from "@/components/key/Secretkeyform";
-import Link from "next/link";
 
 export default async function KeyStatusPage({
   searchParams,

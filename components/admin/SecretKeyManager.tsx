@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useMutation } from "@tanstack/react-query";
@@ -75,6 +74,7 @@ export default function SecretKeyManager({ userId }: { userId: string }) {
                 setUploadStatus("success");
                 setProgress(100);
               },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onError: (error: any) => {
                 console.error("Mutation Error:", error);
                 toast({
@@ -99,7 +99,7 @@ export default function SecretKeyManager({ userId }: { userId: string }) {
         },
       });
     },
-    [mutate, toast, userId]
+    [mutate, userId]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -114,7 +114,7 @@ export default function SecretKeyManager({ userId }: { userId: string }) {
       >
         <input {...getInputProps()} />
         <Upload className="mx-auto h-8 w-8 text-gray-400" />
-        <p className="mt-2">Drag 'n' drop a CSV file here.</p>
+        <p className="mt-2">Drag and drop a CSV file here.</p>
         <p className="text-sm text-red-500 mt-1">
           CSV should not end with comma!
         </p>
