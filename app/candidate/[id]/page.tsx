@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import CandidateDetails from "@/components/CandidateDetails";
-import { LoaderCircle } from "lucide-react";
 import { getCandidateById } from "@/actions/candidate";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
