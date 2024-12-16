@@ -1,5 +1,6 @@
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 
+// @ts-ignore
 interface CandidatePageProps {
   params: {
     archiveId: string;
