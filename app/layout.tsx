@@ -1,6 +1,6 @@
 // import localFont from "next/font/local";
 import { ClerkProvider } from "@clerk/nextjs";
-import "./globals.css";
+import './globals.css';
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
 import ReactQueryProvider from "./providers";
