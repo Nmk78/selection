@@ -4,7 +4,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
 import ReactQueryProvider from "./providers";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Metadata } from "next";
 
 const quindelia = localFont({
@@ -68,9 +68,9 @@ export default function RootLayout({
             <Nav isAdmin={true} />
             {children}
             <Toaster />
-            {process.env.NODE_ENV !== "production" && (
+            {/* {process.env.NODE_ENV !== "production" && (
               <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            )} */}
           </body>
         </html>
       </ReactQueryProvider>
