@@ -2,13 +2,13 @@
   "name": "selection",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "postinstall": "prisma generate",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
+"scripts": {
+  "dev": "next dev --turbopack",
+  "postinstall": "prisma generate",
+  "build": "npm install --legacy-peer-deps && next build",
+  "start": "next start",
+  "lint": "next lint"
+},
   "dependencies": {
     "@clerk/nextjs": "^6.5.1",
     "@prisma/client": "^6.0.1",
@@ -27,7 +27,7 @@
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.4",
-    "@tanstack/react-query": "^5.62.7",
+    "@tanstack/react-query": "5.62.7",
     "@uploadthing/react": "^7.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -49,7 +49,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^5.62.7",
+    "@tanstack/react-query-devtools": "5.62.7",
     "@tanstack/eslint-plugin-query": "^5.62.1",
     "@types/lodash": "^4.17.13",
     "@types/node": "^20",
@@ -62,5 +62,10 @@
     "prisma": "^6.0.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "engines": {
+  "node": "20.x",
+  "npm": "10.x"
+}
+
 }
