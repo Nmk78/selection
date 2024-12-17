@@ -18,8 +18,8 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
 
     if (round !== "first" && round !== "second") {
       throw new Error("Voting is closed.");
-    };
-    
+    }
+
     secretKey = secretKey.toLowerCase().trim();
     // Fetch the secret key details
     const secretKeyRecord = await prisma.secretKey.findUnique({
@@ -40,8 +40,6 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
       secondRoundMale,
       secondRoundFemale,
     } = secretKeyRecord;
-
-
 
     // Check the candidate's gender
     const candidate = await prisma.candidate.findUnique({
@@ -186,10 +184,16 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
         }
       } catch (error) {
         console.error("Error in second round voting:", error);
-        //@ts-ignore
-        throw new Error(
-          error.message || "An error occurred while casting the vote."
-        );
+
+        // Type guard to check if the error has a 'message' property
+        if (error instanceof Error) {
+          throw new Error(
+            error.message || "An error occurred while casting the vote."
+          );
+        }
+
+        // Handle cases where the error is not an instance of Error
+        throw new Error("An unknown error occurred while casting the vote.");
       }
     }
 

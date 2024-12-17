@@ -292,7 +292,7 @@ export const getCandidatesForJudge = async () => {
       ])
       .toArray();
       
-      console.log("🚀 ~ getCandidatesForJudge ~ candidatesWithStats:", candidatesWithStats)
+      // console.log("🚀 ~ getCandidatesForJudge ~ candidatesWithStats:", candidatesWithStats)
 
     // Separate candidates by gender
     const maleCandidates = candidatesWithStats.filter(

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getCandidatesForJudge } from "@/actions/candidate";
 import { getMetadata } from "@/actions/metadata";
 import JudgeVoting from "@/components/JudgeVoting";
@@ -28,9 +29,8 @@ export default async function JudgeVotingPage() {
     // Check if it's the second round
     if (round === "second") {
       // Fetch data dynamically for the second round
-      const { topMales, topFemales } = await getCandidatesForJudge(); // Adjust parameters as needed
-      // const { topMales, topFemales } = await getCandidatesForSecondRound(); // Adjust parameters as needed
-      candidates = [...topMales, ...topFemales]; // Combine and flatten male and female candidates
+      const { topMales, topFemales } = await getCandidatesForJudge();
+      candidates = [...topMales, ...topFemales];
     }
   } catch (error) {
     console.error("Failed to fetch data:", error);
@@ -44,7 +44,8 @@ export default async function JudgeVotingPage() {
           Judge Voting Panel
         </h1>
         <p className="text-center text-gray-500">
-          The judge voting will be available in the second round. Please wait for the round to start.
+          The judge voting will be available in the second round. Please wait
+          for the round to start.
         </p>
       </div>
     );
@@ -55,8 +56,10 @@ export default async function JudgeVotingPage() {
       <h1 className="text-3xl font-bold text-center mb-8">
         Judge Voting Panel
       </h1>
-      {/* Pass candidates dynamically */}
-      <JudgeVoting candidates={candidates} />
+      <Suspense fallback={<div>Loading...</div>}>
+        {/* Pass candidates dynamically */}
+        <JudgeVoting candidates={candidates} />
+      </Suspense>
     </div>
   );
 }

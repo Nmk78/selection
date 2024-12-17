@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma"; // Adjust the path to your Prisma client
-import { MongoClient, ObjectId } from "mongodb";
+import { Document, MongoClient, ObjectId } from "mongodb";
 
 //@ts-ignore
 const client = new MongoClient(process.env.DATABASE_URL);
@@ -34,45 +34,163 @@ export async function archiveMetadata() {
   }
 }
 
+// export const getCandidatesWithStatsAndTitles = async (roomId: string) => {
+//   try {
+//     await client.connect();
+//     const db = client.db("selectionv2");
+
+//     // Fetch candidates and their stats for the specific room
+//     const candidatesWithStats = await db
+//       .collection("Candidate")
+//       .aggregate([
+//         { $match: { roomId } }, // Filter by specific roomId
+//         {
+//           $lookup: {
+//             from: "Vote", // Join with the Vote collection
+//             let: { candidateId: { $toString: "$_id" } }, // Convert ObjectId to string
+//             pipeline: [
+//               { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } }, // Match votes for the candidate
+//             ],
+//             as: "voteDetails",
+//           },
+//         },
+//         {
+//           $addFields: {
+//             totalVotes: {
+//               $ifNull: [{ $sum: "$voteDetails.totalVotes" }, 0], // Sum totalVotes
+//             },
+//             totalRating: {
+//               $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0], // Sum totalRating
+//             },
+//             combinedScore: {
+//               $add: [
+//                 { $ifNull: [{ $sum: "$voteDetails.totalVotes" }, 0] },
+//                 { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
+//               ], // Combined score for sorting
+//             },
+//           },
+//         },
+//         {
+//           $project: {
+//             id: "$_id", // MongoDB ObjectId as id
+//             roomId: 1,
+//             name: 1,
+//             title: 1,
+//             intro: 1,
+//             gender: 1,
+//             major: 1,
+//             profileImage: 1,
+//             carouselImages: 1,
+//             height: 1,
+//             age: 1,
+//             weight: 1,
+//             hobbies: 1,
+//             totalVotes: 1,
+//             totalRating: 1,
+//             combinedScore: 1,
+//           },
+//         },
+//         { $sort: { combinedScore: -1 } }, // Sort by combinedScore in descending order
+//       ])
+//       .toArray();
+
+//     // Separate candidates by gender
+//     const males = candidatesWithStats.filter(
+//       (candidate: { gender: string }) => candidate.gender === "male"
+//     );
+//     const females = candidatesWithStats.filter(
+//       (candidate: { gender: string }) => candidate.gender === "female"
+//     );
+
+//     // Assign titles to the top males and females
+//     const assignTitles = (list: any[], titles: string[]) => {
+//       return list.map((candidate: any, index: string | number) => ({
+//         ...candidate,
+//         title: titles[index] || null, // Assign titles to top candidates, null for others
+//       }));
+//     };
+
+//     const maleTitles = ["King", "Prince"];
+//     const femaleTitles = ["Queen", "Princess"];
+
+//     const titledMales = assignTitles(males, maleTitles);
+//     const titledFemales = assignTitles(females, femaleTitles);
+
+//     // Combine titled candidates with other candidates
+//     const allCandidatesWithTitles = [...titledMales, ...titledFemales];
+//     console.log(
+//       "🚀 ~ getCandidatesWithStatsAndTitles ~ allCandidatesWithTitles:",
+//       allCandidatesWithTitles
+//     );
+
+//     return {
+//       success: true,
+//       data: allCandidatesWithTitles,
+//     };
+//   } catch (error) {
+//     console.error("Error fetching candidates with stats and titles:", error);
+//     return {
+//       success: false,
+//       message: "Failed to fetch candidates.",
+//     };
+//   } finally {
+//     await client.close();
+//   }
+// };
+
+interface Candidate {
+  id: string;
+  roomId: string;
+  name: string;
+  title: string | null;
+  intro: string;
+  gender: "male" | "female";
+  major: string;
+  profileImage: string;
+  carouselImages: string[];
+  height: number;
+  age: number;
+  weight: number;
+  hobbies: string[];
+  totalVotes: number;
+  totalRating: number;
+  combinedScore: number;
+}
+
 export const getCandidatesWithStatsAndTitles = async (roomId: string) => {
   try {
     await client.connect();
     const db = client.db("selectionv2");
 
-    // Fetch candidates and their stats for the specific room
-    const candidatesWithStats = await db
+    const candidatesWithStatsDocuments: Document[] = await db
       .collection("Candidate")
       .aggregate([
-        { $match: { roomId } }, // Filter by specific roomId
+        { $match: { roomId } },
         {
           $lookup: {
-            from: "Vote", // Join with the Vote collection
-            let: { candidateId: { $toString: "$_id" } }, // Convert ObjectId to string
+            from: "Vote",
+            let: { candidateId: { $toString: "$_id" } },
             pipeline: [
-              { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } }, // Match votes for the candidate
+              { $match: { $expr: { $eq: ["$candidateId", "$$candidateId"] } } },
             ],
             as: "voteDetails",
           },
         },
         {
           $addFields: {
-            totalVotes: {
-              $ifNull: [{ $sum: "$voteDetails.totalVotes" }, 0], // Sum totalVotes
-            },
-            totalRating: {
-              $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0], // Sum totalRating
-            },
+            totalVotes: { $ifNull: [{ $sum: "$voteDetails.totalVotes" }, 0] },
+            totalRating: { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
             combinedScore: {
               $add: [
                 { $ifNull: [{ $sum: "$voteDetails.totalVotes" }, 0] },
                 { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
-              ], // Combined score for sorting
+              ],
             },
           },
         },
         {
           $project: {
-            id: "$_id", // MongoDB ObjectId as id
+            id: "$_id",
             roomId: 1,
             name: 1,
             title: 1,
@@ -90,23 +208,45 @@ export const getCandidatesWithStatsAndTitles = async (roomId: string) => {
             combinedScore: 1,
           },
         },
-        { $sort: { combinedScore: -1 } }, // Sort by combinedScore in descending order
+        { $sort: { combinedScore: -1 } },
       ])
       .toArray();
 
+    // Transform Document[] to Candidate[]
+    const candidatesWithStats: Candidate[] = candidatesWithStatsDocuments.map(
+      (doc) => ({
+        id: doc.id, // Assuming `_id` was renamed to `id` in the aggregation's `$project`
+        roomId: doc.roomId,
+        name: doc.name,
+        title: doc.title || null,
+        intro: doc.intro,
+        gender: doc.gender as "male" | "female", // Type assertion for gender
+        major: doc.major,
+        profileImage: doc.profileImage,
+        carouselImages: doc.carouselImages || [],
+        height: doc.height,
+        age: doc.age,
+        weight: doc.weight,
+        hobbies: doc.hobbies || [],
+        totalVotes: doc.totalVotes || 0,
+        totalRating: doc.totalRating || 0,
+        combinedScore: doc.combinedScore || 0,
+      })
+    );
+
     // Separate candidates by gender
     const males = candidatesWithStats.filter(
-      (candidate: { gender: string }) => candidate.gender === "male"
+      (candidate) => candidate.gender === "male"
     );
     const females = candidatesWithStats.filter(
-      (candidate: { gender: string }) => candidate.gender === "female"
+      (candidate) => candidate.gender === "female"
     );
 
     // Assign titles to the top males and females
-    const assignTitles = (list: any[], titles: string[]) => {
-      return list.map((candidate: any, index: string | number) => ({
+    const assignTitles = (list: Candidate[], titles: string[]) => {
+      return list.map((candidate, index) => ({
         ...candidate,
-        title: titles[index] || null, // Assign titles to top candidates, null for others
+        title: titles[index] || null,
       }));
     };
 
@@ -185,16 +325,31 @@ export const getArchivedCandidateById = async (candidateId: string) => {
     const femaleVotes = allVotes.filter((vote) => vote.gender === "female");
 
     // Count votes for each male candidate
-    const maleVoteCounts = maleVotes.reduce((acc, vote) => {
-      acc[vote.candidateId] = (acc[vote.candidateId] || 0) + 1;
-      return acc;
-    }, {});
+    // Define the type for a vote
+    interface Vote {
+      candidateId: string | ObjectId; // candidateId can be ObjectId or a string
+      gender: "male" | "female";
+    }
+
+    // Count votes for each male candidate
+    const maleVoteCounts = maleVotes.reduce<Record<string, number>>(
+      (acc, vote) => {
+        const candidateId = vote.candidateId.toString(); // Ensure the key is a string
+        acc[candidateId] = (acc[candidateId] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
 
     // Count votes for each female candidate
-    const femaleVoteCounts = femaleVotes.reduce((acc, vote) => {
-      acc[vote.candidateId] = (acc[vote.candidateId] || 0) + 1;
-      return acc;
-    }, {});
+    const femaleVoteCounts = femaleVotes.reduce<Record<string, number>>(
+      (acc, vote) => {
+        const candidateId = vote.candidateId.toString(); // Ensure the key is a string
+        acc[candidateId] = (acc[candidateId] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
 
     // Sort male and female candidates by votes in descending order
     const sortedMaleVotes = Object.entries(maleVoteCounts).sort(

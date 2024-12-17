@@ -5,13 +5,19 @@ import Footer from "@/components/Footer";
 import LivelyBackground from "@/components/LivelyBackground";
 import Link from "next/link";
 
+type SearchParams = Promise<{ filter?: string }>;
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: { filter?: string };
+  searchParams: SearchParams;
 }) {
-  
+  // Await the searchParams to resolve
+  const resolvedSearchParams = await searchParams;
+
+  // Access the filter parameter if available
+  const filter = resolvedSearchParams?.filter || "mix";
+
   const metadata = await getMetadata();
 
   const { round } = metadata[0];
@@ -53,7 +59,7 @@ export default async function Home({
             ""
           )}
 
-          <CandidateSelection searchParams={searchParams} />
+          <CandidateSelection searchParams={{filter}} />
 
           <Footer />
         </div>
