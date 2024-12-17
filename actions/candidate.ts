@@ -2,6 +2,7 @@
 
 "use server";
 
+import { utapi } from "@/app/server/uploadthing";
 import { prisma } from "@/lib/prisma";
 import { candidateSchema } from "@/lib/validations";
 import { Candidate } from "@/types/types";
@@ -237,7 +238,6 @@ export const getCandidatesForSecondRound = async () => {
   }
 };
 
-
 export const getCandidatesForJudge = async () => {
   try {
     const activMetadata = await prisma.metadata.findMany({
@@ -291,8 +291,8 @@ export const getCandidatesForJudge = async () => {
         },
       ])
       .toArray();
-      
-      // console.log("🚀 ~ getCandidatesForJudge ~ candidatesWithStats:", candidatesWithStats)
+
+    // console.log("🚀 ~ getCandidatesForJudge ~ candidatesWithStats:", candidatesWithStats)
 
     // Separate candidates by gender
     const maleCandidates = candidatesWithStats.filter(
@@ -384,12 +384,91 @@ export async function getCandidateById(candidateId: string) {
   return candidate;
 }
 
-export async function updateCandidate(id: string, data: any) {
-  return await prisma.candidate.update({
-    where: { id },
-    data,
-  });
+// Define the types for the data being passed
+interface CandidateUpdateData {
+  profileImage?: string | null; // the profile image URL or identifier (nullable if no image)
+  carouselImages?: string[]; // list of carousel image URLs or identifiers (must have at least 1 image)
 }
+
+// Define the Candidate type based on the Prisma schema
+
+export const updateCandidate = async (
+  candidateId: string,
+  updatedData: CandidateUpdateData
+): Promise<void> => {
+  // Ensure carouselImages is not empty
+  if (updatedData.carouselImages && updatedData.carouselImages.length === 0) {
+    throw new Error("Carousel images must contain at least one image.");
+  }
+
+  console.log("🚀 ~ updatedData:", updatedData);
+
+  // Track the old images from the current candidate (before updating)
+  const existingCandidate: Candidate | null = await prisma.candidate.findUnique({
+    where: { id: candidateId },
+  });
+
+  // If candidate doesn't exist, we should handle the case appropriately
+  if (!existingCandidate) {
+    throw new Error("Candidate not found");
+  }
+
+  // Track the old images
+  const deletedImages = {
+    profileImage: existingCandidate.profileImage,
+    carouselImages: existingCandidate.carouselImages,
+  };
+
+  // Update candidate data (name, gender, etc.)
+  const updatedCandidateData: any = {
+    ...updatedData,
+    // Only update profileImage and carouselImages separately as handled
+    profileImage: updatedData.profileImage || existingCandidate.profileImage,
+    carouselImages: updatedData.carouselImages || existingCandidate.carouselImages,
+  };
+
+  // Check if profile image has been updated
+  if (
+    updatedData.profileImage &&
+    updatedData.profileImage !== existingCandidate.profileImage
+  ) {
+    // If the profile image was removed, delete it from Uploadthing and MongoDB
+    if (deletedImages.profileImage) {
+      console.log("Deleting profile image");
+      const res = await utapi.deleteFiles(extractKeyFromUrl(deletedImages.profileImage)); // Delete the old profile image
+      console.log("🚀 ~ Delete profile image res:", res);
+    }
+  }
+
+  // Handle carousel image changes
+  if (updatedData.carouselImages && updatedData.carouselImages.length > 0) {
+    // Check for removed carousel images
+    const imagesToDelete = deletedImages.carouselImages.filter(
+      (img) => !updatedData?.carouselImages?.includes(img)
+    );
+
+    // Delete removed carousel images from Uploadthing
+    if (imagesToDelete.length > 0) {
+      console.log("deleting carousel Images");
+      const res = await utapi.deleteFiles(imagesToDelete.map(extractKeyFromUrl)); // Delete the images no longer needed
+      console.log("🚀 ~ delete carousel Image - res:", res);
+    }
+  }
+
+  // Update the candidate in the database
+  await prisma.candidate.update({
+    where: { id: candidateId },
+    data: updatedCandidateData, // Update with all the new data including profileImage and carouselImages
+  });
+
+  console.log("🚀 ~ Candidate updated successfully");
+};
+
+// Utility function to extract the key from a URL (if your URL follows this pattern)
+const extractKeyFromUrl = (url: string): string => {
+  const match = url.match(/f\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : ""; // Extracts the key from the URL
+};
 
 export async function deleteCandidate(id: string) {
   return await prisma.candidate.delete({
@@ -472,7 +551,10 @@ export const getTopCandidates = async () => {
       .toArray();
 
     // Log candidates for debugging
-    console.log("🚀 ~ getTopCandidates ~ candidatesWithVotes:", candidatesWithVotes)
+    console.log(
+      "🚀 ~ getTopCandidates ~ candidatesWithVotes:",
+      candidatesWithVotes
+    );
 
     // Filter candidates by gender
     const males = candidatesWithVotes.filter(

@@ -17,12 +17,15 @@ import { useAuth } from "@clerk/nextjs";
 import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
 
 export default function AdminPage() {
+  const [editModal, setEditModal] = useState<boolean | null>(null);
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
   const [metaDataModal, setmetaDataModal] = useState<boolean | null>(null);
+  const [candidateId, setCandidateId] = useState<string | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
   const { userId } = useAuth();
 
   const closeModal = () => setActiveModal(null);
+  const closeEditModal = () => setEditModal(null);
   const closeMetaDataModal = () => setmetaDataModal(null);
 
   return (
@@ -64,6 +67,8 @@ export default function AdminPage() {
         <CandidateManager
           classes="h-full md:col-span-2 row-span-3 md:row-span-5"
           setActiveModal={setActiveModal}
+          setEditModal={setEditModal}
+          setCandidateId={setCandidateId}
         />
         <ArchiveManager
           setMetaDataModal={setmetaDataModal}
@@ -116,15 +121,12 @@ export default function AdminPage() {
             <CardContent>
               <div className="relative">
                 {/* Skeleton Loader for the entire Upload Area */}
-
-                  {/* Skeleton for the icon */}
-                  <div className="mt-4 w-full h-14 bg-gray-300 rounded-md animate-pulse"></div>{" "}
-
-                  {/* Skeleton for instruction text */}
-
-                  {/* Skeleton for error message */}
-                  <div className="mt-4 w-full h-8 bg-gray-200 rounded-md border-gray-500 animate-pulse"></div>{" "}
-                  {/* Skeleton for Progress Bar */}
+                {/* Skeleton for the icon */}
+                <div className="mt-4 w-full h-14 bg-gray-300 rounded-md animate-pulse"></div>{" "}
+                {/* Skeleton for instruction text */}
+                {/* Skeleton for error message */}
+                <div className="mt-4 w-full h-8 bg-gray-200 rounded-md border-gray-500 animate-pulse"></div>{" "}
+                {/* Skeleton for Progress Bar */}
                 {/* Skeleton for Button */}
                 <div className="mt-4 w-full h-10 bg-gray-300 rounded-md animate-pulse"></div>{" "}
                 {/* Skeleton for button */}
@@ -136,6 +138,11 @@ export default function AdminPage() {
       {activeModal && (
         <Modal title="Add New Candidate" onClose={closeModal}>
           <CandidateForm closeModal={closeModal} />
+        </Modal>
+      )}{" "}
+      {editModal && candidateId && (
+        <Modal title="Add New Candidate" onClose={closeEditModal}>
+          <CandidateForm candidateId={candidateId} closeModal={closeModal} />
         </Modal>
       )}{" "}
       {metaDataModal && (

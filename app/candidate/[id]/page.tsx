@@ -91,7 +91,6 @@
 import { notFound } from "next/navigation";
 import CandidateDetails from "@/components/CandidateDetails";
 import { getCandidateById } from "@/actions/candidate";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 // Define the type for the page props with params
 type Params = Promise<{ id: string }>;
@@ -107,14 +106,9 @@ export default async function CandidatePage({ params }: { params: Params }) {
   return (
     <div className="w-full min-h-screen bg-Cbackground px-0 py-0 sm:px-6 lg:px-8">
       <main className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center">
-        <Card className="w-full max-w-4xl mx-auto bg-Cbackground rounded-none shadow-lg">
-          <CardContent className="p-4 md:p-6">
+        <div className="w-full max-w-4xl mx-auto bg-Cbackground md:my-5 rounded-none shadow-lg">
             <CandidateDetails {...candidateData} />
-          </CardContent>
-          <CardFooter className="flex justify-center p-4 md:p-6 bg-romantic-Csecondary bg-opacity-30">
-            {/* Add any footer content here */}
-          </CardFooter>
-        </Card>
+        </div>
       </main>
     </div>
   );
