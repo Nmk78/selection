@@ -174,11 +174,7 @@
 
 
 module.exports = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx}',   // If you're using the app directory in Next.js 13+
-    './pages/**/*.{js,ts,jsx,tsx}',  // If you're using the pages directory
-    './components/**/*.{js,ts,jsx,tsx}', // If you have a components folder
-  ],
+purge: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {},
   },
