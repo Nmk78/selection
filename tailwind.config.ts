@@ -82,5 +82,7 @@ export default withUt({
     },
   },
   plugins: [require("tailwindcss-animate")],
+  enabled: process.env.NODE_ENV === "production",
+
 }) satisfies Config;
 
