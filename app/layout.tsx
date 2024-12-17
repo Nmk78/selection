@@ -1,4 +1,4 @@
-import localFont from "next/font/local";
+// import localFont from "next/font/local";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Nav from "@/components/Nav";
@@ -7,21 +7,21 @@ import ReactQueryProvider from "./providers";
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Metadata } from "next";
 
-const quindelia = localFont({
-  src: "./fonts/quindelia.regular.ttf", // Correct lowercase
-  variable: "--font-quindelia",
-});
+// const quindelia = localFont({
+//   src: "./fonts/quindelia.regular.ttf", // Correct lowercase
+//   variable: "--font-quindelia",
+// });
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+// const geistSans = localFont({
+//   src: "./fonts/GeistVF.woff",
+//   variable: "--font-geist-sans",
+//   weight: "100 900",
+// });
+// const geistMono = localFont({
+//   src: "./fonts/GeistMonoVF.woff",
+//   variable: "--font-geist-mono",
+//   weight: "100 900",
+// });
 
 export const metadata: Metadata = {
   title: 'PU Selection',
@@ -63,7 +63,8 @@ export default function RootLayout({
       <ReactQueryProvider>
         <html lang="en">
           <body
-            className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
+            className={` h-screen antialiased bg-background flex flex-col items-center`}
+            // className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
           >
             <Nav isAdmin={true} />
             {children}
