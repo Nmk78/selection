@@ -26,12 +26,12 @@ export default function CarouselComponent() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-7xl md:mt-10 mx-auto overflow-hidden">
+      <div className="w-full max-w-7xl md:mt-2 mx-auto overflow-hidden">
         <div className="p-0 ">
           <Carousel className="w-full rounded-none md:rounded-xl">
             <CarouselContent>
-              {[...Array(3)].map((_, index) => (
-                <CarouselItem key={index} className="relative pl-0 md:basis-1/2 lg:basis-1/5">
+              {[...Array(4)].map((_, index) => (
+                <CarouselItem key={index} className="relative rounded-none pl-0 md:basis-1/2 lg:basis-1/5">
                   <div className="aspect-[3/4] w-full relative">
                     <Skeleton className="w-full h-full absolute inset-0" />
                   </div>
@@ -58,25 +58,25 @@ export default function CarouselComponent() {
   }
 
   return (
-    <Card className="w-full max-w-7xl md:mt-10 mx-auto overflow-hidden">
-      <CardContent className="p-0">
+    <Card className="w-full max-w-7xl rounded-none md:mt-2 mx-auto overflow-hidden">
+      <CardContent className="p-0 rounded-none md:rounded-xl">
         <Carousel
           plugins={[plugin.current]}
-          className="w-full"
+          className="w-full rounded-none md:rounded-xl"
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
         >
-          <CarouselContent>
+          <CarouselContent className="rounded-none">
             {images.map((url, index) => (
-              <CarouselItem key={index} className="relative pl-0 md:basis-1/2 lg:basis-1/5">
-                <div className="aspect-[3/4] w-full relative">
+              <CarouselItem key={index} className="relative rounded-none pl-0 md:basis-1/2 lg:basis-1/5">
+                <div className="aspect-[3/4] w-full rounded-none relative">
                   <Image
                     src={url}
                     alt={`Full-body Image ${index + 1}`}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     style={{ objectFit: "cover" }}
-                    className=""
+                    className=" rounded-none"
                   />
                 </div>
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">

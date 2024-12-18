@@ -9,9 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  CarouselItem
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getArchivedCandidateById } from "@/actions/archive";

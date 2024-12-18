@@ -8,14 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getCandidatesWithStatsAndTitles } from '@/actions/archive';
 import { Skeleton } from '@/components/ui/skeleton'; // ShadCN Skeleton
 
-// Define the Candidate type
-interface Candidate {
-  id: string;
-  name: string;
-  title: 'King' | 'Queen' | 'Prince' | 'Princess';
-  profileImage: string;
-  details: string;
-}
+
 
 export default function YearArchivePage() {
   const { archiveId } = useParams(); // Extract archiveId from URL
