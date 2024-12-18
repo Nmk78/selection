@@ -40,6 +40,7 @@ export default function CandidateDetails({
   console.log("🚀 ~ carouselImages:", carouselImages)
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
+  /// TODO Add SEO Metadata
   const [voting, setVoting] = useState(false);
   // Mutation using React Query
   const { mutate: voteCandidate } = useMutation({

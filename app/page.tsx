@@ -56,7 +56,7 @@ export default async function Home({
             <Link
               href="/results"
               id="results"
-              className="block text-Caccent font-quindelia text-2xl text-center mx-auto hover:underline transition-all duration-300"
+              className="mt-8 block text-Caccent font-quindelia text-2xl text-center mx-auto hover:underline transition-all duration-300"
             >
               Check results
             </Link>

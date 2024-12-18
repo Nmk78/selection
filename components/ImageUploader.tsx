@@ -11,11 +11,11 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-export const ImageUploader = forwardRef((_, ref) => {
+export const ImageUploader = forwardRef(({ setProfileImage }: any, ref) => {
   const [file, setFile] = useState<File | null>(null);
-
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
+      setProfileImage()
       setFile(acceptedFiles[0]); // Replace the current file with the new one
     }
   }, []);

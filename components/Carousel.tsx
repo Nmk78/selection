@@ -18,7 +18,9 @@ export default function CarouselComponent() {
     queryKey: ["allImages"],
     queryFn: async () => {
       const response = await getAllCandidateImages();
-      return response;
+      let random_images = response.sort(() => Math.random() - 0.5); // Randomize order
+
+      return random_images;
     },
   });
 

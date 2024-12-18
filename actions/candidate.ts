@@ -385,23 +385,96 @@ export async function getCandidateById(candidateId: string) {
 }
 
 // Define the types for the data being passed
+
+
+// Define the Candidate type based on the Prisma schema
+
+// export const updateCandidate = async (
+//   candidateId: string,
+//   updatedData: CandidateUpdateData
+// ): Promise<void> => {
+//   // Ensure carouselImages is not empty
+//   if (updatedData.carouselImages && updatedData.carouselImages.length === 0) {
+//     throw new Error("Carousel images must contain at least one image.");
+//   }
+
+//   console.log("🚀 ~ updatedData:", updatedData);
+
+//   // Track the old images from the current candidate (before updating)
+//   const existingCandidate: Candidate | null = await prisma.candidate.findUnique({
+//     where: { id: candidateId },
+//   });
+
+//   // If candidate doesn't exist, we should handle the case appropriately
+//   if (!existingCandidate) {
+//     throw new Error("Candidate not found");
+//   }
+
+//   // Track the old images
+//   const deletedImages = {
+//     profileImage: existingCandidate.profileImage,
+//     carouselImages: existingCandidate.carouselImages,
+//   };
+
+//   // Update candidate data (name, gender, etc.)
+//   const updatedCandidateData: any = {
+//     ...updatedData,
+//     // Only update profileImage and carouselImages separately as handled
+//     profileImage: updatedData.profileImage || existingCandidate.profileImage,
+//     carouselImages: updatedData.carouselImages || existingCandidate.carouselImages,
+//   };
+
+//   // Check if profile image has been updated
+//   if (
+//     updatedData.profileImage &&
+//     updatedData.profileImage !== existingCandidate.profileImage
+//   ) {
+//     // If the profile image was removed, delete it from Uploadthing and MongoDB
+//     if (deletedImages.profileImage) {
+//       console.log("Deleting profile image");
+//       const res = await utapi.deleteFiles(extractKeyFromUrl(deletedImages.profileImage)); // Delete the old profile image
+//       console.log("🚀 ~ Delete profile image res:", res);
+//     }
+//   }
+
+//   // Handle carousel image changes
+//   if (updatedData.carouselImages && updatedData.carouselImages.length > 0) {
+//     // Check for removed carousel images
+//     const imagesToDelete = deletedImages.carouselImages.filter(
+//       (img) => !updatedData?.carouselImages?.includes(img)
+//     );
+
+//     // Delete removed carousel images from Uploadthing
+//     if (imagesToDelete.length > 0) {
+//       console.log("deleting carousel Images");
+//       const res = await utapi.deleteFiles(imagesToDelete.map(extractKeyFromUrl)); // Delete the images no longer needed
+//       console.log("🚀 ~ delete carousel Image - res:", res);
+//     }
+//   }
+
+//   // Update the candidate in the database
+//   await prisma.candidate.update({
+//     where: { id: candidateId },
+//     data: updatedCandidateData, // Update with all the new data including profileImage and carouselImages
+//   });
+
+//   console.log("🚀 ~ Candidate updated successfully");
+// };
 interface CandidateUpdateData {
   profileImage?: string | null; // the profile image URL or identifier (nullable if no image)
   carouselImages?: string[]; // list of carousel image URLs or identifiers (must have at least 1 image)
 }
-
-// Define the Candidate type based on the Prisma schema
-
 export const updateCandidate = async (
   candidateId: string,
   updatedData: CandidateUpdateData
 ): Promise<void> => {
   // Ensure carouselImages is not empty
   if (updatedData.carouselImages && updatedData.carouselImages.length === 0) {
+    console.error("Carousel images must contain at least one image.");
     throw new Error("Carousel images must contain at least one image.");
   }
 
-  console.log("🚀 ~ updatedData:", updatedData);
+  console.log("🚀 ~ Updated candidate data received:", updatedData);
 
   // Track the old images from the current candidate (before updating)
   const existingCandidate: Candidate | null = await prisma.candidate.findUnique({
@@ -410,14 +483,18 @@ export const updateCandidate = async (
 
   // If candidate doesn't exist, we should handle the case appropriately
   if (!existingCandidate) {
+    console.error("Candidate not found for ID:", candidateId);
     throw new Error("Candidate not found");
   }
+
+  console.log("🚀 ~ Existing candidate data:", existingCandidate);
 
   // Track the old images
   const deletedImages = {
     profileImage: existingCandidate.profileImage,
     carouselImages: existingCandidate.carouselImages,
   };
+  console.log("🚀 ~ Images to be deleted (Old):", deletedImages);
 
   // Update candidate data (name, gender, etc.)
   const updatedCandidateData: any = {
@@ -427,6 +504,8 @@ export const updateCandidate = async (
     carouselImages: updatedData.carouselImages || existingCandidate.carouselImages,
   };
 
+  console.log("🚀 ~ Updated candidate data after combining with existing:", updatedCandidateData);
+
   // Check if profile image has been updated
   if (
     updatedData.profileImage &&
@@ -434,7 +513,7 @@ export const updateCandidate = async (
   ) {
     // If the profile image was removed, delete it from Uploadthing and MongoDB
     if (deletedImages.profileImage) {
-      console.log("Deleting profile image");
+      console.log("Deleting old profile image:", deletedImages.profileImage);
       const res = await utapi.deleteFiles(extractKeyFromUrl(deletedImages.profileImage)); // Delete the old profile image
       console.log("🚀 ~ Delete profile image res:", res);
     }
@@ -447,22 +526,30 @@ export const updateCandidate = async (
       (img) => !updatedData?.carouselImages?.includes(img)
     );
 
+    console.log("🚀 ~ Images to delete from carousel:", imagesToDelete);
+
     // Delete removed carousel images from Uploadthing
     if (imagesToDelete.length > 0) {
-      console.log("deleting carousel Images");
+      console.log("Deleting carousel images:", imagesToDelete);
       const res = await utapi.deleteFiles(imagesToDelete.map(extractKeyFromUrl)); // Delete the images no longer needed
-      console.log("🚀 ~ delete carousel Image - res:", res);
+      console.log("🚀 ~ Delete carousel image - res:", res);
     }
   }
 
   // Update the candidate in the database
-  await prisma.candidate.update({
-    where: { id: candidateId },
-    data: updatedCandidateData, // Update with all the new data including profileImage and carouselImages
-  });
-
-  console.log("🚀 ~ Candidate updated successfully");
+  try {
+    console.log("🚀 ~ Updating candidate in database...");
+    await prisma.candidate.update({
+      where: { id: candidateId },
+      data: updatedCandidateData, // Update with all the new data including profileImage and carouselImages
+    });
+    console.log("🚀 ~ Candidate updated successfully in database.");
+  } catch (error) {
+    console.error("🚨 Error updating candidate in the database:", error);
+    throw error;
+  }
 };
+
 
 // Utility function to extract the key from a URL (if your URL follows this pattern)
 const extractKeyFromUrl = (url: string): string => {
