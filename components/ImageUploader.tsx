@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import { X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-
+// @typescript-eslint/no-explicit-any
 export const ImageUploader = forwardRef(({ setProfileImage }: any, ref) => {
   const [file, setFile] = useState<File | null>(null);
   const onDrop = useCallback((acceptedFiles: File[]) => {

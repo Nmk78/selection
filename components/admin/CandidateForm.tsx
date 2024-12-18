@@ -59,9 +59,6 @@ export default function CandidateForm({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const profileImageUploaderRef = useRef(null);
   const uploaderRef = useRef(null);
-  const [initialProfileImage, setInitialProfileImage] = useState<string | null>(
-    formData.profileImage
-  );
   const [initialCarouselImages, setInitialCarouselImages] = useState<string[]>(
     formData.carouselImages || []
   );
@@ -89,7 +86,6 @@ export default function CandidateForm({
         });
       };
       fetchCandidate();
-      setInitialProfileImage(formData.profileImage);
       setInitialCarouselImages(formData.carouselImages || []);
       setLoading(false);
     }
@@ -400,6 +396,8 @@ export default function CandidateForm({
       }
 
       // Construct mutation payload
+      // @typescript-eslint/no-explicit-any 
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       const payload = {
         ...formData,
         age: parseInt(formData.age, 10),

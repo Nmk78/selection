@@ -18,6 +18,7 @@ export default function CarouselComponent() {
     queryKey: ["allImages"],
     queryFn: async () => {
       const response = await getAllCandidateImages();
+      /* eslint-disable prefer-const */
       let random_images = response.sort(() => Math.random() - 0.5); // Randomize order
 
       return random_images;
