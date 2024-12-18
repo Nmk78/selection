@@ -1,6 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma"; // Adjust the path to your Prisma client
 import { Document, MongoClient, ObjectId } from "mongodb";
+import { getTopCandidates } from "./candidate";
 
 //@ts-ignore
 const client = new MongoClient(process.env.DATABASE_URL);
@@ -280,13 +281,9 @@ export const getCandidatesWithStatsAndTitles = async (roomId: string) => {
 
 export const getArchivedCandidateById = async (candidateId: string) => {
   try {
-    // Ensure the MongoDB client is connected
-    await client.connect();
-    const db = client.db("selectionv2");
-
-    // Fetch candidate details by ID
-    const candidate = await db.collection("Candidate").findOne({
-      _id: new ObjectId(candidateId), // Convert candidateId to ObjectId
+    // Fetch the candidate by ID using Prisma
+    const candidate = await prisma.candidate.findUnique({
+      where: { id: candidateId },
     });
 
     if (!candidate) {
@@ -296,114 +293,174 @@ export const getArchivedCandidateById = async (candidateId: string) => {
       };
     }
 
-    // Fetch the metadata for the candidate, which includes roomId, title, and year
-    const metadata = await prisma.metadata.findFirst({
-      where: { id: candidate.roomId }, // Use candidate.roomId to find metadata
-    });
+    // Fetch metadata using the roomId from the candidate
+    const metadata = candidate.roomId
+      ? await prisma.metadata.findUnique({
+          where: { id: candidate.roomId },
+        })
+      : null;
 
-    if (!metadata) {
-      return {
-        success: false,
-        message: "Metadata not found for this candidate.",
-      };
-    }
+    const room = metadata?.title || null; // Use metadata.title as the room name
 
-    // Extract the title and roomId from metadata (e.g., room and title for the position)
-    const room = metadata.title || null; // Assuming title represents the room in your case
+    // Fetch top candidates to determine the title
+    const { king, queen, prince, princess } = await getTopCandidatesFromArchive(candidate.roomId);
+    console.log("🚀 ~ getArchivedCandidateById ~ king:", king)
 
-    // Fetch the votes for this candidate
-    const votes = await db
-      .collection("Votes")
-      .find({ candidateId: new ObjectId(candidateId) })
-      .toArray();
-
-    // Calculate the title based on votes
-    const allVotes = await db.collection("Votes").find({}).toArray(); // Get all votes
-
-    // Separate male and female votes
-    const maleVotes = allVotes.filter((vote) => vote.gender === "male");
-    const femaleVotes = allVotes.filter((vote) => vote.gender === "female");
-
-    // Count votes for each male candidate
-    // Define the type for a vote
-    interface Vote {
-      candidateId: string | ObjectId; // candidateId can be ObjectId or a string
-      gender: "male" | "female";
-    }
-
-    // Count votes for each male candidate
-    const maleVoteCounts = maleVotes.reduce<Record<string, number>>(
-      (acc, vote) => {
-        const candidateId = vote.candidateId.toString(); // Ensure the key is a string
-        acc[candidateId] = (acc[candidateId] || 0) + 1;
-        return acc;
-      },
-      {}
-    );
-
-    // Count votes for each female candidate
-    const femaleVoteCounts = femaleVotes.reduce<Record<string, number>>(
-      (acc, vote) => {
-        const candidateId = vote.candidateId.toString(); // Ensure the key is a string
-        acc[candidateId] = (acc[candidateId] || 0) + 1;
-        return acc;
-      },
-      {}
-    );
-
-    // Sort male and female candidates by votes in descending order
-    const sortedMaleVotes = Object.entries(maleVoteCounts).sort(
-      (a, b) => b[1] - a[1]
-    );
-    const sortedFemaleVotes = Object.entries(femaleVoteCounts).sort(
-      (a, b) => b[1] - a[1]
-    );
-
-    // Determine titles (King, Queen, Prince, Princess)
-    const kingId = sortedMaleVotes[0]?.[0]; // Most voted male candidate
-    const queenId = sortedFemaleVotes[0]?.[0]; // Most voted female candidate
-    const princeId = sortedMaleVotes[1]?.[0]; // Second most voted male candidate
-    const princessId = sortedFemaleVotes[1]?.[0]; // Second most voted female candidate
-
-    // Determine the title for the candidate based on their ID
+    // Determine the title for the current candidate
     let title: string | null = null;
-    if (candidate._id.toString() === kingId) {
+    if (king && king._id.toString() === candidate.id) {
       title = "King";
-    } else if (candidate._id.toString() === queenId) {
+    } else if (queen && queen._id.toString() === candidate.id) {
       title = "Queen";
-    } else if (candidate._id.toString() === princeId) {
+    } else if (prince && prince._id.toString() === candidate.id) {
       title = "Prince";
-    } else if (candidate._id.toString() === princessId) {
+    } else if (princess && princess._id.toString() === candidate.id) {
       title = "Princess";
     }
 
-    // Return candidate data with calculated title and room from metadata
+    console.log("data", {
+      id: candidate.id,
+      name: candidate.name,
+      title,
+      room,
+      intro: candidate.intro,
+      gender: candidate.gender,
+      major: candidate.major,
+      profileImage: candidate.profileImage,
+      carouselImages: candidate.carouselImages || [],
+      height: candidate.height,
+      age: candidate.age,
+      weight: candidate.weight,
+      hobbies: candidate.hobbies || [],
+    })
+    // Return the merged data
     return {
       success: true,
       data: {
-        id: candidate._id.toString(), // Convert ObjectId to string for the response
+        id: candidate.id,
         name: candidate.name,
-        title: title, // Determined by votes (King, Queen, Prince, Princess)
-        room: room, // From metadata (room information)
+        title,
+        room,
         intro: candidate.intro,
         gender: candidate.gender,
         major: candidate.major,
         profileImage: candidate.profileImage,
-        carouselImages: candidate.carouselImages,
+        carouselImages: candidate.carouselImages || [],
         height: candidate.height,
         age: candidate.age,
         weight: candidate.weight,
-        hobbies: candidate.hobbies,
+        hobbies: candidate.hobbies || [],
       },
     };
   } catch (error) {
-    console.error("Error fetching archived candidate:", error);
+    console.error("Error fetching candidate data:", error);
     return {
       success: false,
       message: "Failed to fetch candidate data.",
     };
+  }
+};
+
+
+export const getTopCandidatesFromArchive = async (roomId:string) => {
+  try {
+    await client.connect();
+    const db = client.db("selectionv2");
+
+    const votesCollection = db.collection("Vote");
+    const candidatesCollection = db.collection("Candidate");
+
+    // Fetch active room metadata
+   
+
+
+    // Aggregate the candidates with their votes and ratings
+    const candidatesWithVotes = await candidatesCollection
+      .aggregate([
+        { $match: { roomId: roomId } }, // Filter by roomId
+        {
+          $lookup: {
+            from: "Vote",
+            let: { candidateId: { $toString: "$_id" } }, // Convert `_id` to string if needed
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$candidateId", "$$candidateId"] }, // Match votes for the candidate
+                },
+              },
+            ],
+            as: "voteDetails",
+          },
+        },
+        {
+          $addFields: {
+            totalVotes: {
+              $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
+            },
+            totalRating: {
+              $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0],
+            },
+            combinedScore: {
+              $add: [
+                {
+                  $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
+                },
+                { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
+              ],
+            },
+          },
+        },
+        {
+          $sort: { combinedScore: -1 }, // Sort by combined score
+        },
+        {
+          $project: {
+            id: { $toString: "$_id" },
+            name: 1,
+            gender: 1,
+            profileImage: 1,
+            major: 1,
+            totalVotes: 1,
+            totalRating: 1,
+            combinedScore: 1,
+            voteDetails: 1, // Inspect the joined vote details
+          },
+        },
+      ])
+      .toArray();
+
+    // Log candidates for debugging
+    console.log(
+      "🚀 ~ getTopCandidates ~ candidatesWithVotes:",
+      candidatesWithVotes
+    );
+
+    // Filter candidates by gender
+    const males = candidatesWithVotes.filter(
+      (candidate) => candidate.gender === "male"
+    );
+    const females = candidatesWithVotes.filter(
+      (candidate) => candidate.gender === "female"
+    );
+
+    // Get the top 2 candidates for each gender
+    const topMales = males.slice(0, 2);
+    const topFemales = females.slice(0, 2);
+
+    console.log("Top Males:", topMales);
+    console.log("Top Females:", topFemales);
+
+    // Return the top 2 candidates for each gender
+    return {
+      king: topMales[0],
+      prince: topMales[1],
+      queen: topFemales[0],
+      princess: topFemales[1],
+    };
+  } catch (error) {
+    console.error("Error fetching top candidates:", error);
+    throw new Error("Failed to fetch top candidates.");
   } finally {
-    // Ensure the MongoDB client is properly closed
     await client.close();
   }
 };

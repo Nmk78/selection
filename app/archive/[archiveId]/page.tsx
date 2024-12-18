@@ -1,46 +1,81 @@
-'use client'; // Ensure this is a client-side component
+'use client';
 
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import { getCandidatesWithStatsAndTitles } from '@/actions/archive';
+import { Skeleton } from '@/components/ui/skeleton'; // ShadCN Skeleton
 
 // Define the Candidate type
 interface Candidate {
   id: string;
   name: string;
-  title: "King" | "Queen" | "Prince" | "Princess";
+  title: 'King' | 'Queen' | 'Prince' | 'Princess';
   profileImage: string;
   details: string;
 }
 
 export default function YearArchivePage() {
-  const router = useRouter();
-  const { archiveId } = router.query; // Get the archiveId from the URL query
+  const { archiveId } = useParams(); // Extract archiveId from URL
 
-  const [pastCandidates, setPastCandidates] = useState<Candidate[]>([]);
+  // Use React Query to fetch candidates
+  const query = useQuery({
+    queryKey: ['candidates', archiveId],
+    queryFn: async () => {
+      const res = await getCandidatesWithStatsAndTitles(String(archiveId));
+      if (!res.success) {
+        throw new Error('Failed to fetch candidates');
+      }
+      return res.data; // Return candidates data
+    },
+    enabled: !!archiveId, // Ensure query runs only when archiveId is defined
+  });
 
-  useEffect(() => {
-    // Fetch candidates data once archiveId is available
-    if (archiveId) {
-      const fetchCandidates = async () => {
-        const res = await getCandidatesWithStatsAndTitles(String(archiveId)); // Ensure archiveId is a string
-        if (res.success) {
-          //@ts-expect-error //Error
-          setPastCandidates(res.data);
-        }
-      };
-      fetchCandidates();
-    }
-  }, [archiveId]);
+  const { data: pastCandidates = [], isLoading, isError } = query;
 
-  // Handle the loading state
-  if (!archiveId) {
-    return <div>Loading...</div>;
+  // Render skeletons during loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <motion.h1
+          className="text-gradient-2 text-4xl sm:text-5xl md:text-6xl font-script text-romantic-primary text-center mb-8 sm:mb-12 shadow-text"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Selected Students
+        </motion.h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-80 md:w-96 mx-auto group"
+            >
+              <Skeleton className="h-[300px] w-full" />
+              <div className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-5 w-1/2 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
+  // Render error state
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500 text-lg">Failed to load candidates.</p>
+      </div>
+    );
+  }
+
+  // Render candidates data
   return (
     <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <motion.h1
@@ -79,7 +114,7 @@ export default function YearArchivePage() {
                   </p>
                   <div className="max-h-0 overflow-hidden group-hover:max-h-[500px] transition-all duration-500">
                     <p className="text-sm sm:text-base mb-4">
-                      {candidate.details}
+                      {candidate.intro}
                     </p>
                     <p className="text-sm sm:text-base mb-4">
                       This is some extra hidden text that will appear on hover.

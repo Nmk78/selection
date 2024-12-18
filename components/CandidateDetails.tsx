@@ -37,6 +37,7 @@ export default function CandidateDetails({
   carouselImages,
   profileImage,
 }: Candidate) {
+  console.log("🚀 ~ carouselImages:", carouselImages)
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
   const [voting, setVoting] = useState(false);
@@ -172,7 +173,7 @@ export default function CandidateDetails({
                 key={index}
                 className=" -pl-1 md:basis-1/2 lg:basis-1/3"
               >
-                <div className="aspect-potriate relative overflow-hidden">
+                <div className=" aspect-portrait relative overflow-hidden">
                   <Image
                     src={url}
                     alt={`Full-body Image ${index + 1} of ${name}`}

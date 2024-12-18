@@ -26,9 +26,9 @@ export default function CarouselComponent() {
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-7xl md:mt-10 mx-auto overflow-hidden">
-        <CardContent className="p-0">
-          <Carousel className="w-full">
+      <div className="w-full max-w-7xl md:mt-10 mx-auto overflow-hidden">
+        <div className="p-0 ">
+          <Carousel className="w-full rounded-none md:rounded-xl">
             <CarouselContent>
               {[...Array(3)].map((_, index) => (
                 <CarouselItem key={index} className="relative pl-0 md:basis-1/2 lg:basis-1/5">
@@ -42,8 +42,8 @@ export default function CarouselComponent() {
               ))}
             </CarouselContent>
           </Carousel>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 

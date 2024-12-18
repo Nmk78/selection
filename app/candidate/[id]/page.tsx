@@ -98,6 +98,7 @@ type Params = Promise<{ id: string }>;
 export default async function CandidatePage({ params }: { params: Params }) {
   const { id } = await params;
   const candidateData = await getCandidateById(id); // Fetch the candidate data
+  console.log("🚀 ~ CandidatePage ~ candidateData:", candidateData)
 
   if (!candidateData) {
     notFound(); // Redirect to a 404 page if no candidate is found
