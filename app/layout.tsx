@@ -58,15 +58,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+  
   return (
-    <ClerkProvider>
+    <ClerkProvider afterSignOutUrl="/">
       <ReactQueryProvider>
         <html lang="en">
           <body
             // className={` h-screen antialiased bg-background flex flex-col items-center`}
             className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
           >
-            <Nav isAdmin={true} />
+            <Nav />
             {children}
             <Toaster />
             {process.env.NODE_ENV !== "production" && (

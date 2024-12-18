@@ -13,13 +13,10 @@ import {
   TicketCheck,
   Loader2,
 } from "lucide-react";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { archiveMetadata } from "@/actions/archive";
 
-interface NavbarProps {
-  isAdmin: boolean;
-}
 type RoundData = {
   id: string;
   title: string;
@@ -39,12 +36,14 @@ type RoundData = {
   updatedAt: Date; // Include this if necessary
 };
 
-export default function Nav({ isAdmin }: NavbarProps) {
+export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false); // State for archive dropdown
   const [archives, setArchives] = useState<{ href: string; label: string }[]>(
     []
   ); // State to store fetched archives
+
+  const {sessionId} = useAuth()
 
   const { isLoading, error } = useQuery({
     queryKey: ["nonActiveMetadata"], // Unique key for caching
@@ -72,7 +71,7 @@ export default function Nav({ isAdmin }: NavbarProps) {
       icon: <TicketCheck className="w-5 h-5" />,
       label: "Check",
     },
-    ...(isAdmin
+    ...(sessionId
       ? [
           {
             href: "/admin",
