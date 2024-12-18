@@ -90,12 +90,17 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
+  // content: [
+  //   "./components/**/*.{js,ts,jsx,tsx}",
+  //   "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  //   "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+  //   "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  // ],
   content: [
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+  ],  
   theme: {
     extend: {
       backgroundImage: {
@@ -167,5 +172,4 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
-  enabled: process.env.NODE_ENV === "production",
 } satisfies Config;
