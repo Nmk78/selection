@@ -14,6 +14,7 @@ import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { addRatingsToVotes } from "@/actions/judge";
 import { toast } from "@/hooks/use-toast";
+import { Badge } from "./ui/badge";
 
 interface Candidate {
   id: string;
@@ -146,77 +147,168 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto p-6">
       {candidates.map((candidate, index) => (
+        // <motion.div
+        //   key={candidate.id}
+        //   initial={{ opacity: 0, y: 20 }}
+        //   animate={{ opacity: 1, y: 0 }}
+        //   transition={{ duration: 0.5, delay: index * 0.1 }}
+        // >
+
+        //   <Card key={candidate.id} className="w-full p-2 md:p-6">
+        //   <CardContent className="p-0">
+        //     <Carousel className="w-full max-w-xs my-2 mx-auto">
+        //       <CarouselContent>
+        //         <CarouselItem>
+        //           <div className="aspect-portrait relative">
+        //             <Image
+        //               src={candidate.profileImage}
+        //               alt={`${candidate.name}'s profile`}
+        //               fill
+        //               className="object-cover rounded-md"
+        //             />
+        //           </div>
+        //         </CarouselItem>
+        //         {candidate.carouselImages.map((image, index) => (
+        //           <CarouselItem key={index} className="basis-1/2 md:">
+        //             <div className="aspect-portrait relative">
+        //               <Image
+        //                 src={image}
+        //                 alt={`${candidate.name}'s image ${index + 1}`}
+        //                 fill
+        //                 className="object-cover rounded-md"
+        //               />
+        //             </div>
+        //           </CarouselItem>
+        //         ))}
+        //       </CarouselContent>
+
+        //     </Carousel>
+        //     <div className="w-full md:w-1/2 lg:w-3/5 space-y-3 px-4">
+        //       <h3 className="text-2xl font-bold text-gray-800">{candidate.name}</h3>
+        //       <p className="text-lg text-gray-600">{candidate.major}</p>
+        //       <p className="text-gray-600">{candidate.intro}</p>
+        //       <div className="grid grid-cols-2 gap-2 text-sm">
+        //         <p><strong>Age:</strong> {candidate.age}</p>
+        //         <p><strong>Gender:</strong> {candidate.gender}</p>
+        //         <p><strong>Height:</strong> {candidate.height} cm</p>
+        //         <p><strong>Weight:</strong> {candidate.weight} kg</p>
+        //       </div>
+        //       <div>
+        //         <strong>Hobbies:</strong>
+        //         <div className="flex flex-wrap gap-2 mt-1">
+        //           {candidate.hobbies.map((hobby, index) => (
+        //             <Badge key={index} variant="secondary">{hobby}</Badge>
+        //           ))}
+        //         </div>
+        //       </div>
+        //       <div className="space-y-4 mt-4">
+        //         <div className="flex justify-end items-center">
+        //           <StarRating rating={ratings[candidate.id]} />
+        //         </div>
+        //         <Slider
+        //           min={0}
+        //           max={10}
+        //           step={0.1}
+        //           value={[ratings[candidate.id]]}
+        //           onValueChange={(value) => {
+        //             if (ratings[candidate.id] !== value[0]) {
+        //               handleRatingChange(candidate.id, value[0]);
+        //             }
+        //           }}
+        //           className="w-full"
+        //         />
+        //       </div>
+        //     </div>
+        //   </CardContent>
+        // </Card>
+        // </motion.div>
+
         <motion.div
           key={candidate.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
+          className="w-full"
         >
-          <Card className="overflow-hidden bg-white shadow-lg rounded-xl hover:shadow-xl transition-shadow duration-300">
-            <CardContent className="p-2 py-6 pb-8 md:p-4">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-3/5 h-auto md:h-auto">
-                  <Carousel
-                    plugins={[plugin.current]}
-                    className="w-full mx-auto rounded-lg h-auto md:h-auto"
-                    onMouseEnter={plugin.current.stop}
-                    onMouseLeave={plugin.current.reset}
-                  >
-                    <CarouselContent className="w-full h-full">
-                      {candidate.carouselImages.map((url, index) => (
-                        <CarouselItem
-                          className="mx-auto md:basis-1/2"
-                          key={index}
-                        >
-                          <div className="w-full h-full mx-auto relative aspect-potriate">
-                            <Image
-                              src={url}
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              alt={`Full-body Image ${index + 1} of ${name}`}
-                              fill
-                              style={{ objectFit: "cover" }}
-                              className="rounded-lg mx-auto"
-                            />
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                  </Carousel>
+          <Card className="w-full p-4 md:p-6">
+            <CardContent className="flex flex-col md:flex-row gap-6 p-0">
+              {/* Carousel Section */}
+              <div className="w-full md:w-1/2 flex-grow">
+                <Carousel className="w-full max-w-full mx-auto">
+                  <CarouselContent className="flex gap-2">
+                    {/* Carousel Images */}
+                    {candidate.carouselImages.map((image, idx) => (
+                      <CarouselItem
+                        key={idx}
+                        className="basis-full md:basis-1/2 lg:basis-1/2"
+                      >
+                        <div className="aspect-portrait w-full relative">
+                          <Image
+                            src={image}
+                            alt={`${candidate.name}'s image ${idx + 1}`}
+                            fill
+                            className="object-cover rounded-md"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              </div>
+
+              {/* Candidate Details Section */}
+              <div className="w-full md:w-1/2 space-y-4">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+                  {candidate.name}
+                </h3>
+                <p className="text-sm md:text-lg text-gray-600">
+                  {candidate.major}
+                </p>
+                <p className="text-sm text-gray-600">{candidate.intro}</p>
+
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <p>
+                    <strong>Age:</strong> {candidate.age}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {candidate.gender}
+                  </p>
+                  <p>
+                    <strong>Height:</strong> {candidate.height} cm
+                  </p>
+                  <p>
+                    <strong>Weight:</strong> {candidate.weight} kg
+                  </p>
                 </div>
-                <div className="w-full md:w-1/2 lg:w-3/5 space-y-3 px-4">
-                {/* TODO display candidate data */}
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {candidate.name}
-                  </h3>
-                  <p className="text-lg text-gray-600">{candidate.major}</p>
-                  <p className="text-gray-600">{candidate.intro}</p>
-                  <div className="space-y-4">
-                    <div className="flex justify-end items-center">
-                      <StarRating rating={ratings[candidate.id]} />
-                    </div>
-                    {/* <Slider
-                      min={0}
-                      max={10}
-                      step={0.1}
-                      value={[ratings[candidate.id]]}
-                      onValueChange={(value) =>
-                        handleRatingChange(candidate.id, value)
-                      }
-                      className="w-full"
-                    /> */}
-                    <Slider
-                      min={0}
-                      max={10}
-                      step={0.1}
-                      value={[ratings[candidate.id]]} // Controlled value
-                      onValueChange={(value) => {
-                        if (ratings[candidate.id] !== value[0]) {
-                          handleRatingChange(candidate.id, value[0]);
-                        }
-                      }}
-                      className="w-full"
-                    />
+
+                <div>
+                  <strong>Hobbies:</strong>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {candidate.hobbies.map((hobby, idx) => (
+                      <Badge key={idx} variant="secondary">
+                        {hobby}
+                      </Badge>
+                    ))}
                   </div>
+                </div>
+
+                {/* Rating and Slider */}
+                <div className="space-y-4">
+                  <div className="flex justify-end items-center">
+                    <StarRating rating={ratings[candidate.id]} />
+                  </div>
+                  <Slider
+                    min={0}
+                    max={10}
+                    step={0.1}
+                    value={[ratings[candidate.id]]}
+                    onValueChange={(value) => {
+                      if (ratings[candidate.id] !== value[0]) {
+                        handleRatingChange(candidate.id, value[0]);
+                      }
+                    }}
+                    className="w-full"
+                  />
                 </div>
               </div>
             </CardContent>
