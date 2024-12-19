@@ -25,6 +25,7 @@ export default async function JudgeVotingPage() {
     // Fetch round metadata
     const metadata = await getMetadata();
     round = metadata[0]?.round ?? null;
+    console.log("🚀 ~ JudgeVotingPage ~ round:", round)
 
     // Check if it's the second round
     if (round === "second") {
