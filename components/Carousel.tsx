@@ -65,9 +65,10 @@ export default function CarouselComponent() {
       <CardContent className="p-0 rounded-none md:rounded-xl">
         <Carousel
           plugins={[plugin.current]}
-          className="w-full rounded-none md:rounded-xl"
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
+          className="w-full rounded-none md:rounded-xl"
+
         >
           <CarouselContent className="rounded-none">
             {images.map((url, index) => (

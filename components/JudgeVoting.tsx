@@ -234,7 +234,12 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
             <CardContent className="flex flex-col md:flex-row gap-6 p-0">
               {/* Carousel Section */}
               <div className="w-full md:w-1/2 flex-grow">
-                <Carousel className="w-full max-w-full mx-auto">
+                <Carousel
+                  plugins={[plugin.current]}
+                  onMouseEnter={plugin.current.stop}
+                  onMouseLeave={plugin.current.reset}
+                  className="w-full max-w-full mx-auto"
+                >
                   <CarouselContent className="flex gap-2">
                     {/* Carousel Images */}
                     {candidate.carouselImages.map((image, idx) => (
