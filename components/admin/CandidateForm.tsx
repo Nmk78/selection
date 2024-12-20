@@ -396,7 +396,7 @@ export default function CandidateForm({
       }
 
       // Construct mutation payload
-      // @typescript-eslint/no-explicit-any 
+      // @typescript-eslint/no-explicit-any
       /* eslint-disable @typescript-eslint/no-explicit-any */
       const payload = {
         ...formData,
@@ -410,9 +410,14 @@ export default function CandidateForm({
         carouselImages: [
           ...(formData.carouselImages || []), // Retain existing images
           ...(imgRes.length > 0
-            ? imgRes.map((image: any) =>
-                typeof image === "string" ? image : image?.url
-              ) // Add new images
+            ? imgRes
+                .map((image: any) =>
+                  typeof image === "string" ? image : image?.url
+                ) // Extract URLs
+                .filter(
+                  (image: string) =>
+                    !(formData.carouselImages || []).includes(image) // Add only new images
+                )
             : []),
         ],
 
