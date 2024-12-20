@@ -40,9 +40,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-// Corrected type for page props
 export default async function CandidatePage({ params }: { params: { id: string } }) {
-  const candidateData = await getCandidateById(params.id); // Fetch the candidate data
+  const { id } = params;
+  const candidateData = await getCandidateById(id); // Fetch the candidate data
   console.log("🚀 ~ CandidatePage ~ candidateData:", candidateData);
 
   if (!candidateData) {
