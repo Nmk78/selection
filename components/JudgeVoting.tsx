@@ -9,12 +9,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star, StarHalf } from "lucide-react";
+import { AlertCircle, Star, StarHalf } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { addRatingsToVotes } from "@/actions/judge";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
+import { error } from "console";
+import { Alert, AlertDescription } from "./ui/alert";
 
 interface Candidate {
   id: string;
@@ -110,12 +112,18 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     seLoading(true);
     if (!judgeCode) {
       seLoading(false);
-      alert("Please enter your judge code!");
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>Please enter your judge code! </AlertDescription>
+      </Alert>;
       return;
     }
     if (Object.values(ratings).some((rating) => rating === 0)) {
       seLoading(false);
-      alert("Please rate all candidates!");
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>Please rate all candidates! </AlertDescription>
+      </Alert>;
       return;
     }
     console.log("Judge Code:", judgeCode);
