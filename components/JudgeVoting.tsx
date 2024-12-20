@@ -15,7 +15,6 @@ import Autoplay from "embla-carousel-autoplay";
 import { addRatingsToVotes } from "@/actions/judge";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
-import { error } from "console";
 import { Alert, AlertDescription } from "./ui/alert";
 
 interface Candidate {
