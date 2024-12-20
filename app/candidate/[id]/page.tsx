@@ -68,11 +68,11 @@ import { getCandidateById } from "@/actions/candidate";
 // Define the type for the page props with params
 type Params = Promise<{ id: string }>;
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const candidateId = params.id;
+export async function generateMetadata({ params }: { params: Params }) {
+  const { id } = await params;
 
   // Fetch the candidate data using the ID
-  const candidate = await getCandidateById(candidateId);
+  const candidate = await getCandidateById(id);
 
   if (!candidate) {
     return {
@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     openGraph: {
       title: `${candidate.name}'s Profile`,
       description: `Discover ${candidate.name}'s journey in the selection process.`,
-      url: `${process.env.BASE_URL}/candidates/${candidateId}`,
+      url: `${process.env.BASE_URL}/candidates/${id}`,
       images: [
         {
           url: candidate.profileImage, // Use the candidate's profile image
