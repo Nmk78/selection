@@ -8,7 +8,7 @@ type Params = Promise<{ id: string }>;
 // Generate metadata for each candidate
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const candidateId = params.id;
-  
+
   // Fetch the candidate data using the ID
   const candidate = await getCandidateById(candidateId);
 
