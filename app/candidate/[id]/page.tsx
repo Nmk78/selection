@@ -2,9 +2,6 @@ import { notFound } from "next/navigation";
 import CandidateDetails from "@/components/CandidateDetails";
 import { getCandidateById } from "@/actions/candidate";
 
-// Define the type for the page props with params
-type Params = Promise<{ id: string }>;
-
 // Generate metadata for each candidate
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const candidateId = params.id;
@@ -43,9 +40,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default async function CandidatePage({ params }: { params: Params }) {
-  const { id } = await params;
-  const candidateData = await getCandidateById(id); // Fetch the candidate data
+// Corrected type for page props
+export default async function CandidatePage({ params }: { params: { id: string } }) {
+  const candidateData = await getCandidateById(params.id); // Fetch the candidate data
   console.log("🚀 ~ CandidatePage ~ candidateData:", candidateData);
 
   if (!candidateData) {
