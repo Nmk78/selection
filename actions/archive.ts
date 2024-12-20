@@ -12,7 +12,7 @@ export async function archiveMetadata() {
     const nonActiveMetadata = await prisma.metadata.findMany({
       where: { active: false },
     });
-    console.log("🚀 ~ archiveMetadata ~ nonActiveMetadata:", nonActiveMetadata);
+    // console.log("🚀 ~ archiveMetadata ~ nonActiveMetadata:", nonActiveMetadata);
 
     if (!nonActiveMetadata || nonActiveMetadata.length === 0) {
       return {
