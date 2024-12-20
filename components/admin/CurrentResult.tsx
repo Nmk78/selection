@@ -34,6 +34,7 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
   }
 
   console.log("🚀 ~ CurrentResults ~ candidates:", candidates);
+  const sortedCandidates = [...candidates].sort((a, b) => b.totalRating - a.totalRating);
 
   return (
     <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
@@ -86,7 +87,7 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
                     </TableCell>
                   </TableRow>
                 ))}
-              {candidates.map((candidate) => (
+              {sortedCandidates.map((candidate) => (
                 <TableRow key={candidate.id}>
                   <TableCell colSpan={5}>{candidate.name}</TableCell>
                   <TableCell colSpan={1} className="text-center">
