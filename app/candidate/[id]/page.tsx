@@ -40,13 +40,14 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
+// Define the type for the page props
 export default async function CandidatePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = params; // Correct: params is an object, not a Promise
   const candidateData = await getCandidateById(id); // Fetch the candidate data
   console.log("🚀 ~ CandidatePage ~ candidateData:", candidateData);
 
   if (!candidateData) {
-    notFound();
+    notFound(); // Redirect to a 404 page if no candidate is found
   }
 
   return (
