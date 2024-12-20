@@ -8,6 +8,7 @@ interface ResultsProps {
 }
 
 export default function Results({ results }: ResultsProps) {
+  console.log("🚀 ~ Results ~ results:", results)
   const getTitleColor = (title: string) => {
     switch (title) {
       case "King":
@@ -55,12 +56,12 @@ export default function Results({ results }: ResultsProps) {
             <a href={`candidate/${candidate.id}`} className="text-xl md:text-2xl lg:text-3xl font-semibold text-romantic-text mb-2">
               {candidate.name}
             </a>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <Heart className="w-5 h-5 text-romantic-accent" />
               <span className="text-lg text-romantic-text">
                 {candidate.votes} votes
               </span>
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

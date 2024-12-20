@@ -25,27 +25,34 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "PU Selection",
+  title: "PU Selection - Vote for the Best!",
   description:
-    "The PU Selection App allows users to vote and select students for various positions, including king, queen, prince, and princess. The app features two rounds of voting based on different criteria for each position.",
+    "Join the PU Selection App to vote and help select the university's King, Queen, Prince, and Princess. Participate in two exciting voting rounds to make your voice heard!",
 
   // Open Graph Tags for social media sharing
   openGraph: {
-    title: "PU Selection App",
+    title: "PU Selection - Engage and Vote!",
     description:
-      "A platform for university students to vote and select the king, queen, prince, and princess. Participate in the first and second rounds of voting!",
-    url: process.env.BASE_URL,
-    // image: 'URL_to_image.jpg',
+      "The PU Selection App empowers students to choose their King, Queen, Prince, and Princess. Dive into two rounds of voting with unique criteria and be part of the decision!",
+    url: process.env.BASE_URL || "https://example.com",
+    images: [
+      {
+        url: `${process.env.BASE_URL || "https://example.com"}/logo.webp`,
+        alt: "PU Selection App Logo",
+      },
+    ],
     type: "website",
+    locale: "en_US", // Add appropriate locale
+    siteName: "PU Selection",
   },
 
   // Twitter Card Tags
   twitter: {
     card: "summary_large_image",
-    title: "PU Selection App",
+    title: "PU Selection - Be the Judge!",
     description:
-      "Vote for the king, queen, prince, and princess in the PU Selection App!",
-    // image: 'URL_to_image.jpg',
+      "Cast your votes for the King, Queen, Prince, and Princess in the PU Selection App. Join the excitement now!",
+    images: [`${process.env.BASE_URL || "https://example.com"}/logo.webp`],
   },
 
   // Favicon
@@ -54,7 +61,7 @@ export const metadata: Metadata = {
   },
 
   // Canonical URL
-  // canonical: process.env.BASE_URL,
+  // canonical: process.env.BASE_URL || "https://example.com",
 };
 
 export default function RootLayout({

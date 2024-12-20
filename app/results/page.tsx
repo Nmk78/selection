@@ -23,9 +23,10 @@ async function ResultsContent() {
   }
 
   const data = await getTopCandidates();
+  // console.log("🚀 ~ ResultsContent ~ data:", data)
 
   const winners: winnerCandidate[] = [
-    { id: data.king.candidateId, name: data.king.name, title: "King", profileImage: data.king.profileImage, votes: data.king.totalVotes + data.king.totalRating },
+    { id: data.king.id, name: data.king.name, title: "King", profileImage: data.king.profileImage, votes: data.king.totalVotes + data.king.totalRating },
     { id: data.queen.candidateId, name: data.queen.name, title: "Queen", profileImage: data.queen.profileImage, votes: data.queen.totalVotes + data.queen.totalRating },
     { id: data.prince.candidateId, name: data.prince.name, title: "Prince", profileImage: data.prince.profileImage, votes: data.prince.totalVotes + data.prince.totalRating },
     { id: data.princess.candidateId, name: data.princess.name, title: "Princess", profileImage: data.princess.profileImage, votes: data.princess.totalVotes + data.princess.totalRating },

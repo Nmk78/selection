@@ -12,6 +12,7 @@ import {
   Archive,
   TicketCheck,
   Loader2,
+  ScrollText,
 } from "lucide-react";
 import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
@@ -43,7 +44,7 @@ export default function Nav() {
     []
   ); // State to store fetched archives
 
-  const {sessionId} = useAuth()
+  const { sessionId } = useAuth();
 
   const { isLoading, error } = useQuery({
     queryKey: ["nonActiveMetadata"], // Unique key for caching
@@ -70,6 +71,11 @@ export default function Nav() {
       href: "/check",
       icon: <TicketCheck className="w-5 h-5" />,
       label: "Check",
+    },
+    {
+      href: "/policy",
+      icon: <ScrollText className="w-5 h-5" />,
+      label: "Policy",
     },
     ...(sessionId
       ? [

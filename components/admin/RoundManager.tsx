@@ -223,7 +223,7 @@ export default function RoundManager() {
                 {updating
                   ? "Updating"
                   : round === "result"
-                  ? "Close Voting"
+                  ? "Back to first round"
                   : round === "firstVotingClosed"
                   ? "Open Second Round Preview"
                   : round === "secondVotingClosed"
