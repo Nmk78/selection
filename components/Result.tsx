@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Crown, Heart } from "lucide-react";
+import { Crown } from "lucide-react";
 import { winnerCandidate } from "@/types/types";
 
 
