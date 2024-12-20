@@ -103,8 +103,9 @@ export default async function JudgeVotingPage() {
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
+  console.log("🚀 ~ JudgeVotingPage ~ round:", round)
 
-  if (round !== "second") {
+  if (round !== "second" && round !== "secondPreview") {
     return (
       <div className="container mx-auto py-8 px-4 mt-60 md:mt-52">
         <h1 className="text-3xl font-bold text-center mb-8">
