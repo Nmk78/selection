@@ -179,53 +179,7 @@ export default function CandidateForm({
     }
   };
 
-  const { mutate: createCandidateMutation } = useMutation({
-    mutationFn: async () => {
-      setLoading(true);
-      await createNewCandidate();
-    },
-    onSuccess: () => {
-      setLoading(false);
-      toast({
-        title: "Success",
-        description: "Candidate saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      closeModal()
-    },
-    onError: (_err: { message: string }) => {
-      // console.log("🚀 ~ _err:", _err);
-      setLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to save candidate.",
-      });
-    },
-  });
 
-  const { mutate: editCandidateMutation } = useMutation({
-    mutationFn: async () => {
-      setLoading(true);
-      await editCandidate();
-    },
-    onSuccess: () => {
-      setLoading(false);
-      toast({
-        title: "Success",
-        description: "Candidate edited successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      closeModal()
-    },
-    onError: (_err: { message: string }) => {
-      // console.log("🚀 ~ _err:", _err);
-      setLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to edit candidate.",
-      });
-    },
-  });
 
   const uploadProfileImage = async () => {
     try {
@@ -399,23 +353,7 @@ export default function CandidateForm({
 
       const carouselImageUrls = await uploadCarouselImages();
       console.log("📸 Uploaded carousel image URLs:", carouselImageUrls);
-  
-      // Uncomment these checks if needed
-      // if (!profileImageUrl) {
-      //   toast({ title: "Failed", description: "Profile image is required." });
-      //   console.error("❌ Profile image is required but missing");
-      //   setLoading(false);
-      //   return;
-      // }
-  
-      // if (carouselImageUrls.length === 0) {
-      //   toast({ title: "Failed", description: "At least one carousel image is required." });
-      //   console.error("❌ Carousel images are required but missing");
-      //   setLoading(false);
-      //   return;
-      // }
-  
-      // Step 3: Prepare payload
+
       const payload = {
         ...formData,
         age: parseInt(formData.age, 10),
@@ -457,22 +395,67 @@ export default function CandidateForm({
   };
   
 
+  const { mutate: createCandidateMutation } = useMutation({
+    mutationFn: async () => {
+      setLoading(true);
+      await createNewCandidate();
+    },
+    onSuccess: () => {
+      setLoading(false);
+      toast({
+        title: "Success",
+        description: "Candidate saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      closeModal();
+    },
+    onError: (err: { message: string }) => { // Renamed _err to err
+      console.error("🚀 ~ Error in createCandidateMutation:", err);
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to save candidate.",
+      });
+    },
+  });
+  
+  const { mutate: editCandidateMutation } = useMutation({
+    mutationFn: async () => {
+      setLoading(true);
+      await editCandidate();
+    },
+    onSuccess: () => {
+      setLoading(false);
+      toast({
+        title: "Success",
+        description: "Candidate edited successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      closeModal();
+    },
+    onError: (err: { message: string }) => { // Renamed _err to err
+      console.error("🚀 ~ Error in editCandidateMutation:", err);
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to edit candidate.",
+      });
+    },
+  });
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      setLoading(true);
-
       console.log("Form submission started");
       if (!candidateId) {
-        createCandidateMutation();
+        createCandidateMutation(); // Use the hook outside of condition
       } else {
-        editCandidateMutation();
-        // editCandidate();
+        editCandidateMutation(); // Use the hook outside of condition
       }
     } catch (error) {
-      // console.log("🚀 ~ handleSubmit ~ error:", error);
+      console.error("🚀 ~ handleSubmit ~ error:", error);
       toast({
         title: "Error",
         description: "Something went wrong.",
@@ -481,6 +464,7 @@ export default function CandidateForm({
       setLoading(false);
     }
   };
+  
 
   const handleDelete = async () => {
     if (!candidateId) return;
@@ -495,7 +479,7 @@ export default function CandidateForm({
       queryClient.invalidateQueries({ queryKey: ["candidates"] });
       closeModal();
     } catch (err) {
-      // console.log("🚀 ~ handleDelete ~ err:", err);
+      console.log("🚀 ~ handleDelete ~ err:", err);
       toast({
         title: "Error",
         description: "Failed to delete candidate.",
