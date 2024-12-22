@@ -4,8 +4,10 @@
 
 import { utapi } from "@/app/server/uploadthing";
 import { prisma } from "@/lib/prisma";
+import { extractKeyFromUrl } from "@/lib/utils";
 import { candidateSchema } from "@/lib/validations";
-import { Candidate } from "@/types/types";
+import { Candidate } from "@prisma/client";
+// import { Candidate } from "@/types/types";
 import { MongoClient } from "mongodb";
 
 //@ts-ignore
@@ -552,10 +554,7 @@ export const updateCandidate = async (
 
 
 // Utility function to extract the key from a URL (if your URL follows this pattern)
-const extractKeyFromUrl = (url: string): string => {
-  const match = url.match(/f\/([a-zA-Z0-9_-]+)/);
-  return match ? match[1] : ""; // Extracts the key from the URL
-};
+
 
 export async function deleteCandidate(id: string) {
   return await prisma.candidate.delete({
@@ -670,5 +669,98 @@ export const getTopCandidates = async () => {
     throw new Error("Failed to fetch top candidates.");
   } finally {
     await client.close();
+  }
+};
+
+
+export const deleteImage = async (imgUrl: string, candidateId: string): Promise<{ success: boolean; deletedCount: number }> => {
+  try {
+    // Step 1: Perform the deletion from the cloud storage
+    const key = extractKeyFromUrl(imgUrl);
+
+    const res = await utapi.deleteFiles(key); // Assuming utapi.deleteFiles is the API call
+    console.log("🚀 ~ deleteImage ~ res:", res);
+
+    // Step 2: If the deletion from the cloud was successful, delete from the database
+    if (res.success) {
+      // Call API to delete the image from the database using candidateId
+      await deleteImageFromDatabase(candidateId, imgUrl);
+      return {
+        success: true,
+        deletedCount: res.deletedCount,
+      };
+    }
+
+    return {
+      success: false,
+      deletedCount: 0,
+    };
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    return {
+      success: false,
+      deletedCount: 0,
+    };
+  }
+};
+
+
+const deleteImageFromDatabase = async (candidateId: string, imageUrl: string) => {
+  console.log("Deleting img from db")
+  try {
+    // First, check if the candidate exists
+    const candidate = await prisma.candidate.findUnique({
+      where: { id: candidateId },
+    });
+    console.log("🚀 ~ deleteImageFromDatabase ~ candidate:", candidate)
+
+    if (!candidate) {
+      throw new Error("Candidate not found.");
+    }
+
+    // // Step 1: Remove the image from profileImage if it's the profile image being deleted
+    // if (candidate.profileImage === imageKey) {
+    //   await prisma.candidate.update({
+    //     where: { id: candidateId },
+    //     data: { profileImage: "" }, // Reset profile image field
+    //   });
+    //   console.log(`Profile image for candidate ${candidateId} deleted from the database.`);
+    // }
+
+    // Step 2: Remove the image from carouselImages if it's an additional carousel image
+    if (candidate.carouselImages.includes(imageUrl)) {
+      const res = await prisma.candidate.update({
+        where: { id: candidateId },
+        data: {
+          carouselImages: {
+            set: candidate.carouselImages.filter((image) => image !== imageUrl), // Remove image from the array
+          },
+        },
+      });
+      console.log("🚀 ~ deleteImageFromDatabase ~ res:", res)
+    }
+
+    return { success: true, message: "Image deleted from database." };
+  } catch (error) {
+    console.error("Error deleting image from database:", error);
+    return { success: false, message: "Failed to delete image from database." };
+  }
+};
+
+
+export const deleteImages = async (urls: string[]): Promise<void> => {
+  if (!urls || urls.length === 0) {
+    console.warn("No URLs provided for image deletion.");
+    return;
+  }
+
+  try {
+    const keys = urls.map((url) => extractKeyFromUrl(url));
+    console.log(`Deleting images with keys: ${keys}`);
+    await utapi.deleteFiles(keys);
+    console.log("Images deleted successfully:", urls);
+  } catch (error) {
+    console.error("Error deleting images:", error);
+    throw new Error("Failed to delete the images.");
   }
 };

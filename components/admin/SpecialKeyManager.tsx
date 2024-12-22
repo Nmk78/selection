@@ -30,7 +30,7 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
     queryKey: ["specialKeys"],
     queryFn: async () => {
       const specialKeys = await getAllSpecialSecretKeys();
-      console.log("🚀 ~ queryFn: ~ specialKeys:", specialKeys);
+      // console.log("🚀 ~ queryFn: ~ specialKeys:", specialKeys);
       return Array.isArray(specialKeys.data) ? specialKeys.data : [];
     },
   });

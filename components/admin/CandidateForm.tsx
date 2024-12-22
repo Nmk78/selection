@@ -1,3 +1,4 @@
+"use client";
 import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,10 +15,12 @@ import {
   updateCandidate,
   deleteCandidate,
   getCandidateById,
+  deleteImage,
 } from "@/actions/candidate";
 import { getActiveMetadata } from "@/actions/metadata";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { extractKeyFromUrl } from "@/lib/utils";
 
 interface CandidateFormProps {
   closeModal: () => void;
@@ -123,40 +126,45 @@ export default function CandidateForm({
     }));
   };
 
-  const removeAdditionalImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      carouselImages: prev.carouselImages.filter((_, i) => i !== index),
-    }));
-  };
-  const { mutate } = useMutation({
-    mutationFn: async (formData: {
-      name: string;
-      gender: "male" | "female";
-      major: string;
-      age: number;
-      height: number;
-      weight: number;
-      intro: string;
-      hobbies: string[];
-      profileImage: string;
-      carouselImages: string[];
-      roomId: string;
-    }) => {
-      setLoading(true);
-      if (candidateId) {
-        await updateCandidate(candidateId, formData);
+  const removeAdditionalImage = async (index: number) => {
+    if (!candidateId) {
+      return;
+    }
+    try {
+      const imageToDelete = formData.carouselImages[index];
+
+      // Perform the deletion
+      const res = await deleteImage(imageToDelete, candidateId);
+      console.log("🚀 ~ deleteImage ~ res:", res);
+
+      // Update state only after successful deletion
+      if (res.success && res.deletedCount > 0) {
+        toast({
+          title: "Image Deleted",
+          description: "Image successfully deleted",
+        });
+        setFormData((prev) => ({
+          ...prev,
+          carouselImages: prev.carouselImages.filter((_, i) => i !== index),
+        }));
       } else {
-        await createCandidate(formData);
+        throw new Error("Failed to delete the image from the server.");
       }
+    } catch (error) {
+      console.error(`Failed to delete image at index ${index}:`, error);
+    }
+  };
+
+  const { mutate: createCandidateMutation } = useMutation({
+    mutationFn: async () => {
+      setLoading(true);
+      await createNewCandidate();
     },
     onSuccess: () => {
       setLoading(false);
       toast({
         title: "Success",
-        description: candidateId
-          ? "Candidate updated successfully."
-          : "Candidate saved successfully.",
+        description: "Candidate saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ["candidates"] });
     },
@@ -169,18 +177,6 @@ export default function CandidateForm({
       });
     },
   });
-
-  const areArraysEqual = (arr1: string[], arr2: string[]): boolean => {
-    if (arr1.length !== arr2.length) return false;
-    console.log(
-      arr1 +
-        "and" +
-        arr2 +
-        "are equal " +
-        arr1.every((val, index) => val === arr2[index])
-    );
-    return arr1.every((val, index) => val === arr2[index]);
-  };
 
   // Function to upload profile image
   // Upload Profile Image
@@ -310,7 +306,7 @@ export default function CandidateForm({
       };
 
       console.log("Updated payload:", payload);
-      createCandidate(payload)
+      createCandidate(payload);
     } catch (error) {
       console.error("Error creating new candidate:", error);
       toast({
@@ -325,9 +321,11 @@ export default function CandidateForm({
     setLoading(true);
 
     try {
+      setLoading(true);
+
       console.log("Form submission started");
       if (!candidateId) {
-        createNewCandidate(formData);
+        createCandidateMutation();
       }
     } catch (error) {
       console.log("🚀 ~ handleSubmit ~ error:", error);
