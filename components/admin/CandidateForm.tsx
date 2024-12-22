@@ -63,6 +63,55 @@ export default function CandidateForm({
   const profileImageUploaderRef = useRef(null);
   const carouselImagesUploaderRef = useRef(null);
 
+  const { mutate: createCandidateMutation } = useMutation({
+    mutationFn: async () => {
+      setLoading(true);
+      await createNewCandidate();
+    },
+    onSuccess: () => {
+      setLoading(false);
+      toast({
+        title: "Success",
+        description: "Candidate saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      closeModal();
+    },
+    onError: (err: { message: string }) => { // Renamed _err to err
+      console.error("🚀 ~ Error in createCandidateMutation:", err);
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to save candidate.",
+      });
+    },
+  });
+  
+  const { mutate: editCandidateMutation } = useMutation({
+    mutationFn: async () => {
+      setLoading(true);
+      await editCandidate();
+    },
+    onSuccess: () => {
+      setLoading(false);
+      toast({
+        title: "Success",
+        description: "Candidate edited successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      closeModal();
+    },
+    onError: (err: { message: string }) => { // Renamed _err to err
+      console.error("🚀 ~ Error in editCandidateMutation:", err);
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to edit candidate.",
+      });
+    },
+  });
+  
+  
   useEffect(() => {
     if (candidateId) {
       // Fetch the candidate data for editing if candidateId is provided
@@ -264,8 +313,7 @@ export default function CandidateForm({
         description: "Additional images uploaded.",
       });
 
-      // Return an array of uploaded image URLs
-      return carouselRes.map((image: any) => image.url);
+      return carouselRes.map((image: { url: any; }) => image.url);
     } catch (error) {
       console.error("Error uploading additional images:", error);
       toast({
@@ -381,7 +429,6 @@ export default function CandidateForm({
       if(res.status === "success"){
         console.log("✅ Candidate updated successfully");
       }
-      res.status
     } catch (error) {
       console.error("❌ Error editing candidate:", error);
       toast({
@@ -395,54 +442,7 @@ export default function CandidateForm({
   };
   
 
-  const { mutate: createCandidateMutation } = useMutation({
-    mutationFn: async () => {
-      setLoading(true);
-      await createNewCandidate();
-    },
-    onSuccess: () => {
-      setLoading(false);
-      toast({
-        title: "Success",
-        description: "Candidate saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      closeModal();
-    },
-    onError: (err: { message: string }) => { // Renamed _err to err
-      console.error("🚀 ~ Error in createCandidateMutation:", err);
-      setLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to save candidate.",
-      });
-    },
-  });
-  
-  const { mutate: editCandidateMutation } = useMutation({
-    mutationFn: async () => {
-      setLoading(true);
-      await editCandidate();
-    },
-    onSuccess: () => {
-      setLoading(false);
-      toast({
-        title: "Success",
-        description: "Candidate edited successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      closeModal();
-    },
-    onError: (err: { message: string }) => { // Renamed _err to err
-      console.error("🚀 ~ Error in editCandidateMutation:", err);
-      setLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to edit candidate.",
-      });
-    },
-  });
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
