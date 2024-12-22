@@ -30,7 +30,7 @@ export default function CandidateForm({
 }: CandidateFormProps) {
   const queryClient = useQueryClient();
 
-  interface FormData {
+  const [formData, setFormData] = useState<{
     name: string;
     gender: "male" | "female";
     major: string;
@@ -41,8 +41,7 @@ export default function CandidateForm({
     hobbies: string[];
     profileImage: string | null;
     carouselImages: string[];
-  }
-  const [formData, setFormData] = useState<FormData>({
+  }>({
     name: "",
     gender: "male",
     major: "",
@@ -59,7 +58,7 @@ export default function CandidateForm({
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const profileImageUploaderRef = useRef(null);
-  const carouselImagesUploaderRef = useRef(null);
+  const uploaderRef = useRef(null);
   const [initialCarouselImages, setInitialCarouselImages] = useState<string[]>(
     formData.carouselImages || []
   );
@@ -170,6 +169,145 @@ export default function CandidateForm({
     },
   });
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   if (!uploaderRef.current || !profileImageUploaderRef.current) {
+  //     console.error(
+  //       "Uploader refs are not set. Ensure uploaderRef and profileImageUploaderRef are properly assigned."
+  //     );
+  //     return;
+  //   }
+
+  //   try {
+  //     if (!profileImageUploaderRef.current || !uploaderRef.current) {
+  //       toast({
+  //         title: "Error",
+  //         description: "Image upload components are not available.",
+  //       });
+  //       return;
+  //     }
+
+  //     // Upload profile image
+  //     //@ts-expect-error //it was showing error
+  //     const profileRes = await profileImageUploaderRef.current.startUpload();
+  //     // Upload additional images
+  //     //@ts-expect-error //it was showing error
+  //     const imgRes = await uploaderRef.current.startUpload();
+  //     if (!profileRes || profileRes.length === 0) {
+  //       toast({
+  //         title: "Error",
+  //         description: "Failed to upload profile image.",
+  //       });
+  //       return;
+  //     }
+
+  //     if (!imgRes || imgRes.length === 0) {
+  //       toast({
+  //         title: "Error",
+  //         description: "Failed to upload additional images.",
+  //       });
+  //       return;
+  //     }
+
+  //     const currentlyActiveRoom = await getActiveMetadata();
+  //     if (!currentlyActiveRoom || currentlyActiveRoom.length === 0) {
+  //       toast({ title: "Error", description: "No active room found." });
+  //       return;
+  //     }
+
+  //     mutate({
+  //       ...formData,
+  //       age: parseInt(formData.age, 10),
+  //       height: parseInt(formData.height, 10),
+  //       weight: parseInt(formData.weight, 10),
+  //       profileImage: profileRes[0].url,
+  //       carouselImages: imgRes.map((image: { url: string }) => image.url),
+  //       roomId: currentlyActiveRoom[0].id,
+  //     });
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Image upload failed:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "An error occurred during image upload.",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   if (!uploaderRef.current || !profileImageUploaderRef.current) {
+  //     console.error(
+  //       "Uploader refs are not set. Ensure uploaderRef and profileImageUploaderRef are properly assigned."
+  //     );
+  //     return;
+  //   }
+
+  //   try {
+  //     let profileRes = formData.profileImage;
+  //     let imgRes = formData.carouselImages;
+
+  //     // If profile image is being updated, upload the new one
+  //     if (profileImageUploaderRef.current) {
+  //       //@ts-expect-error //hide red-underlines
+  //       profileRes = await profileImageUploaderRef.current.startUpload();
+  //       if (!profileRes || profileRes.length === 0) {
+  //         toast({
+  //           title: "Error",
+  //           description: "Failed to upload profile image.",
+  //         });
+  //         return;
+  //       }
+  //     }
+
+  //     // If additional images are being updated, upload the new ones
+  //     if (uploaderRef.current) {
+  //       //@ts-expect-error //hide red-underlines
+  //       imgRes = await uploaderRef.current.startUpload();
+  //       if (!imgRes || imgRes.length === 0) {
+  //         toast({
+  //           title: "Error",
+  //           description: "Failed to upload additional images.",
+  //         });
+  //         return;
+  //       }
+  //     }
+
+  //     const currentlyActiveRoom = await getActiveMetadata();
+  //     if (!currentlyActiveRoom || currentlyActiveRoom.length === 0) {
+  //       toast({ title: "Error", description: "No active room found." });
+  //       return;
+  //     }
+
+  //     mutate({
+  //       ...formData,
+  //       age: parseInt(formData.age, 10),
+  //       height: parseInt(formData.height, 10),
+  //       weight: parseInt(formData.weight, 10),
+  //       profileImage: Array.isArray(profileRes)
+  //         ? profileRes[0].url
+  //         : profileRes,
+  //       carouselImages: imgRes.map((image: string) => image),
+  //       roomId: currentlyActiveRoom[0].id,
+  //     });
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Image upload failed:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "An error occurred during image upload.",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const areArraysEqual = (arr1: string[], arr2: string[]): boolean => {
     if (arr1.length !== arr2.length) return false;
     console.log(
@@ -182,94 +320,72 @@ export default function CandidateForm({
     return arr1.every((val, index) => val === arr2[index]);
   };
 
-  // Function to upload profile image
-  // Upload Profile Image
-  const uploadProfileImage = async () => {
-    if (!profileImageUploaderRef.current) {
-      toast({
-        title: "Failed",
-        description: "Failed to upload profile image. Please try again.",
-      });
-      return null; // Return null if upload fails
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    console.log("Form submission started");
+
+    if (!uploaderRef.current || !profileImageUploaderRef.current) {
+      console.error(
+        "Uploader refs are not set. Ensure uploaderRef and profileImageUploaderRef are properly assigned."
+      );
+      setLoading(false);
+      return;
     }
 
-    try {
-      console.log("Uploading profile image...");
-      //@ts-expect-error //Hide red errors
-      const profileRes = await profileImageUploaderRef.current.startUpload();
-      console.log("Profile image upload response:", profileRes);
+    let profileRes = formData.profileImage; // Fallback to existing value
+    let imgRes = formData.carouselImages; // Fallback to existing value
 
-      if (!profileRes || profileRes.length === 0) {
-        console.warn("Profile image upload failed.");
-        toast({
-          title: "Failed",
-          description: "Profile image upload failed.",
-        });
-        return null; // Return null if upload fails
+    console.log("Initial profile image:", profileRes);
+    console.log("Initial carousel images:", imgRes);
+
+    try {
+      // Profile image upload
+      try {
+        if (profileImageUploaderRef.current && formData.profileImage === null) {
+          console.log("Uploading profile image...");
+          //@ts-expect-error //hide red-underlines
+          profileRes = await profileImageUploaderRef.current.startUpload();
+          console.log("Profile image upload response:", profileRes);
+
+          if (!profileRes || profileRes.length === 0) {
+            console.warn("Profile image upload failed, using fallback value");
+            profileRes = formData.profileImage; // Fallback to existing value
+          }
+        }
+      } catch (error) {
+        console.error("Error uploading profile image:", error);
+        profileRes = formData.profileImage; // Fallback to existing value
       }
 
-      toast({
-        title: "Succeeded",
-        description: "Profile image uploaded.",
-      });
+      // Additional images upload
+      try {
+        if (
+          uploaderRef.current &&
+          !areArraysEqual(formData.carouselImages, initialCarouselImages)
+        ) {
+          console.log("Uploading additional images...");
+          //@ts-expect-error //hide red-underlines
+          imgRes = await uploaderRef.current.startUpload();
+          console.log("Additional images upload response:", imgRes);
 
-      // Return the URL of the uploaded profile image
-      return profileRes[0]?.url;
-    } catch (error) {
-      console.error("Error uploading profile image:", error);
-      toast({
-        title: "Error",
-        description: "Error while uploading profile image.",
-      });
-      return null; // Return null if upload fails
-    }
-  };
-
-  // Upload Carousel Images
-  const uploadCarouselImages = async () => {
-    if (!carouselImagesUploaderRef.current) {
-      toast({
-        title: "Failed",
-        description: "Failed to upload additional images. Please try again.",
-      });
-      return []; // Return empty array if upload fails
-    }
-
-    try {
-      console.log("Uploading additional images...");
-      //@ts-expect-error //Hide red errors
-      const carouselRes = await carouselImagesUploaderRef.current.startUpload();
-      console.log("Additional images upload response:", carouselRes);
-
-      if (!carouselRes || carouselRes.length === 0) {
-        console.warn("Additional image upload failed.");
-        toast({
-          title: "Failed",
-          description: "Additional image upload failed.",
-        });
-        return []; // Return empty array if upload fails
+          if (!imgRes || imgRes.length === 0) {
+            console.warn(
+              "Additional image upload failed, using fallback value"
+            );
+            imgRes = formData.carouselImages; // Fallback to existing value
+          }
+        } else {
+          console.log("Skipped additional images");
+          imgRes = formData.carouselImages; // Fallback to existing value
+        }
+      } catch (error) {
+        console.error("Error uploading additional images:", error);
+        imgRes = formData.carouselImages; // Fallback to existing value
       }
 
-      toast({
-        title: "Succeeded",
-        description: "Additional images uploaded.",
-      });
-
-      // Return an array of uploaded image URLs
-      return carouselRes.map((image: any) => image.url);
-    } catch (error) {
-      console.error("Error uploading additional images:", error);
-      toast({
-        title: "Error",
-        description: "Error while uploading additional images.",
-      });
-      return []; // Return empty array if upload fails
-    }
-  };
-
-  const createNewCandidate = async () => {
-    try {
-      setLoading(true);
+      // Fetch metadata and ensure valid payload
       const currentlyActiveRoom = await getActiveMetadata();
       console.log("Currently active room:", currentlyActiveRoom);
 
@@ -278,65 +394,58 @@ export default function CandidateForm({
         console.error("No active room found");
         return;
       }
-      // Upload the profile image and carousel images
-      const profileImageUrl = await uploadProfileImage();
-      const carouselImageUrls = await uploadCarouselImages();
 
-      if (!profileImageUrl) {
-        toast({
-          title: "Failed",
-          description: "Profile image is required.",
-        });
-        return;
-      }
-
-      if (carouselImageUrls.length === 0) {
-        toast({
-          title: "Failed",
-          description: "At least one carousel image is required.",
-        });
-        return;
-      }
-      // Update formData with the uploaded image URLs
+      // Construct mutation payload
+      // @typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       const payload = {
         ...formData,
         age: parseInt(formData.age, 10),
         height: parseInt(formData.height, 10),
         weight: parseInt(formData.weight, 10),
-        profileImage: profileImageUrl, // Ensure valid fallback
-        carouselImages: carouselImageUrls,
+        profileImage:
+          profileRes && Array.isArray(profileRes)
+            ? profileRes[0]?.url
+            : profileRes || formData.profileImage, // Ensure valid fallback
+        carouselImages: [
+          ...(formData.carouselImages || []), // Retain existing images
+          ...(imgRes.length > 0
+            ? imgRes
+                .map((image: any) =>
+                  typeof image === "string" ? image : image?.url
+                ) // Extract URLs
+                .filter(
+                  (image: string) =>
+                    !(formData.carouselImages || []).includes(image) // Add only new images
+                )
+            : []),
+        ],
 
         roomId: currentlyActiveRoom[0].id,
       };
+      console.log("🚀 ~ handleSubmit ~ imgRes:", imgRes);
+      console.log("Final mutation payload:", payload);
 
-      console.log("Updated payload:", payload);
-      createCandidate(payload)
-    } catch (error) {
-      console.error("Error creating new candidate:", error);
-      toast({
-        title: "Error",
-        description: "Error during candidate creation.",
-      });
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      console.log("Form submission started");
-      if (!candidateId) {
-        createNewCandidate(formData);
+      // Ensure payload validity
+      if (!payload.profileImage || !payload.carouselImages) {
+        console.error("Invalid mutation payload:", payload);
+        toast({
+          title: "Error",
+          description: "Form submission data is incomplete.",
+        });
+        return;
       }
+
+      mutate(payload);
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
+      console.error("Error during form submission:", error);
       toast({
         title: "Error",
-        description: "Something went wrong.",
+        description: "An error occurred during the form submission.",
       });
     } finally {
       setLoading(false);
+      console.log("Form submission ended");
     }
   };
 
@@ -518,7 +627,7 @@ export default function CandidateForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="additionalImages">Additional Images</Label>
-            <MultiImageUploader ref={carouselImagesUploaderRef} />
+            <MultiImageUploader ref={uploaderRef} />
             {formData.carouselImages.length > 0 && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">

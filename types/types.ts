@@ -51,7 +51,7 @@ export interface Metadata {
 }
 
 export interface Candidate {
-  roomId: string;
+  roomId?: string;
   name: string;
   intro: string;
   gender: "male" | "female";

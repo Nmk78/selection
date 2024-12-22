@@ -33,7 +33,7 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
     return <div>Failed to load candidates. Please try again.</div>;
   }
 
-  console.log("🚀 ~ CurrentResults ~ candidates:", candidates);
+  // console.log("🚀 ~ CurrentResults ~ candidates:", candidates);
   const sortedCandidates = [...candidates].sort((a, b) => b.totalRating - a.totalRating);
 
   return (

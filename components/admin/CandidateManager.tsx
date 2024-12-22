@@ -45,7 +45,7 @@ export default function CandidateManager({
     queryFn: getAllCandidates,
   });
 
-  console.log("🚀 ~ candidates:", candidates);
+  // console.log("🚀 ~ candidates:", candidates);
 
   return (
     <Card className={`md:overflow-hidden ${classes}`}>
