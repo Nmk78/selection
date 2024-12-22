@@ -22,6 +22,7 @@ const candidateSchema = z.object({
   roomId: z.string().min(1, { message: "Room ID is required" }), // Add room ID here
   // id: z.string().trim().min(1, { message: "ID is required" }),
   name: z.string().trim().min(1, { message: "Name is required" }),
+  intro: z.string().trim().min(1, { message: "Intro is required" }),
   gender: z.enum(["male", "female"], { message: "Invalid gender" }),
   major: z.string().trim().min(1, { message: "Major is required" }),
   profileImage: z

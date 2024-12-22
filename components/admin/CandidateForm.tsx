@@ -20,7 +20,6 @@ import {
 import { getActiveMetadata } from "@/actions/metadata";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { extractKeyFromUrl } from "@/lib/utils";
 
 interface CandidateFormProps {
   closeModal: () => void;
@@ -63,9 +62,6 @@ export default function CandidateForm({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const profileImageUploaderRef = useRef(null);
   const carouselImagesUploaderRef = useRef(null);
-  const [initialCarouselImages, setInitialCarouselImages] = useState<string[]>(
-    formData.carouselImages || []
-  );
 
   useEffect(() => {
     if (candidateId) {
@@ -90,10 +86,12 @@ export default function CandidateForm({
         });
       };
       fetchCandidate();
-      setInitialCarouselImages(formData.carouselImages || []);
       setLoading(false);
     }
   }, [candidateId]);
+
+
+  if (candidateId && !formData) return <p>Loading...</p>;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -135,7 +133,7 @@ export default function CandidateForm({
 
       // Perform the deletion
       const res = await deleteImage(imageToDelete, candidateId);
-      console.log("🚀 ~ deleteImage ~ res:", res);
+      // console.log("🚀 ~ deleteImage ~ res:", res);
 
       // Update state only after successful deletion
       if (res.success && res.deletedCount > 0) {
@@ -155,6 +153,32 @@ export default function CandidateForm({
     }
   };
 
+  const removeProfileImage = async (url: string) => {
+    if (!candidateId) {
+      return;
+    }
+    try {
+      const res = await deleteImage(url, candidateId);
+      // console.log("🚀 ~ deleteImage ~ res:", res);
+
+      // Update state only after successful deletion
+      if (res.success && res.deletedCount > 0) {
+        toast({
+          title: "Image Deleted",
+          description: "Profile image successfully deleted",
+        });
+        setFormData((prev) => ({
+          ...prev,
+          profileImage: null,
+        }));
+      } else {
+        throw new Error("Failed to delete the image from the server.");
+      }
+    } catch (error) {
+      console.error("Failed to delete profile image", error);
+    }
+  };
+
   const { mutate: createCandidateMutation } = useMutation({
     mutationFn: async () => {
       setLoading(true);
@@ -167,9 +191,10 @@ export default function CandidateForm({
         description: "Candidate saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      closeModal()
     },
     onError: (_err: { message: string }) => {
-      console.log("🚀 ~ _err:", _err);
+      // console.log("🚀 ~ _err:", _err);
       setLoading(false);
       toast({
         title: "Error",
@@ -178,18 +203,43 @@ export default function CandidateForm({
     },
   });
 
-  // Function to upload profile image
-  // Upload Profile Image
-  const uploadProfileImage = async () => {
-    if (!profileImageUploaderRef.current) {
+  const { mutate: editCandidateMutation } = useMutation({
+    mutationFn: async () => {
+      setLoading(true);
+      await editCandidate();
+    },
+    onSuccess: () => {
+      setLoading(false);
       toast({
-        title: "Failed",
-        description: "Failed to upload profile image. Please try again.",
+        title: "Success",
+        description: "Candidate edited successfully.",
       });
-      return null; // Return null if upload fails
-    }
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      closeModal()
+    },
+    onError: (_err: { message: string }) => {
+      // console.log("🚀 ~ _err:", _err);
+      setLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to edit candidate.",
+      });
+    },
+  });
 
+  const uploadProfileImage = async () => {
     try {
+      if (!profileImageUploaderRef.current) {
+        if (candidateId && formData.profileImage) {
+          return null;
+        } else {
+          toast({
+            title: "Failed",
+            description: "Failed to upload profile image. Please try again.",
+          });
+          return null;
+        }
+      }
       console.log("Uploading profile image...");
       //@ts-expect-error //Hide red errors
       const profileRes = await profileImageUploaderRef.current.startUpload();
@@ -221,17 +271,26 @@ export default function CandidateForm({
     }
   };
 
-  // Upload Carousel Images
   const uploadCarouselImages = async () => {
-    if (!carouselImagesUploaderRef.current) {
-      toast({
-        title: "Failed",
-        description: "Failed to upload additional images. Please try again.",
-      });
-      return []; // Return empty array if upload fails
-    }
-
     try {
+      // console.log(
+      // "🚀 ~ uploadCarouselImages ~ carouselImagesUploaderRef.current:",
+      // carouselImagesUploaderRef.current
+      // );
+
+      if (!carouselImagesUploaderRef.current) {
+        if (candidateId) {
+          console.log("Edit mode and no ref");
+          return null;
+        } else {
+          toast({
+            title: "Failed",
+            description:
+              "Failed to upload additional images. Please try again.",
+          });
+          return null;
+        }
+      }
       console.log("Uploading additional images...");
       //@ts-expect-error //Hide red errors
       const carouselRes = await carouselImagesUploaderRef.current.startUpload();
@@ -316,6 +375,88 @@ export default function CandidateForm({
     }
   };
 
+  const editCandidate = async () => {
+    console.log("🛠️ Starting editCandidate function");
+  
+    try {
+      setLoading(true);
+      console.log("🔄 Loading state set to true");
+  
+      // Step 1: Fetch currently active room
+      const currentlyActiveRoom = await getActiveMetadata();
+      console.log("📂 Currently active room metadata fetched:", currentlyActiveRoom);
+  
+      if (!currentlyActiveRoom || currentlyActiveRoom.length === 0) {
+        toast({ title: "Error", description: "No active room found." });
+        console.error("❌ No active room found, stopping execution");
+        setLoading(false);
+        return;
+      }
+  
+      // Step 2: Upload images
+      const profileImageUrl = await uploadProfileImage();
+      console.log("📸 Uploaded profile image URL:", profileImageUrl);
+
+      const carouselImageUrls = await uploadCarouselImages();
+      console.log("📸 Uploaded carousel image URLs:", carouselImageUrls);
+  
+      // Uncomment these checks if needed
+      // if (!profileImageUrl) {
+      //   toast({ title: "Failed", description: "Profile image is required." });
+      //   console.error("❌ Profile image is required but missing");
+      //   setLoading(false);
+      //   return;
+      // }
+  
+      // if (carouselImageUrls.length === 0) {
+      //   toast({ title: "Failed", description: "At least one carousel image is required." });
+      //   console.error("❌ Carousel images are required but missing");
+      //   setLoading(false);
+      //   return;
+      // }
+  
+      // Step 3: Prepare payload
+      const payload = {
+        ...formData,
+        age: parseInt(formData.age, 10),
+        height: parseInt(formData.height, 10),
+        weight: parseInt(formData.weight, 10),
+        // profileImage: profileImageUrl, // Ensure valid fallback
+        profileImage: profileImageUrl ? profileImageUrl : formData.profileImage,
+        carouselImages:
+          carouselImageUrls?.length > 0
+            ? [...formData.carouselImages, ...carouselImageUrls]
+            : formData.carouselImages,
+        id: candidateId,
+        roomId: currentlyActiveRoom[0].id,
+      };
+
+      if(!payload.profileImage || payload.carouselImages.length < 1){
+        toast({ title: "Error", description: "Incomplete form!" });
+        return
+      }
+  
+      console.log("📝 Update payload prepared:", payload);
+  
+      // Step 4: Call updateCandidate function
+      const res = await updateCandidate(payload);
+      if(res.status === "success"){
+        console.log("✅ Candidate updated successfully");
+      }
+      res.status
+    } catch (error) {
+      console.error("❌ Error editing candidate:", error);
+      toast({
+        title: "Error",
+        description: "Error while editing candidate.",
+      });
+    } finally {
+      console.log("🔄 Setting loading state back to false");
+      setLoading(false);
+    }
+  };
+  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -326,9 +467,12 @@ export default function CandidateForm({
       console.log("Form submission started");
       if (!candidateId) {
         createCandidateMutation();
+      } else {
+        editCandidateMutation();
+        // editCandidate();
       }
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
+      // console.log("🚀 ~ handleSubmit ~ error:", error);
       toast({
         title: "Error",
         description: "Something went wrong.",
@@ -351,7 +495,7 @@ export default function CandidateForm({
       queryClient.invalidateQueries({ queryKey: ["candidates"] });
       closeModal();
     } catch (err) {
-      console.log("🚀 ~ handleDelete ~ err:", err);
+      // console.log("🚀 ~ handleDelete ~ err:", err);
       toast({
         title: "Error",
         description: "Failed to delete candidate.",
@@ -363,7 +507,6 @@ export default function CandidateForm({
   return (
     <div className="w-full max-w-7xl mx-auto">
       <form
-        onSubmit={handleSubmit}
         className="w-full h-[550px] overflow-y-scroll scroll-area grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
         <div className="space-y-4">
@@ -498,11 +641,8 @@ export default function CandidateForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="profilePic">Profile Picture</Label>
-            <ImageUploader
-              setProfileImage={setProfileImage}
-              ref={profileImageUploaderRef}
-            />
-            {formData.profileImage && (
+
+            {formData.profileImage ? (
               <div className="relative">
                 <Image
                   src={formData.profileImage}
@@ -511,12 +651,25 @@ export default function CandidateForm({
                   height={200}
                   className="rounded-lg object-cover w-full h-40"
                 />
+                <button
+                  onClick={() => removeProfileImage(formData.profileImage!)} // Non-null assertion
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                >
+                  <X size={16} />
+                </button>
               </div>
+            ) : (
+              <ImageUploader
+                setProfileImage={setProfileImage}
+                ref={profileImageUploaderRef}
+              />
             )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="additionalImages">Additional Images</Label>
-            <MultiImageUploader ref={carouselImagesUploaderRef} />
+            {formData.carouselImages.length < 10 && (
+              <MultiImageUploader ref={carouselImagesUploaderRef} />
+            )}
             {formData.carouselImages.length > 0 && (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
@@ -544,7 +697,7 @@ export default function CandidateForm({
         </div>
         <Button
           disabled={loading}
-          type="submit"
+          onClick={handleSubmit}
           className="w-full lg:col-span-2 mt-0"
         >
           {loading ? "Submitting" : "Submit"}

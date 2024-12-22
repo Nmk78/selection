@@ -140,7 +140,7 @@ export default function AdminPage() {
         </Modal>
       )}{" "}
       {editModal && candidateId && (
-        <Modal title="Add New Candidate" onClose={closeEditModal}>
+        <Modal title="Edit Candidate" onClose={closeEditModal}>
           <CandidateForm candidateId={candidateId} closeModal={closeModal} />
         </Modal>
       )}{" "}
@@ -163,7 +163,7 @@ function Modal({ title, onClose, children }: ModalProps) {
   return (
     <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-3xl w-full">
-        <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex justify-between items-center px-4 py-2 border-b">
           <h2 className="text-xl font-semibold">{title}</h2>
           <Button variant="ghost" onClick={onClose}>
             <X className="w-4 h-4" />
