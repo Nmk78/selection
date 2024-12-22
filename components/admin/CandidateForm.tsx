@@ -111,7 +111,7 @@ export default function CandidateForm({
     },
   });
   
-  
+
   useEffect(() => {
     if (candidateId) {
       // Fetch the candidate data for editing if candidateId is provided
@@ -313,7 +313,7 @@ export default function CandidateForm({
         description: "Additional images uploaded.",
       });
 
-      return carouselRes.map((image: { url: any; }) => image.url);
+      return carouselRes.map((image: { url: string; }) => image.url);
     } catch (error) {
       console.error("Error uploading additional images:", error);
       toast({
