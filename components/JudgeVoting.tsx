@@ -127,8 +127,13 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     }
     console.log("Judge Code:", judgeCode);
     console.log("Ratings:", ratings);
+    const roundedRatings = Object.fromEntries(
+      Object.entries(ratings).map(([key, value]) => [key, Math.round(value)])
+    );
+    
+    console.log("Rounded Ratings:", roundedRatings);
     try {
-      const res = await addRatingsToVotes(ratings, judgeCode);
+      const res = await addRatingsToVotes(roundedRatings, judgeCode);
       console.log("🚀 ~ handleSubmit ~ res:", res);
       toast({
         title: res.success ? "Succeed" : "Failed",
@@ -275,6 +280,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
 
       <Button
         type="submit"
+        disabled={loading}
         className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-3 rounded-xl transition-colors duration-300"
       >
         {loading ? "Processing" : "Rate"}

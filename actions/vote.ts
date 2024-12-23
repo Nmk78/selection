@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma"; // Adjust the path to your Prisma client
-import { MongoClient } from "mongodb";
-import { getCandidatesForSecondRound } from "./candidate";
+// import { MongoClient } from "mongodb";
+// import { getCandidatesForSecondRound } from "./candidate";
 
 export async function voteForCandidate(candidateId: string, secretKey: string) {
   try {
@@ -14,9 +14,10 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
       throw new Error("No active round found.");
     }
 
-    const { round, maleForSecondRound, femaleForSecondRound, id } = currentRoom;
+    const { round, id } = currentRoom;  //Removed  maleForSecondRound, femaleForSecondRound, cuz sec round was removed
 
-    if (round !== "first" && round !== "second") {
+    // if (round !== "first" && round !== "second") {
+    if (round !== "first") {
       throw new Error("Voting is closed.");
     }
 
@@ -37,8 +38,8 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
       roomId,
       firstRoundMale,
       firstRoundFemale,
-      secondRoundMale,
-      secondRoundFemale,
+      // secondRoundMale,
+      // secondRoundFemale,
     } = secretKeyRecord;
 
     // Check the candidate's gender
@@ -54,9 +55,9 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
 
     if (
       (round === "first" && gender === "male" && firstRoundMale) ||
-      (round === "first" && gender === "female" && firstRoundFemale) ||
-      (round === "second" && gender === "male" && secondRoundMale) ||
-      (round === "second" && gender === "female" && secondRoundFemale)
+      (round === "first" && gender === "female" && firstRoundFemale)
+      // ||(round === "second" && gender === "male" && secondRoundMale) ||
+      // (round === "second" && gender === "female" && secondRoundFemale)
     ) {
       console.log("📍📍📍Already used");
       return {
@@ -113,89 +114,90 @@ export async function voteForCandidate(candidateId: string, secretKey: string) {
         });
         console.log("🚀 ~ voteForCandidate update ~ voteres:", voteres);
       }
-    } else if (round === "second") {
-      try {
-        // Fetch eligible candidates for the second round
-        let res = await getCandidatesForSecondRound();
-        console.log("🚀 ~ voteForCandidate ~ res:", res);
-
-        const { eligibleCandidates, topMales, topFemales } = res;
-
-        // Check if the candidate is eligible
-        if (!eligibleCandidates.includes(candidateId)) {
-          throw new Error(
-            "Candidate is not eligible for votes in the second round."
-          );
-        }
-
-        if (
-          (gender === "male" && !topMales.some((c) => c.id === candidateId)) ||
-          (gender === "female" && !topFemales.some((c) => c.id === candidateId))
-        ) {
-          throw new Error(
-            "This candidate is not eligible based on the gender for this round."
-          );
-        }
-
-        // Proceed with adding a vote for the valid candidate
-        const voteRecord = await prisma.vote.findFirst({
-          where: { candidateId, roomId },
-        });
-
-        if (!voteRecord) {
-          const res = await prisma.vote.create({
-            data: {
-              roomId,
-              candidateId,
-              totalVotes: 1,
-            },
-          });
-          const voteres = await prisma.secretKey.update({
-            where: { secretKey },
-            data: {
-              secondRoundMale: gender === "male" ? true : secondRoundMale,
-              secondRoundFemale: gender === "female" ? true : secondRoundFemale,
-            },
-          });
-          console.log("🚀 ~ voteForCandidate create ~ res:", res);
-          return {
-            success: true,
-            message: "Vote successfully cast for the candidate.",
-          };
-        } else {
-          const res = await prisma.vote.update({
-            where: { id: voteRecord.id },
-            data: {
-              totalVotes: voteRecord.totalVotes + 1,
-            },
-          });
-          const voteres = await prisma.secretKey.update({
-            where: { secretKey },
-            data: {
-              secondRoundMale: gender === "male" ? true : secondRoundMale,
-              secondRoundFemale: gender === "female" ? true : secondRoundFemale,
-            },
-          });
-          console.log("🚀 ~ voteForCandidate update ~ res:", res);
-          return {
-            success: true,
-            message: "Vote successfully cast for the candidate.",
-          };
-        }
-      } catch (error) {
-        console.error("Error in second round voting:", error);
-
-        // Type guard to check if the error has a 'message' property
-        if (error instanceof Error) {
-          throw new Error(
-            error.message || "An error occurred while casting the vote."
-          );
-        }
-
-        // Handle cases where the error is not an instance of Error
-        throw new Error("An unknown error occurred while casting the vote.");
-      }
     }
+    // else if (round === "second") {
+    //   try {
+    //     // Fetch eligible candidates for the second round
+    //     let res = await getCandidatesForSecondRound();
+    //     console.log("🚀 ~ voteForCandidate ~ res:", res);
+
+    //     const { eligibleCandidates, topMales, topFemales } = res;
+
+    //     // Check if the candidate is eligible
+    //     if (!eligibleCandidates.includes(candidateId)) {
+    //       throw new Error(
+    //         "Candidate is not eligible for votes in the second round."
+    //       );
+    //     }
+
+    //     if (
+    //       (gender === "male" && !topMales.some((c) => c.id === candidateId)) ||
+    //       (gender === "female" && !topFemales.some((c) => c.id === candidateId))
+    //     ) {
+    //       throw new Error(
+    //         "This candidate is not eligible based on the gender for this round."
+    //       );
+    //     }
+
+    //     // Proceed with adding a vote for the valid candidate
+    //     const voteRecord = await prisma.vote.findFirst({
+    //       where: { candidateId, roomId },
+    //     });
+
+    //     if (!voteRecord) {
+    //       const res = await prisma.vote.create({
+    //         data: {
+    //           roomId,
+    //           candidateId,
+    //           totalVotes: 1,
+    //         },
+    //       });
+    //       const voteres = await prisma.secretKey.update({
+    //         where: { secretKey },
+    //         data: {
+    //           secondRoundMale: gender === "male" ? true : secondRoundMale,
+    //           secondRoundFemale: gender === "female" ? true : secondRoundFemale,
+    //         },
+    //       });
+    //       console.log("🚀 ~ voteForCandidate create ~ res:", res);
+    //       return {
+    //         success: true,
+    //         message: "Vote successfully cast for the candidate.",
+    //       };
+    //     } else {
+    //       const res = await prisma.vote.update({
+    //         where: { id: voteRecord.id },
+    //         data: {
+    //           totalVotes: voteRecord.totalVotes + 1,
+    //         },
+    //       });
+    //       const voteres = await prisma.secretKey.update({
+    //         where: { secretKey },
+    //         data: {
+    //           secondRoundMale: gender === "male" ? true : secondRoundMale,
+    //           secondRoundFemale: gender === "female" ? true : secondRoundFemale,
+    //         },
+    //       });
+    //       console.log("🚀 ~ voteForCandidate update ~ res:", res);
+    //       return {
+    //         success: true,
+    //         message: "Vote successfully cast for the candidate.",
+    //       };
+    //     }
+    //   } catch (error) {
+    //     console.error("Error in second round voting:", error);
+
+    //     // Type guard to check if the error has a 'message' property
+    //     if (error instanceof Error) {
+    //       throw new Error(
+    //         error.message || "An error occurred while casting the vote."
+    //       );
+    //     }
+
+    //     // Handle cases where the error is not an instance of Error
+    //     throw new Error("An unknown error occurred while casting the vote.");
+    //   }
+    // }
 
     return { success: true, message: "Vote successfully recorded." };
   } catch (error) {

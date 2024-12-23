@@ -38,16 +38,18 @@ export default async function Home({
                   Cast your votes for the selection
                 </p>
               </div>
-            ) : round === "second" ? (
-              <div className="bg-Caccent  text-white py-4 px-6  shadow-md text-center animate-pulse">
-                <h2 className="text-3xl font-bold font-quindelia">
-                  Second Round Now Open!
-                </h2>
-                <p className="mt-2 text-lg">
-                  Cast your votes for the final selection
-                </p>
-              </div>
-            ):round === "result" ? (
+            ) 
+            // : round === "second" ? (
+            //   <div className="bg-Caccent  text-white py-4 px-6  shadow-md text-center animate-pulse">
+            //     <h2 className="text-3xl font-bold font-quindelia">
+            //       Second Round Now Open!
+            //     </h2>
+            //     <p className="mt-2 text-lg">
+            //       Cast your votes for the final selection
+            //     </p>
+            //   </div>
+            // )
+            :round === "result" ? (
               <div className="bg-Caccent  text-white py-4 px-6  shadow-md text-center animate-pulse">
                 <h2 className="text-3xl font-bold font-quindelia">
                   Result is available now!

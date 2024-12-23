@@ -226,7 +226,7 @@ export default function CandidateDetails({
                 type="submit"
                 disabled={voting}
               >
-                {voting ? "Please wait" : "Submit Vote"}
+                {voting ? "Please wait" : "Vote"}
               </Button>
             </form>
 

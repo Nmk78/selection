@@ -305,7 +305,7 @@ export default function CandidateForm({
           title: "Failed",
           description: "Additional image upload failed.",
         });
-        return []; // Return empty array if upload fails
+        return []; 
       }
 
       toast({
