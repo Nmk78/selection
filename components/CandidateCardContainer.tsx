@@ -50,12 +50,9 @@
 import CandidateCard from "./CandidateCard";
 import {
   getAllCandidates,
-  getCandidatesForSecondRound,
 } from "@/actions/candidate";
-import { getMetadata } from "@/actions/metadata";
 import { Candidate as BaseCandidate } from "@/types/types";
 import FilterDropdown from "./FilterDropDown";
-import { Metadata } from "@prisma/client";
 
 export interface Candidate extends BaseCandidate {
   id: string; // Add the ID property
@@ -84,10 +81,12 @@ interface Props {
 export default async function CandidateSelection({ searchParams }: Props) {
   const filter = searchParams?.filter || "mix"; // Default to 'mix'
   console.log("🚀 ~ CandidateSelection ~ filter:", filter);
+  //@ts-ignore
   let candidates: Candidate[] = [];
+    //@ts-ignore
   let topMale: topCandidate[] = [];
-  let topFemale: topCandidate[] = [];
-  let eligibleCandidates: Candidate[] = [];
+  // let topFemale: topCandidate[] = [];
+  // let eligibleCandidates: Candidate[] = [];
   // let isSecondRound = false;
 
   try {
