@@ -81,10 +81,9 @@ interface Props {
 export default async function CandidateSelection({ searchParams }: Props) {
   const filter = searchParams?.filter || "mix"; // Default to 'mix'
   console.log("🚀 ~ CandidateSelection ~ filter:", filter);
-  //@ts-ignore
   let candidates: Candidate[] = [];
     //@ts-ignore
-  let topMale: topCandidate[] = [];
+  // let topMale: topCandidate[] = [];
   // let topFemale: topCandidate[] = [];
   // let eligibleCandidates: Candidate[] = [];
   // let isSecondRound = false;
@@ -171,7 +170,7 @@ export default async function CandidateSelection({ searchParams }: Props) {
       candidates = allCandidates.sort(() => Math.random() - 0.5);
     }
     // }
-    console.log("🚀 ~ CandidateSelection ~ topMale:", topMale);
+    // console.log("🚀 ~ CandidateSelection ~ topMale:", topMale);
   } catch (error) {
     console.error("Error fetching candidates or metadata:", error);
   }
