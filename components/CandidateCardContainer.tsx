@@ -58,21 +58,21 @@ export interface Candidate extends BaseCandidate {
   id: string; // Add the ID property
 }
 
-type topCandidate = {
-  id: string;
-  name: string;
-  age: number;
-  gender: "male" | "female";
-  height: number;
-  weight: number;
-  hobbies: string[];
-  major: string;
-  intro: string;
-  profileImage: string;
-  carouselImages: string[];
-  combinedScore: number;
-  roomId: string;
-};
+// type topCandidate = {
+//   id: string;
+//   name: string;
+//   age: number;
+//   gender: "male" | "female";
+//   height: number;
+//   weight: number;
+//   hobbies: string[];
+//   major: string;
+//   intro: string;
+//   profileImage: string;
+//   carouselImages: string[];
+//   combinedScore: number;
+//   roomId: string;
+// };
 
 interface Props {
   searchParams?: { filter?: string };
