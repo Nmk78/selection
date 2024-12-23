@@ -82,7 +82,6 @@ export default async function CandidateSelection({ searchParams }: Props) {
   const filter = searchParams?.filter || "mix"; // Default to 'mix'
   console.log("🚀 ~ CandidateSelection ~ filter:", filter);
   let candidates: Candidate[] = [];
-    //@ts-ignore
   // let topMale: topCandidate[] = [];
   // let topFemale: topCandidate[] = [];
   // let eligibleCandidates: Candidate[] = [];
