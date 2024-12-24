@@ -22,12 +22,12 @@ const policySteps = [
   {
     title: "Second Round",
     icon: <Award className="w-8 h-8" />,
-    content: "Voters choose from finalists. Judges rate candidates on a 1-10 scale."
+    content: "Judges rate candidates on a 1-10 scale."
   },
   {
     title: "Final Results",
     icon: <Calculator className="w-8 h-8" />,
-    content: "Votes are tallied, including judges' weighted scores. Winners are announced on stage!"
+    content: "Votes are tallied, including judges' scores. Winners are announced on stage!"
   }
 ]
 
