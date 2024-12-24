@@ -39,7 +39,7 @@ export function KeyStatus({ status }: KeyStatusProps) {
         
           {status.isValid ? (
             <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-start space-x-3">
               <span className="font-medium text-Cprimary">Key Validity</span>
               {status.isValid ? (
                 <CheckCircle className="text-green-500" />
@@ -47,19 +47,19 @@ export function KeyStatus({ status }: KeyStatusProps) {
                 <XCircle className="text-red-500" />
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h3 className="font-semibold text-Cprimary">First Round</h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-Cprimary">Male Vote</span>
+            {/* <div className="grid grid-cols-2 gap-4"> */}
+              <div className="space-y-2 flex justify-between items-center" title="green means you are legit to vote and red cross meant it was already voted">
+                {/* <h3 className="font-semibold text-Cprimary">First Round</h3> */}
+                <div className="flex items-center justify-between space-x-2">
+                  <span className="text-sm text-Cprimary" >Male Vote</span>
                   <StatusIcon isActive={status.maleVoteFirstRound} />
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between space-x-2">
                   <span className="text-sm text-Cprimary">Female Vote</span>
                   <StatusIcon isActive={status.femaleVoteFirstRound} />
                 </div>
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <h3 className="font-semibold text-Cprimary">Second Round</h3>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-Cprimary">Male Vote</span>
@@ -69,8 +69,8 @@ export function KeyStatus({ status }: KeyStatusProps) {
                   <span className="text-sm text-Cprimary">Female Vote</span>
                   <StatusIcon isActive={status.femaleVoteSecondRound} />
                 </div>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
             </div>
 
           ) : (
