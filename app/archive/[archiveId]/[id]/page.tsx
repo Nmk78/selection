@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 import { getArchivedCandidateById } from "@/actions/archive";
 
-type Params = Promise<{ id: string }>;
 
 
 export default function CandidatePage() {
