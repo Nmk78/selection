@@ -134,7 +134,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     console.log("Rounded Ratings:", roundedRatings);
     try {
       const res = await addRatingsToVotes(roundedRatings, judgeCode);
-      // console.log("🚀 ~ handleSubmit ~ res:", res);
+      console.log("🚀 ~ handleSubmit ~ res:", res);
       toast({
         title: res.success ? "Succeed" : "Failed",
         description: res.message,
@@ -142,6 +142,10 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
       seLoading(false);
     } catch (error) {
       console.log("🚀 ~ handleSubmit ~ error:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong! Please try again.",
+      });
     }
 
     // Submit to backend
