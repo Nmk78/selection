@@ -142,6 +142,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
       seLoading(false);
     } catch (error) {
       console.log("🚀 ~ handleSubmit ~ error:", error);
+      seLoading(false);
       toast({
         title: "Error",
         description: "Something went wrong! Please try again.",
