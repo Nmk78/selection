@@ -37,8 +37,8 @@ export default function Results({ results }: ResultsProps) {
                 src={candidate.profileImage}
                 alt={`${candidate.title} ${candidate.name}`}
                 layout="fill"
-                objectFit="cover"
-                className="rounded-full border-4 border-romantic-primary shadow-lg"
+                // objectFit="cover"
+                className="rounded-full object-cover border-4 border-romantic-primary shadow-lg"
               />
               <div className="absolute -top-4 -right-4 md:right-4 bg-romantic-bg rounded-full p-2 shadow-md">
                 <Crown

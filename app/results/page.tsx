@@ -9,6 +9,35 @@ import Confetti from '@/components/Confetti';
 
 export const revalidate = 0; // Disable caching entirely for this page
 
+export async function generateMetadata() {
+  const ogImageUrl = `${process.env.BASE_URL || "https://example.com"}/logo.webp`;
+
+  return {
+    title: 'Selection Results - Winners Announced!',
+    description: 'Meet the King, Queen, Prince, and Princess of the selection process!',
+    openGraph: {
+      title: 'Selection Results',
+      description: 'Celebrate the winners of the selection process: King, Queen, Prince, and Princess.',
+      url: `${process.env.BASE_URL}/results`,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: 'Winner Profiles',
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Selection Results',
+      description: 'The winners are revealed! Celebrate the new King, Queen, Prince, and Princess.',
+      images: [ogImageUrl],
+    },
+  };
+}
+
 async function ResultsContent() {
   const metadata = await getMetadata();
 
@@ -29,9 +58,9 @@ async function ResultsContent() {
 
   const winners: winnerCandidate[] = [
     { id: data.king.id, name: data.king.name, title: "King", profileImage: data.king.profileImage, votes: data.king.totalVotes + data.king.totalRating },
-    { id: data.queen.candidateId, name: data.queen.name, title: "Queen", profileImage: data.queen.profileImage, votes: data.queen.totalVotes + data.queen.totalRating },
-    { id: data.prince.candidateId, name: data.prince.name, title: "Prince", profileImage: data.prince.profileImage, votes: data.prince.totalVotes + data.prince.totalRating },
-    { id: data.princess.candidateId, name: data.princess.name, title: "Princess", profileImage: data.princess.profileImage, votes: data.princess.totalVotes + data.princess.totalRating },
+    { id: data.queen.id, name: data.queen.name, title: "Queen", profileImage: data.queen.profileImage, votes: data.queen.totalVotes + data.queen.totalRating },
+    { id: data.prince.id, name: data.prince.name, title: "Prince", profileImage: data.prince.profileImage, votes: data.prince.totalVotes + data.prince.totalRating },
+    { id: data.princess.id, name: data.princess.name, title: "Princess", profileImage: data.princess.profileImage, votes: data.princess.totalVotes + data.princess.totalRating },
   ];
 
   return (
@@ -59,4 +88,5 @@ export default function ResultsPage() {
     </main>
   );
 }
+
 
