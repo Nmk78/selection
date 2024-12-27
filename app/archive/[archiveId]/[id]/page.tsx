@@ -4,7 +4,6 @@ import { useParams } from "next/navigation"; // Import useParams
 import { useQuery } from "@tanstack/react-query";
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 import { getArchivedCandidateById } from "@/actions/archive";
-import { getCandidateById } from "@/actions/candidate";
 
 type Params = Promise<{ id: string }>;
 
