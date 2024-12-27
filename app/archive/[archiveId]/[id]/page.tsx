@@ -8,7 +8,7 @@ import { getCandidateById } from "@/actions/candidate";
 
 type Params = Promise<{ id: string }>;
 
-export async function generateMetadata({ params }: { params: Params }) {
+async function generateMetadata({ params }: { params: Params }) {
   const { id } = await params;
 
   // Fetch the candidate data using the ID
