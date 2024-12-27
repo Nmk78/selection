@@ -29,7 +29,7 @@ export default async function JudgeVotingPage() {
     round = metadata[0]?.round ?? null;
     console.log("🚀 ~ JudgeVotingPage ~ round:", round);
 
-    if (round === "second") {
+    if (round === "second" || round === "secondPreview") {
       const { topMales, topFemales } = await getCandidatesForJudge();
       candidates = [...topMales, ...topFemales];
     }
@@ -63,7 +63,7 @@ export default async function JudgeVotingPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">
+      <h1 className="text-3xl font-bold text-center mb-2">
         Judge Voting Panel
       </h1>
       <Suspense

@@ -7,6 +7,8 @@ import { Crown } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import Confetti from '@/components/Confetti';
 
+export const revalidate = 0; // Disable caching entirely for this page
+
 async function ResultsContent() {
   const metadata = await getMetadata();
 
