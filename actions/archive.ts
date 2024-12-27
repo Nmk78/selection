@@ -6,13 +6,13 @@ import { getTopCandidates } from "./candidate";
 //@ts-ignore
 const client = new MongoClient(process.env.DATABASE_URL);
 
-export async function archiveMetadata() {
+export async function getArchiveMetadatas() {
   try {
     // Fetch all metadata that are not active
     const nonActiveMetadata = await prisma.metadata.findMany({
       where: { active: false },
     });
-    // console.log("🚀 ~ archiveMetadata ~ nonActiveMetadata:", nonActiveMetadata);
+    // console.log("🚀 ~ getArchiveMetadatas ~ nonActiveMetadata:", nonActiveMetadata);
 
     if (!nonActiveMetadata || nonActiveMetadata.length === 0) {
       return {
@@ -25,6 +25,34 @@ export async function archiveMetadata() {
     return {
       success: true,
       data: nonActiveMetadata,
+    };
+  } catch (error) {
+    console.error("Error loading non-active metadata:", error);
+    return {
+      success: false,
+      message: "Failed to load non-active metadata.",
+    };
+  }
+}
+export async function getArchiveMetadatasById(id:string) {
+  try {
+    // Fetch all metadata that are not active
+    const metadata = await prisma.metadata.findMany({
+      where: { id },
+    });
+    // console.log("🚀 ~ getArchiveMetadatas ~ metadata:", metadata);
+
+    if (!metadata || metadata.length === 0) {
+      return {
+        success: false,
+        message: "No metadata found.",
+        data: [],
+      };
+    }
+
+    return {
+      success: true,
+      data: metadata,
     };
   } catch (error) {
     console.error("Error loading non-active metadata:", error);

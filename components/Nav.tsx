@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
-import { archiveMetadata } from "@/actions/archive";
+import { getArchiveMetadatas } from "@/actions/archive";
 
 type RoundData = {
   id: string;
@@ -49,7 +49,7 @@ export default function Nav() {
   const { isLoading, error } = useQuery({
     queryKey: ["nonActiveMetadata"], // Unique key for caching
     queryFn: async () => {
-      const fetchedData = await archiveMetadata();
+      const fetchedData = await getArchiveMetadatas();
       //@ts-expect-error  //it was showing error
       const formattedArchives = fetchedData.data.map((item: RoundData) => ({
         href: `/${item.id}`, // Example of generating a URL

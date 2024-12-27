@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { getCandidatesWithStatsAndTitles } from '@/actions/archive';
+import { getArchiveMetadatasById, getCandidatesWithStatsAndTitles } from '@/actions/archive';
 import { Skeleton } from '@/components/ui/skeleton'; // ShadCN Skeleton
 
 
@@ -14,6 +14,19 @@ export default function YearArchivePage() {
   const { archiveId } = useParams(); // Extract archiveId from URL
 
   // Use React Query to fetch candidates
+  const {data} = useQuery({
+    queryKey: ['room', archiveId],
+    queryFn: async () => {
+      const res = await getArchiveMetadatasById(String(archiveId));
+      if (!res.success) {
+        throw new Error('Failed to fetch metadata');
+      }
+      return res.data; // Return candidates data
+    },
+    enabled: !!archiveId, 
+  });  
+  console.log("🚀 ~ YearArchivePage ~ data:", data)
+
   const query = useQuery({
     queryKey: ['candidates', archiveId],
     queryFn: async () => {
@@ -29,7 +42,7 @@ export default function YearArchivePage() {
   const { data: pastCandidates = [], isLoading, isError } = query;
 
   // Render skeletons during loading
-  if (isLoading) {
+  if (isLoading && !data) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <motion.h1
@@ -38,7 +51,7 @@ export default function YearArchivePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Selected Students
+          Selected Students of ....
         </motion.h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -77,7 +90,7 @@ export default function YearArchivePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        Selected Students
+        {data && `Selected Students of ${data[0].title}`}
       </motion.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto mb-20">
         {pastCandidates.length > 0 ? (
@@ -107,10 +120,7 @@ export default function YearArchivePage() {
                   </p>
                   <div className="max-h-0 overflow-hidden group-hover:max-h-[500px] transition-all duration-500">
                     <p className="text-sm sm:text-base mb-4">
-                      {candidate.intro}
-                    </p>
-                    <p className="text-sm sm:text-base mb-4">
-                      This is some extra hidden text that will appear on hover.
+                      {candidate.intro.slice(0,200)}....
                     </p>
                     <Link
                       href={`/archive/${archiveId}/${candidate.id}`}
