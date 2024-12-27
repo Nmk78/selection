@@ -152,13 +152,14 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
         </div>
         <p className="text-gray-700 text-sm mb-4 line-clamp-3 flex-grow">{candidate.intro}</p>
         <div>
-          <h3 className="font-semibold text-Cprimary text-sm mb-2">Hobbies:</h3>
           <div className="flex flex-wrap gap-2">
+          <h3 className="font-semibold text-Cprimary text-sm mb-2">Hobbies:</h3>
+
             {candidate.hobbies.map((hobby, index) => (
               <Badge 
                 key={index} 
                 variant="secondary" 
-                className="bg-Csecondary text-Cprimary px-2 py-1 text-sm"
+                className="bg-Csecondary text-Cprimary px-2 py-1 text-xs"
               >
                 {hobby}
               </Badge>

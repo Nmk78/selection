@@ -8,7 +8,7 @@ const Footer = () => {
       <p className=" font-geistSans font-extralight text-center">
         This website has been developed as a personal project with the primary
         objective of serving as an online voting system within the <strong>Polytechnic
-        University Myeik</strong>.The main purpose is to simplify and enhance the voting
+        University (Myeik)</strong>.The main purpose is to simplify and enhance the voting
         process, providing a user-friendly platform for the PU Myeik community
         to engage in online voting seamlessly.
       </p>

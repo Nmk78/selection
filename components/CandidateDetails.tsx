@@ -23,6 +23,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { voteForCandidate } from "@/actions/vote";
 import { Candidate } from "@prisma/client";
+import { Badge } from "./ui/badge";
 
 export default function CandidateDetails({
   id,
@@ -37,7 +38,7 @@ export default function CandidateDetails({
   carouselImages,
   profileImage,
 }: Candidate) {
-  console.log("🚀 ~ carouselImages:", carouselImages)
+  console.log("🚀 ~ carouselImages:", carouselImages);
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
   /// TODO Add SEO Metadata
@@ -105,7 +106,7 @@ export default function CandidateDetails({
           </div>
 
           {/* Right Section */}
-          <div className="w-full md:w-1/2 space-y-6">
+          <div className="w-full md:w-1/2 space-y-4">
             {/* Name and Age in one row */}
             <div className="flex items-center justify-between space-x-4">
               <h1
@@ -121,7 +122,7 @@ export default function CandidateDetails({
             </div>
 
             {/* Major in its own row */}
-            <div className="space-y-2">
+            <div className="">
               <p className="text-Cprimary">
                 <span className="font-semibold">Major:</span> {major}
               </p>
@@ -130,15 +131,15 @@ export default function CandidateDetails({
             {/* Weight and Height in one row */}
             <div className="flex items-center justify-between">
               <p className="text-Cprimary">
-                <span className="font-semibold">Height:</span> {height}
+                <span className="font-semibold">Height:</span> {height} cm
               </p>
               <p className="text-Cprimary">
-                <span className="font-semibold">Weight:</span> {weight}
+                <span className="font-semibold">Weight:</span> {weight} lb
               </p>
             </div>
 
             {/* About Section */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h2 className="text-xl font-semibold text-Cprimary mb-2">
                 About {name.split(" ")[0]}
               </h2>
@@ -146,15 +147,20 @@ export default function CandidateDetails({
             </div>
 
             {/* Hobbies Section */}
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-romantic-Cprimary mb-2">
-                Hobbies
-              </h2>
-              <ul className="list-disc list-inside text-Cprimary text-sm md:text-base">
-                {hobbies.map((hobby, index) => (
-                  <li key={index}>{hobby}</li>
-                ))}
-              </ul>
+            <div className="flex flex-wrap gap-2">
+              <h3 className="font-semibold text-Cprimary text-md mb-2">
+                Hobbies:
+              </h3>
+
+              {hobbies.map((hobby, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="bg-Csecondary hover:bg-secondary text-Cprimary px-2 py-0.5 text-xs"
+                >
+                  {hobby}
+                </Badge>
+              ))}
             </div>
           </div>
         </div>

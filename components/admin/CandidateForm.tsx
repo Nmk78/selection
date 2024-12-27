@@ -633,8 +633,8 @@ export default function CandidateForm({
                   alt="Profile preview"
                   width={200}
                   height={200}
-                  className="rounded-lg object-cover w-full h-40"
-                />
+                  className="rounded-lg object-cover aspect-square w-40 h-40"
+                  />
                 <button
                   onClick={() => removeProfileImage(formData.profileImage!)} // Non-null assertion
                   className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
