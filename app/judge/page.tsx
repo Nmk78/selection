@@ -18,6 +18,8 @@ type Candidate = {
   carouselImages: string[];
 };
 
+export const revalidate = 0; // Disable caching entirely for this page
+
 export default async function JudgeVotingPage() {
   let candidates: Candidate[] = [];
   let round: string | null = null;
@@ -41,6 +43,11 @@ export default async function JudgeVotingPage() {
 
     return (
       <div className="container mx-auto py-8 px-4 mt-60 md:mt-52">
+        {process.env.NODE_ENV !== "production" && (
+          <span title="This indicator will only seen in development env">
+            Round {round}
+          </span>
+        )}
         <h1 className="text-3xl font-bold text-center mb-8">
           Judge Voting Panel
         </h1>

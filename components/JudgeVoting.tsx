@@ -130,18 +130,18 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     const roundedRatings = Object.fromEntries(
       Object.entries(ratings).map(([key, value]) => [key, Math.round(value)])
     );
-    
+
     console.log("Rounded Ratings:", roundedRatings);
     try {
       const res = await addRatingsToVotes(roundedRatings, judgeCode);
-      console.log("🚀 ~ handleSubmit ~ res:", res);
+      // console.log("🚀 ~ handleSubmit ~ res:", res);
       toast({
         title: res.success ? "Succeed" : "Failed",
         description: res.message,
       });
       seLoading(false);
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
+      // console.log("🚀 ~ handleSubmit ~ error:", error);
     }
 
     // Submit to backend
@@ -159,7 +159,6 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto p-6">
       {candidates.map((candidate, index) => (
-
         <motion.div
           key={candidate.id}
           initial={{ opacity: 0, y: 20 }}
@@ -200,12 +199,14 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
 
               {/* Candidate Details Section */}
               <div className="w-full md:w-1/2 space-y-4">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-                  {candidate.name}
-                </h3>
-                <p className="text-sm md:text-lg text-gray-600">
-                  {candidate.major}
-                </p>
+                <div className="flex justify-between">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+                    {candidate.name}
+                  </h3>
+                  <p className="text-sm md:text-lg text-gray-600">
+                    {candidate.major}
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600">{candidate.intro}</p>
 
                 <div className="grid grid-cols-2 gap-2 text-sm">
