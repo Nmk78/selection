@@ -141,7 +141,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
       });
       seLoading(false);
     } catch (error) {
-      // console.log("🚀 ~ handleSubmit ~ error:", error);
+      console.log("🚀 ~ handleSubmit ~ error:", error);
     }
 
     // Submit to backend
