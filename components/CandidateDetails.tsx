@@ -114,9 +114,13 @@ export default function CandidateDetails({
                   gender === "male" ? "text-Cprimary" : "text-Caccent"
                 }`}
               >
-                {name}
+                {name.split("(")[0].trim()}{" "}
+                <span className="text-sm md:text-base">
+                  {name.includes("(") ? name.substring(name.indexOf("(")) : ""}
+                </span>
               </h1>
-              <p className="text-Cprimary">
+
+              <p className="text-Cprimary w-[8ch]">
                 <span className="font-semibold">Age:</span> {age}
               </p>
             </div>
