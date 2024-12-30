@@ -152,7 +152,7 @@ export default function CandidateDetails({
 
             {/* Hobbies Section */}
             <div className="flex flex-wrap gap-2">
-              <h3 className="font-semibold text-Cprimary text-md mb-2">
+              <h3 className="font-semibold text-Cprimary text-md">
                 Hobbies:
               </h3>
 

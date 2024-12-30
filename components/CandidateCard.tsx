@@ -153,7 +153,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
         <p className="text-gray-700 text-sm mb-4 line-clamp-3 flex-grow">{candidate.intro}</p>
         <div>
           <div className="flex flex-wrap gap-2">
-          <h3 className="font-semibold text-Cprimary text-sm mb-2">Hobbies:</h3>
+          <h3 className="font-semibold text-Cprimary text-sm">Hobbies:</h3>
 
             {candidate.hobbies.map((hobby, index) => (
               <Badge 
