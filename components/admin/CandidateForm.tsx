@@ -568,7 +568,7 @@ export default function CandidateForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="weight">Weight (kg)</Label>
+              <Label htmlFor="weight">Weight (lb)</Label>
               <Input
                 id="weight"
                 name="weight"

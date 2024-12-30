@@ -147,8 +147,8 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
         <p className="text-green-500 font-semibold text-sm mb-1">{candidate.major}</p>
         <p className="text-gray-600 text-sm mb-2">Age: {candidate.age}</p>
         <div className="flex justify-between text-sm text-gray-600 mb-3">
-          <span>Height: {candidate.height}</span>
-          <span>Weight: {candidate.weight}</span>
+          <span>Height: {candidate.height} cm</span>
+          <span>Weight: {candidate.weight} lb</span>
         </div>
         <p className="text-gray-700 text-sm mb-4 line-clamp-3 flex-grow">{candidate.intro}</p>
         <div>
