@@ -117,14 +117,14 @@ export default function ArchiveManager({
                     )}
                     <Label
                       htmlFor={`archive-${archive.title}`}
-                      className={`text-base flex-grow cursor-pointer ${
+                      className={`text-base flex-grow truncate overflow-hidden cursor-pointer ${
                         archive.active
                           ? "text-Caccent font-semibold"
                           : "text-Cprimary"
                       }`}
                     >
                       {typeof archive.title === "string"
-                        ? archive.title.replace("_", " ")
+                        ? archive.title.replace("_", " ").slice(0,12)
                         : `${archive.title} Selection`}
                     </Label>
                   </AlertDialogTrigger>

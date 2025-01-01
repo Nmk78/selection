@@ -34,7 +34,8 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
   }
 
   // console.log("🚀 ~ CurrentResults ~ candidates:", candidates);
-  const sortedCandidates = [...candidates].sort((a, b) => b.totalRating - a.totalRating);
+  const sortedCandidates = [...candidates].sort((a, b) => (b.totalRating + b.totalVotes) - (a.totalRating + a.totalVotes));
+  console.log("🚀 ~ CurrentResults ~ sortedCandidates:", sortedCandidates)
 
   return (
     <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
