@@ -305,13 +305,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { AlertCircle, Star, StarHalf } from "lucide-react";
+import { Star, StarHalf } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { addRatingsToVotes } from "@/actions/judge";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
-import { Alert, AlertDescription } from "./ui/alert";
+// import { Alert, AlertDescription } from "./ui/alert";
 
 interface Candidate {
   id: string;
