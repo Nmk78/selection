@@ -524,9 +524,9 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                   <h3 className="text-xl md:text-2xl font-bold text-gray-800">
                     {candidate.name}
                   </h3>
-                  <p className="text-sm md:text-lg text-gray-600">
+                  {/* <p className="text-sm md:text-lg text-gray-600">
                     {candidate.major}
-                  </p>
+                  </p> */}
                 </div>
                 <p className="text-sm text-gray-600">{candidate.intro}</p>
 
@@ -535,7 +535,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                     <strong>Age:</strong> {candidate.age}
                   </p>
                   <p>
-                    <strong>Gender:</strong> {candidate.gender}
+                    <strong>Major:</strong> {candidate.major}
                   </p>
                   <p>
                     <strong>Height:</strong> {candidate.height} cm
