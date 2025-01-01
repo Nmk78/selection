@@ -338,10 +338,10 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
   const [judgeCode, setJudgeCode] = useState<string | null>(null);
   const [loading, seLoading] = useState<boolean>(false);
   const [ratings, setRatings] = useState<{
-    [key: string]: { dressing: number; performance: number; qa: number };
+    [key: string]: { dressing: number; performance: number; QA: number };
   }>(
     Object.fromEntries(
-      candidates.map((c) => [c.id, { dressing: 0, performance: 0, qa: 0 }])
+      candidates.map((c) => [c.id, { dressing: 0, performance: 0, QA: 0 }])
     )
   );
 
@@ -363,7 +363,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     const hasHalfStar = rating % 2 >= 1;
 
     return (
-      <div className="flex items-center">
+      <div className="w-full flex items-center justify-between">
         <span className="mr-2 font-semibold">{category}:</span>
         <div className="flex">
           {[...Array(5)].map((_, index) => {
@@ -392,7 +392,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
 
   const handleRatingChange = (
     id: string,
-    category: "dressing" | "performance" | "qa",
+    category: "dressing" | "performance" | "QA",
     value: number
   ) => {
     setRatings((prevRatings) => ({
@@ -434,11 +434,11 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     const roundedRatings = Object.fromEntries(
       Object.entries(ratings).map(([key, value]) => [
         key,
-        Math.round(value.dressing + value.performance + value.qa),
+        Math.round(value.dressing + value.performance + value.QA),
         // {
         //   dressing: Math.round(value.dressing),
         //   performance: Math.round(value.performance),
-        //   qa: Math.round(value.qa),
+        //   QA: Math.round(value.QA),
         // },
       ])
     );
@@ -470,7 +470,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
   useEffect(() => {
     setRatings(
       Object.fromEntries(
-        candidates.map((c) => [c.id, { dressing: 0, performance: 0, qa: 0 }])
+        candidates.map((c) => [c.id, { dressing: 0, performance: 0, QA: 0 }])
       )
     );
   }, [candidates]);
@@ -503,10 +503,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                   <CarouselContent className="flex gap-2">
                     {/* Carousel Images */}
                     {candidate.carouselImages.map((image, idx) => (
-                      <CarouselItem
-                        key={idx}
-                        className="basis-full "
-                      >
+                      <CarouselItem key={idx} className="basis-full ">
                         <div className="aspect-portrait w-full relative">
                           <Image
                             src={image}
@@ -561,7 +558,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
 
                 {/* Rating and Sliders */}
                 <div className="space-y-4">
-                  {["dressing", "performance", "qa"].map((category) => (
+                  {["dressing", "performance", "QA"].map((category) => (
                     <div key={category} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <StarRating
@@ -571,7 +568,10 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                             ]
                           }
                           category={
-                            category.charAt(0).toUpperCase() + category.slice(1)
+                            category === "QA"
+                              ? "Q&A"
+                              : category.charAt(0).toUpperCase() +
+                                category.slice(1)
                           }
                         />
                       </div>
@@ -587,7 +587,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                         onValueChange={(value) =>
                           handleRatingChange(
                             candidate.id,
-                            category as "dressing" | "performance" | "qa",
+                            category as "dressing" | "performance" | "QA",
                             value[0]
                           )
                         }
