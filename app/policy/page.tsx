@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChevronRight, ChevronLeft, Users, UserCheck, Award, Calculator } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Users, UserCheck, Award, Calculator, EqualApproximately } from 'lucide-react'
 
 const policySteps = [
   {
@@ -22,7 +22,12 @@ const policySteps = [
   {
     title: "Second Round",
     icon: <Award className="w-8 h-8" />,
-    content: "Judges rate candidates on a 1-10 scale."
+    content: "Judges rate candidates on a 1-10 scale for Dressing, Performance, and Q&A."
+  },
+  {
+    title: "In Case of Tie",
+    icon: <EqualApproximately className="w-8 h-8" />,
+    content: "Judges will choose one candidate."
   },
   {
     title: "Final Results",
@@ -34,14 +39,17 @@ const policySteps = [
 export default function VotingPolicy() {
   const [currentStep, setCurrentStep] = useState(0)
   const [regularVotes, setRegularVotes] = useState(100)
-  const [judgeRating, setJudgeRating] = useState(8)
+  const [dressingScore, setDressingScore] = useState(8)
+  const [performanceScore, setPerformanceScore] = useState(8)
+  const [qaScore, setQaScore] = useState(8)
   const [numJudges, setNumJudges] = useState(5)
 
   const nextStep = () => setCurrentStep((prev) => (prev + 1) % policySteps.length)
   const prevStep = () => setCurrentStep((prev) => (prev - 1 + policySteps.length) % policySteps.length)
 
   const calculateFinalScore = () => {
-    return regularVotes + (judgeRating * (numJudges / 2))
+    const totalJudgeScore = dressingScore + performanceScore + qaScore
+    return regularVotes + (totalJudgeScore * (numJudges / 3))
   }
 
   return (
@@ -88,8 +96,8 @@ export default function VotingPolicy() {
       <Card className="mb-8">
         <CardContent className="p-6">
           <h3 className="text-2xl font-semibold mb-4 text-indigo-800">Vote Calculation Demo</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className=' col-span-2'>
               <Label htmlFor="regularVotes">Regular Votes</Label>
               <Input
                 id="regularVotes"
@@ -100,17 +108,39 @@ export default function VotingPolicy() {
               />
             </div>
             <div>
-              <Label htmlFor="judgeRating">Avg Judge Rating (1-10)</Label>
+              <Label htmlFor="dressingScore">Dressing Score (1-10)</Label>
               <Input
-                id="judgeRating"
+                id="dressingScore"
                 type="number"
-                value={judgeRating}
-                onChange={(e) => setJudgeRating(Number(e.target.value))}
+                value={dressingScore}
+                onChange={(e) => setDressingScore(Number(e.target.value))}
                 min={1}
                 max={10}
               />
             </div>
             <div>
+              <Label htmlFor="performanceScore">Performance Score (1-10)</Label>
+              <Input
+                id="performanceScore"
+                type="number"
+                value={performanceScore}
+                onChange={(e) => setPerformanceScore(Number(e.target.value))}
+                min={1}
+                max={10}
+              />
+            </div>
+            <div>
+              <Label htmlFor="qaScore">Q&A Score (1-10)</Label>
+              <Input
+                id="qaScore"
+                type="number"
+                value={qaScore}
+                onChange={(e) => setQaScore(Number(e.target.value))}
+                min={1}
+                max={10}
+              />
+            </div>
+            <div className=''>
               <Label htmlFor="numJudges">Number of Judges</Label>
               <Input
                 id="numJudges"
@@ -137,4 +167,3 @@ export default function VotingPolicy() {
     </div>
   )
 }
-
