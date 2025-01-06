@@ -2,13 +2,12 @@ import Image from "next/image";
 import { Crown } from "lucide-react";
 import { winnerCandidate } from "@/types/types";
 
-
 interface ResultsProps {
   results: winnerCandidate[];
 }
 
 export default function Results({ results }: ResultsProps) {
-  console.log("🚀 ~ Results ~ results:", results)
+  console.log("🚀 ~ Results ~ results:", results);
   const getTitleColor = (title: string) => {
     switch (title) {
       case "King":
@@ -53,8 +52,18 @@ export default function Results({ results }: ResultsProps) {
             >
               {candidate.title}
             </h2>
-            <a href={`candidate/${candidate.id}`} className="text-xl md:text-2xl lg:text-3xl font-semibold text-romantic-text mb-2">
-              {candidate.name}
+            <a
+              href={`candidate/${candidate.id}`}
+              className="text-xl md:text-2xl lg:text-3xl font-semibold text-romantic-text mb-2"
+            >
+              <h1 className="text-2xl md:text-3xl font-semibold">
+                {candidate.name.split("(")[0].trim()}{" "}
+                <span className="text-sm md:text-base">
+                  {candidate.name.includes("(")
+                    ? candidate.name.substring(candidate.name.indexOf("("))
+                    : ""}
+                </span>
+              </h1>
             </a>
             {/* <div className="flex items-center space-x-2">
               <Heart className="w-5 h-5 text-romantic-accent" />
