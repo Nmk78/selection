@@ -81,6 +81,8 @@ export default function YearArchivePage() {
     );
   }
 
+  const randomPastCandidates =       pastCandidates.sort(() => Math.random() - 0.5);
+
   // Render candidates data
   return (
     <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
@@ -93,8 +95,8 @@ export default function YearArchivePage() {
         {data && `Selected Students of ${data[0].title}`}
       </motion.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto mb-20">
-        {pastCandidates.length > 0 ? (
-          pastCandidates.map((candidate, index) => (
+        {randomPastCandidates.length > 0 ? (
+          randomPastCandidates.map((candidate, index) => (
             <motion.div
               key={candidate.id}
               className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-80 md:w-96 mx-auto group"
