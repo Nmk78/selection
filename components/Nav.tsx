@@ -108,7 +108,7 @@ export default function Nav() {
       <div className="md:max-w-7xl mx-auto px-4 md:px-0">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
+            <Link href="/" prefetch className="flex-shrink-0">
               <Image
                 src="/logo.webp"
                 alt="Royal Selection Logo"
@@ -148,6 +148,7 @@ export default function Nav() {
                       {archives.map((item) => (
                         <li key={item.href}>
                           <Link
+                            prefetch
                             onClick={toggleArchive}
                             href={`/archive${item.href}`}
                             className="block px-4 py-2 text-Cprimary hover:bg-gray-100 transition"
@@ -266,6 +267,7 @@ function NavLink({
 }) {
   return (
     <Link
+      prefetch
       href={href}
       className="font-bold text-xl text-Cprimary hover:text-Caccent px-3 py-2 rounded-md flex items-center transition duration-300 ease-in-out group"
     >
@@ -288,6 +290,7 @@ function MobileNavLink({
 }) {
   return (
     <Link
+      prefetch
       href={href}
       onClick={toggleMenu}
       className="text-Cprimary hover:text-Caccent w-full px-3 py-2 rounded-md text-base font-medium flex items-end transition duration-300 ease-in-out"

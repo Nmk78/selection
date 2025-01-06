@@ -224,7 +224,7 @@ export function ArchiveCandidateDetailPage({ archiveId, id }: CandidateDetailPag
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Candidate not found
           </h1>
-          <Link href={`/archive/${archiveId}`}>
+          <Link prefetch href={`/archive/${archiveId}`}>
             <Button variant="outline" className="text-sm sm:text-base">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Archive

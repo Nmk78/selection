@@ -132,6 +132,7 @@ export default function YearArchivePage() {
                       {candidate.intro.slice(0,200)}....
                     </p>
                     <Link
+                    prefetch
                       href={`/archive/${archiveId}/${candidate.id}`}
                       className="inline-flex items-center text-romantic-accent hover:text-romantic-primary transition-all duration-300 font-semibold text-lg"
                     >

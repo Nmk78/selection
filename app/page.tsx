@@ -55,6 +55,7 @@ export default async function Home({
                   Result is available now!
                 </h2>
                 <Link
+                prefetch
                 href="/results"
                 id="results"
                 className="mt-2 block text-white font-quindelia text-2xl text-center mx-auto hover:underline transition-all duration-300"

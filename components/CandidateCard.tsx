@@ -127,7 +127,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
     //   </Link>
     // </Card>
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
-    <Link href={`candidate/${candidate.id}`}>
+    <Link prefetch href={`candidate/${candidate.id}`}>
       <CardHeader className="p-0">
         <AspectRatio ratio={4/3}>
           <Image
