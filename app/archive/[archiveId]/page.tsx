@@ -81,7 +81,14 @@ export default function YearArchivePage() {
     );
   }
 
-  const randomPastCandidates =       pastCandidates.sort(() => Math.random() - 0.5);
+  // const shuffledCandidates =       pastCandidates.sort(() => Math.random() - 0.5);
+  const shuffledCandidates = [
+    ...pastCandidates.filter((candidate) => candidate.title !== null),
+    ...pastCandidates
+      .filter((candidate) => candidate.title === null)
+      .sort(() => Math.random() - 0.5),
+  ];
+  
 
   // Render candidates data
   return (
@@ -95,8 +102,8 @@ export default function YearArchivePage() {
         {data && `Selected Students of ${data[0].title}`}
       </motion.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto mb-20">
-        {randomPastCandidates.length > 0 ? (
-          randomPastCandidates.map((candidate, index) => (
+        {shuffledCandidates.length > 0 ? (
+          shuffledCandidates.map((candidate, index) => (
             <motion.div
               key={candidate.id}
               className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-80 md:w-96 mx-auto group"
