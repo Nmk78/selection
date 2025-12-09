@@ -1,6 +1,17 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+
+
+//////////////////////
+// 1️⃣ Normal Votes (Student Votes) — 50%
+
+// Each student vote counts as 1 point in the first round.
+
+// 2️⃣ Judge Ratings — 50%
+
+
+///////////////////
 // Vote for a candidate
 export const voteForCandidate = mutation({
   args: {

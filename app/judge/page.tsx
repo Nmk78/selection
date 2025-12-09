@@ -39,7 +39,7 @@ export default function JudgeVotingPage() {
       <div className="container mx-auto py-8 px-4 mt-60 md:mt-52">
         {process.env.NODE_ENV !== "production" && (
           <span title="This indicator will only seen in development env">
-            Round {round}
+          Development Log:  Round {round}
           </span>
         )}
         <h1 className="text-3xl font-bold text-center mb-8">

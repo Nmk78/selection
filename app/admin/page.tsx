@@ -12,20 +12,39 @@ import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
 import CandidateForm from "@/components/admin/CandidateForm";
+import { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@clerk/nextjs";
 import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
+
+// Define the Metadata type based on the schema
+interface Metadata {
+  _id: Id<"metadata">;
+  title: string;
+  active: boolean;
+  description: string;
+  maleForSecondRound: number;
+  femaleForSecondRound: number;
+  leaderBoardCandidates?: number;
+  round: "preview" | "first" | "firstVotingClosed" | "secondPreview" | "second" | "secondVotingClosed" | "result";
+  createdAt: number;
+  updatedAt: number;
+}
 
 export default function AdminPage() {
   const [editModal, setEditModal] = useState<boolean | null>(null);
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
   const [metaDataModal, setmetaDataModal] = useState<boolean | null>(null);
+  const [editingMetadata, setEditingMetadata] = useState<Metadata | null>(null);
   const [candidateId, setCandidateId] = useState<string | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
   const { userId } = useAuth();
 
   const closeModal = () => setActiveModal(null);
   const closeEditModal = () => setEditModal(null);
-  const closeMetaDataModal = () => setmetaDataModal(null);
+  const closeMetaDataModal = () => {
+    setmetaDataModal(null);
+    setEditingMetadata(null);
+  };
 
   return (
     <div className="container max-w-7xl h-[82vh] mx-auto p-4 select-none">
@@ -70,7 +89,16 @@ export default function AdminPage() {
           setCandidateId={setCandidateId}
         />
         <ArchiveManager
-          setMetaDataModal={setmetaDataModal}
+          setMetaDataModal={(param, archiveData) => {
+            if (param === true) {
+              // Adding new metadata or editing existing
+              setEditingMetadata(archiveData || null);
+              setmetaDataModal(true);
+            } else {
+              // Closing modal
+              setmetaDataModal(null);
+            }
+          }}
           classes="h-full md:col-span-1 row-span-1 md:row-span-5"
         />{" "}
         {/* </div> */}
@@ -145,8 +173,18 @@ export default function AdminPage() {
         </Modal>
       )}{" "}
       {metaDataModal && (
-        <Modal title="Add New Room" onClose={closeMetaDataModal}>
-          <MetadataForm closeModal={closeMetaDataModal} />
+        <Modal title={editingMetadata ? "Edit Room" : "Add New Room"} onClose={closeMetaDataModal}>
+          <MetadataForm 
+            closeModal={closeMetaDataModal} 
+            initialData={editingMetadata ? {
+              _id: editingMetadata._id,
+              title: editingMetadata.title,
+              description: editingMetadata.description,
+              maleForSecondRound: editingMetadata.maleForSecondRound,
+              femaleForSecondRound: editingMetadata.femaleForSecondRound,
+              leaderBoardCandidates: editingMetadata.leaderBoardCandidates ?? 5
+            } : null}
+          />
         </Modal>
       )}
     </div>

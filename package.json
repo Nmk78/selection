@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx convex dev & next dev --turbopack",
+    "backend": "npx convex dev",
+    "dev": "next dev --turbopack",
     "build": "npx convex deploy && next build",
     "start": "next start",
     "lint": "next lint",

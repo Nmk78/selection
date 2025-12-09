@@ -8,6 +8,7 @@ export default defineSchema({
     description: v.string(),
     maleForSecondRound: v.number(),
     femaleForSecondRound: v.number(),
+    leaderBoardCandidates: v.optional(v.number()),
     round: v.union(
       v.literal("preview"),
       v.literal("first"),

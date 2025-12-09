@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { Plus, Minus, BadgeInfo } from "lucide-react";
 import {
   TooltipProvider,
@@ -21,6 +22,15 @@ interface NumberInputWithControlsProps {
   value: number;
   onChange: (value: number) => void;
   minValue?: number;
+}
+
+interface MetadataFormData {
+  _id?: Id<"metadata">;
+  title: string;
+  description: string;
+  maleForSecondRound: number;
+  femaleForSecondRound: number;
+  leaderBoardCandidates: number;
 }
 
 function NumberInputWithControls({
@@ -60,33 +70,67 @@ function NumberInputWithControls({
 
 export default function MetadataForm({
   closeModal,
+  initialData,
 }: {
   closeModal: () => void;
+  initialData?: MetadataFormData | null;
 }) {
   const [isPending, setIsPending] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [maleForSecondRound, setMaleForSecondRound] = useState(2);
-  const [femaleForSecondRound, setFemaleForSecondRound] = useState(2);
+  const [maleForSecondRound, setMaleForSecondRound] = useState(5);
+  const [femaleForSecondRound, setFemaleForSecondRound] = useState(5);
+  const [candidatesForLeaderboard, setCandidatesForLeaderboard] = useState(5);
 
   const createMetadata = useMutation(api.metadata.create);
+  const editMetadata = useMutation(api.metadata.edit);
+
+  // Initialize form with existing data if editing
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setDescription(initialData.description);
+      setMaleForSecondRound(initialData.maleForSecondRound);
+      setFemaleForSecondRound(initialData.femaleForSecondRound);
+      setCandidatesForLeaderboard(initialData.leaderBoardCandidates);
+    }
+  }, [initialData]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsPending(true);
 
     try {
-      await createMetadata({
-        title,
-        description,
-        maleForSecondRound,
-        femaleForSecondRound,
-      });
+      if (initialData && initialData._id) {
+        // Editing existing metadata
+        await editMetadata({
+          id: initialData._id,
+          title: title || undefined,
+          description: description || undefined,
+          maleForSecondRound: maleForSecondRound,
+          femaleForSecondRound: femaleForSecondRound,
+          leaderBoardCandidates: candidatesForLeaderboard,
+        });
 
-      toast({
-        title: "Success",
-        description: "Metadata saved successfully.",
-      });
+        toast({
+          title: "Success",
+          description: "Metadata updated successfully.",
+        });
+      } else {
+        // Creating new metadata
+        await createMetadata({
+          title,
+          description,
+          maleForSecondRound,
+          femaleForSecondRound,
+          leaderBoardCandidates: candidatesForLeaderboard,
+        });
+
+        toast({
+          title: "Success",
+          description: "Metadata saved successfully.",
+        });
+      }
       closeModal();
     } catch (error) {
       toast({
@@ -147,8 +191,8 @@ export default function MetadataForm({
         <NumberInputWithControls
           id="leaderboardCandidate"
           label="Leaderboard Top"
-          value={leaderboardCandidate}
-          onChange={setLeaderboardCandidate}
+          value={candidatesForLeaderboard}
+          onChange={setCandidatesForLeaderboard}
           minValue={1}
         />
         <div className="col-span-2 mt-auto">
@@ -181,7 +225,7 @@ export default function MetadataForm({
       </div>
 
       <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Saving..." : "Save Metadata"}
+        {isPending ? "Saving..." : initialData ? "Update Metadata" : "Save Metadata"}
       </Button>
     </form>
   );

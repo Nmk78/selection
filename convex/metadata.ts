@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
 
 // Get all metadata ordered by updatedAt
 export const getAll = query({
@@ -46,6 +47,7 @@ export const create = mutation({
     description: v.string(),
     maleForSecondRound: v.number(),
     femaleForSecondRound: v.number(),
+    leaderBoardCandidates: v.number(),
   },
   handler: async (ctx, args) => {
     // Deactivate all existing active metadata
@@ -65,6 +67,7 @@ export const create = mutation({
       description: args.description,
       maleForSecondRound: args.maleForSecondRound,
       femaleForSecondRound: args.femaleForSecondRound,
+      leaderBoardCandidates: args.leaderBoardCandidates,
       active: true,
       round: "preview",
       createdAt: now,
@@ -72,6 +75,62 @@ export const create = mutation({
     });
 
     return await ctx.db.get(id);
+  },
+});
+
+export const edit = mutation({
+  args: {
+    id: v.id("metadata"),
+    title: v.optional(v.string()),
+    description: v.optional(v.string()),
+    maleForSecondRound: v.optional(v.number()),
+    femaleForSecondRound: v.optional(v.number()),
+    leaderBoardCandidates: v.optional(v.number()),
+    round: v.optional(v.string()),
+  },
+
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.id);
+    if (!existing) throw new Error("Metadata not found");
+
+    const updateData: {
+      _id: Id<"metadata">;
+      _creationTime?: number;
+      leaderBoardCandidates?: number | undefined;
+      title?: string;
+      active?: boolean;
+      description?: string;
+      maleForSecondRound?: number;
+      femaleForSecondRound?: number;
+      round?:
+        | "preview"
+        | "first"
+        | "firstVotingClosed"
+        | "secondPreview"
+        | "second"
+        | "secondVotingClosed"
+        | "result";
+      createdAt?: number;
+      updatedAt?: number;
+    } = {
+      _id: args.id,
+      updatedAt: Date.now(),
+    };
+
+    if (args.title !== undefined) updateData.title = args.title;
+    if (args.description !== undefined)
+      updateData.description = args.description;
+    if (args.maleForSecondRound !== undefined)
+      updateData.maleForSecondRound = args.maleForSecondRound;
+    if (args.femaleForSecondRound !== undefined)
+      updateData.femaleForSecondRound = args.femaleForSecondRound;
+    if (args.leaderBoardCandidates !== undefined)
+      updateData.leaderBoardCandidates = args.leaderBoardCandidates;
+    if (args.round !== undefined) updateData.round = args.round as Doc<"metadata">["round"];
+
+    await ctx.db.patch(args.id, updateData);
+
+    return await ctx.db.get(args.id);
   },
 });
 
