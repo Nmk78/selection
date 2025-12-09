@@ -78,7 +78,7 @@ export const getMetadata = async () => {
         updatedAt: "desc", // Sort by creation date, latest first
       },
     });
-    // console.log("🚀 ~ getMetadata ~ metadata:", [...metadata]);
+    console.log("🚀 ~ getMetadata ~ metadata:", [...metadata]);
     return [...metadata];
   } catch (err) {
     console.error("Error fetching metadata:", err);
