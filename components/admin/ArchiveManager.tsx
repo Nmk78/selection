@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Crown, Archive, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
-import { Metadata } from "@/types/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMetadata, setActiveMetadata } from "@/actions/metadata";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -30,38 +30,22 @@ export default function ArchiveManager({
   classes?: string;
   setMetaDataModal: (param: boolean) => void;
 }) {
-  const queryClient = useQueryClient();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const {
-    data: archives = [],
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["archive"],
-    queryFn: async () => {
-      const metadata = await getMetadata();
-      return Array.isArray(metadata) ? metadata : [];
-    },
-  });
+  const archives = useQuery(api.metadata.getAll);
+  const setActive = useMutation(api.metadata.setActive);
 
-  const { mutate: mutateSetActiveArchive } = useMutation({
-    mutationFn: async (id: string) => {
-      await setActiveMetadata(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["archive", "metadata"] });
+  const isLoading = archives === undefined;
+
+  const handleSetActive = async (id: Id<"metadata">) => {
+    try {
+      await setActive({ id });
       toast({ title: "Success", description: "Archive set active." });
-    },
-    onError: (error) => {
+    } catch (error) {
       console.error("Failed to set active metadata:", error);
       toast({ title: "Error", description: "Something went wrong!" });
-    },
-  });
-
-  if (error) {
-    console.error("🚀 ~ error:", error);
-  }
+    }
+  };
 
   return (
     <Card className={`w-full h-full ${classes}`}>
@@ -86,11 +70,7 @@ export default function ArchiveManager({
               </div>
             ))}
           </div>
-        ) : error ? (
-          <span className="mt-20 text-center text-red-400">
-            {error.message || "Something went wrong!"}
-          </span>
-        ) : archives.length === 0 ? (
+        ) : !archives || archives.length === 0 ? (
           <Button
             onClick={() => setMetaDataModal(true)}
             className="bg-transparent p-0 shadow-none hover:bg-transparent mt-20 text-center text-blue-600"
@@ -100,9 +80,9 @@ export default function ArchiveManager({
           </Button>
         ) : (
           <ScrollArea className="h-full w-full" ref={scrollAreaRef}>
-            {archives.map((archive: Metadata) => (
+            {archives.map((archive) => (
               <div
-                key={archive.id}
+                key={archive._id}
                 className="flex items-center space-x-3 p-1 rounded-lg transition-colors hover:bg-gray-100"
               >
                 <AlertDialog>
@@ -124,7 +104,7 @@ export default function ArchiveManager({
                       }`}
                     >
                       {typeof archive.title === "string"
-                        ? archive.title.replace("_", " ").slice(0,12)
+                        ? archive.title.replace("_", " ").slice(0, 12)
                         : `${archive.title} Selection`}
                     </Label>
                   </AlertDialogTrigger>
@@ -156,7 +136,7 @@ export default function ArchiveManager({
                       <AlertDialogCancel>No</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => {
-                          mutateSetActiveArchive(archive.id);
+                          handleSetActive(archive._id);
                         }}
                       >
                         Yes

@@ -1,61 +1,51 @@
-import { notFound } from "next/navigation";
-import CandidateDetails from "@/components/CandidateDetails";
-import { getCandidateById } from "@/actions/candidate";
+"use client";
 
-// Define the type for the page props with params
-type Params = Promise<{ id: string }>;
+import { useParams } from "next/navigation";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import CandidateDetailsComponent from "@/components/CandidateDetails";
+import { LoaderCircle } from "lucide-react";
 
-export async function generateMetadata({ params }: { params: Params }) {
-  const { id } = await params;
+export default function CandidatePage() {
+  const { id } = useParams();
+  const candidateId = id as Id<"candidates">;
 
-  // Fetch the candidate data using the ID
-  const candidate = await getCandidateById(id);
+  const candidate = useQuery(api.candidates.getById, { id: candidateId });
 
-  if (!candidate) {
-    return {
-      title: "Candidate Not Found",
-      description: "The requested candidate could not be found.",
-    };
+  if (candidate === undefined) {
+    return (
+      <div className="w-full min-h-screen bg-Cbackground flex items-center justify-center">
+        <LoaderCircle className="w-10 h-10 animate-spin" />
+      </div>
+    );
   }
 
-  // Generate metadata dynamically
-  return {
-    title: `${candidate.name} - Candidate Profile`,
-    description: `Explore the profile of ${candidate.name}, a participant in the selection process. Learn more about their hobbies, major, and achievements.`,
-    openGraph: {
-      title: `${candidate.name}'s Profile`,
-      description: `Discover ${candidate.name}'s journey in the selection process.`,
-      url: `${process.env.BASE_URL}/candidates/${id}`,
-      images: [
-        {
-          url: candidate.profileImage, // Use the candidate's profile image
-          alt: `${candidate.name}'s profile image`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${candidate.name}'s Profile`,
-      description: `Check out ${candidate.name}'s details and achievements in the selection process.`,
-      images: [candidate.profileImage],
-    },
-  };
-}
-
-export default async function CandidatePage({ params }: { params: Params }) {
-  const { id } = await params;
-  const candidateData = await getCandidateById(id); // Fetch the candidate data
-  console.log("🚀 ~ CandidatePage ~ candidateData:", candidateData);
-
-  if (!candidateData) {
-    notFound(); // Redirect to a 404 page if no candidate is found
+  if (!candidate) {
+    return (
+      <div className="w-full min-h-screen bg-Cbackground flex items-center justify-center">
+        <p className="text-red-500">Candidate not found</p>
+      </div>
+    );
   }
 
   return (
     <div className="w-full min-h-screen bg-Cbackground px-0 py-0 sm:px-6 lg:px-8">
       <main className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center">
         <div className="w-full max-w-4xl mx-auto bg-Cbackground md:my-5 rounded-none shadow-lg">
-          <CandidateDetails {...candidateData} />
+          <CandidateDetailsComponent
+            id={candidate._id}
+            name={candidate.name}
+            major={candidate.major}
+            age={candidate.age}
+            gender={candidate.gender}
+            height={candidate.height}
+            weight={candidate.weight}
+            intro={candidate.intro}
+            hobbies={candidate.hobbies}
+            carouselImages={candidate.carouselImages}
+            profileImage={candidate.profileImage}
+          />
         </div>
       </main>
     </div>

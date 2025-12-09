@@ -8,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
-import { getCandidatesWithStats } from "@/actions/candidate";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Skeleton } from "../ui/skeleton";
 
 interface CurrentResultsProps {
@@ -17,64 +17,28 @@ interface CurrentResultsProps {
 }
 
 export default function CurrentResults({ visible }: CurrentResultsProps) {
-  const {
-    data: candidates = [],
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["stats"],
-    queryFn: async () => {
-      const candidates = await getCandidatesWithStats();
-      return Array.isArray(candidates) ? candidates : [];
-    },
-  });
+  const candidates = useQuery(api.candidates.getWithStats);
 
-  if (error) {
-    return <div>Failed to load candidates. Please try again.</div>;
-  }
+  const isLoading = candidates === undefined;
 
-  // console.log("🚀 ~ CurrentResults ~ candidates:", candidates);
-  const sortedCandidates = [...candidates].sort((a, b) => (b.totalRating + b.totalVotes) - (a.totalRating + a.totalVotes));
-  console.log("🚀 ~ CurrentResults ~ sortedCandidates:", sortedCandidates)
-
-  return (
-    <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
-      <div className="overflow-x-auto">
-        {/* Fixed Header
-        <Table className="w-full">
-          <TableHeader>
-            <TableRow >
-              <TableHead colSpan={5}>Name</TableHead>
-              <TableHead colSpan={3} className="text-center">Votes</TableHead>
-              <TableHead colSpan={1} className="text-center">Judge Score</TableHead>
-              <TableHead colSpan={1} className="text-center">Total</TableHead>
-            </TableRow>
-          </TableHeader>
-        </Table> */}
-
-        {/* Scrollable Body */}
-        <div className="max-h-[200px] w-full overflow-y-auto scroll-area">
-          <Table className="w-full">
-            <TableHeader className=" sticky top-0 bg-white">
-              <TableRow>
-                <TableHead colSpan={5}>Name</TableHead>
-                <TableHead colSpan={1} className="text-center">
-                  Votes
-                </TableHead>
-                <TableHead colSpan={1} className="text-center">
-                  Judge Score
-                </TableHead>
-                <TableHead colSpan={1} className="text-center">
-                  Total
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading &&
-                Array.from({ length: 4 }).map((_, index) => (
+  if (isLoading) {
+    return (
+      <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
+        <div className="overflow-x-auto">
+          <div className="max-h-[200px] w-full overflow-y-auto scroll-area">
+            <Table className="w-full">
+              <TableHeader className="sticky top-0 bg-white">
+                <TableRow>
+                  <TableHead colSpan={5}>Name</TableHead>
+                  <TableHead colSpan={1} className="text-center">Votes</TableHead>
+                  <TableHead colSpan={1} className="text-center">Judge Score</TableHead>
+                  <TableHead colSpan={1} className="text-center">Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array.from({ length: 4 }).map((_, index) => (
                   <TableRow key={index}>
                     <TableCell colSpan={5}>
-                      {" "}
                       <Skeleton className="h-5 w-full" />
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
@@ -88,6 +52,32 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
                     </TableCell>
                   </TableRow>
                 ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const sortedCandidates = [...(candidates ?? [])].sort(
+    (a, b) => b.combinedScore - a.combinedScore
+  );
+
+  return (
+    <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
+      <div className="overflow-x-auto">
+        <div className="max-h-[200px] w-full overflow-y-auto scroll-area">
+          <Table className="w-full">
+            <TableHeader className="sticky top-0 bg-white">
+              <TableRow>
+                <TableHead colSpan={5}>Name</TableHead>
+                <TableHead colSpan={1} className="text-center">Votes</TableHead>
+                <TableHead colSpan={1} className="text-center">Judge Score</TableHead>
+                <TableHead colSpan={1} className="text-center">Total</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {sortedCandidates.map((candidate) => (
                 <TableRow key={candidate.id}>
                   <TableCell colSpan={5}>{candidate.name}</TableCell>
@@ -98,7 +88,7 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
                     {candidate.totalRating}
                   </TableCell>
                   <TableCell colSpan={1} className="text-center">
-                    {candidate.totalVotes + candidate.totalRating}
+                    {candidate.combinedScore}
                   </TableCell>
                 </TableRow>
               ))}
