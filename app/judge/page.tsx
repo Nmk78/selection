@@ -18,7 +18,7 @@ type Candidate = {
   carouselImages: string[];
 };
 
-export const revalidate = 0; // Disable caching entirely for this page
+export const revalidate = 30; // Revalidate every 30 seconds for fresh voting data
 
 export default async function JudgeVotingPage() {
   let candidates: Candidate[] = [];

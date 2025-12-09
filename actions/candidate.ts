@@ -4,14 +4,10 @@
 
 import { utapi } from "@/app/server/uploadthing";
 import { prisma } from "@/lib/prisma";
+import { getMongoDb } from "@/lib/mongodb";
 import { extractKeyFromUrl } from "@/lib/utils";
 import { candidateSchema } from "@/lib/validations";
 import { Candidate } from "@/types/types";
-// import { Candidate } from "@/types/types";
-import { MongoClient } from "mongodb";
-
-//@ts-ignore
-const client = new MongoClient(process.env.DATABASE_URL);
 
 export async function createCandidate(candidateData: Candidate) {
   // Validate input candidateData using Zod
@@ -71,8 +67,7 @@ export const getCandidatesWithStats = async () => {
       throw Error("No active room!");
     }
 
-    await client.connect();
-    const db = client.db("selectionv2");
+    const db = await getMongoDb();
 
     const candidatesWithStats = await db
       .collection("Candidate")
@@ -124,8 +119,6 @@ export const getCandidatesWithStats = async () => {
   } catch (error) {
     console.error("Error fetching candidates with stats:", error);
     throw new Error("Failed to fetch candidates");
-  } finally {
-    await client.close();
   }
 };
 
@@ -141,8 +134,7 @@ export const getCandidatesForSecondRound = async () => {
 
     const { id, maleForSecondRound, femaleForSecondRound } = activMetadata[0];
 
-    await client.connect();
-    const db = client.db("selectionv2");
+    const db = await getMongoDb();
 
     const candidatesWithStats = await db
       .collection("Candidate")
@@ -238,8 +230,6 @@ export const getCandidatesForSecondRound = async () => {
   } catch (error) {
     console.error("Error fetching candidates for second round:", error);
     throw new Error("Failed to fetch candidates for the second round");
-  } finally {
-    await client.close();
   }
 };
 
@@ -256,8 +246,7 @@ export const getCandidatesForJudge = async () => {
 
     const { id, maleForSecondRound, femaleForSecondRound } = activMetadata[0];
 
-    await client.connect();
-    const db = client.db("selectionv2");
+    const db = await getMongoDb();
 
     const candidatesWithStats = await db
       .collection("Candidate")
@@ -360,8 +349,6 @@ export const getCandidatesForJudge = async () => {
   } catch (error) {
     console.error("Error fetching candidates for the second round:", error);
     throw new Error("Failed to fetch candidates for the second round");
-  } finally {
-    await client.close();
   }
 };
 
@@ -618,10 +605,8 @@ export async function deleteCandidate(id: string) {
 
 export const getTopCandidates = async () => {
   try {
-    await client.connect();
-    const db = client.db("selectionv2");
+    const db = await getMongoDb();
 
-    const votesCollection = db.collection("Vote");
     const candidatesCollection = db.collection("Candidate");
 
     // Fetch active room metadata
@@ -721,8 +706,6 @@ export const getTopCandidates = async () => {
   } catch (error) {
     console.error("Error fetching top candidates:", error);
     throw new Error("Failed to fetch top candidates.");
-  } finally {
-    await client.close();
   }
 };
 
