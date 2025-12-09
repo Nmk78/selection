@@ -13,6 +13,7 @@ model Metadata {
   active      Boolean  @default(true)
   maleForSecondRound Int @default(2)
   femaleForSecondRound Int @default(2)
+  leaderboardCandidate Int @default(5) // Number of top candidates to display on leaderboard
   description String
   round       Round
   createdAt   DateTime @default(now()) // Automatically set on creation

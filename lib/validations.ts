@@ -9,6 +9,10 @@ const metadataSchema = z.object({
   femaleForSecondRound: z
     .number()
     .min(2, { message: "It should be atleast 2 female for second round" }),
+  leaderboardCandidate: z
+    .number()
+    .min(1, { message: "It should be at least 1 candidate for leaderboard" })
+    .default(5),
   // active: z.boolean().default(true),
   round: z
     .enum(["preview", "first", "second", "result"], {

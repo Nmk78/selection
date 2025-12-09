@@ -109,6 +109,7 @@ interface NumberInputWithControlsProps {
   label: string;
   value: number;
   onChange: (value: number) => void;
+  minValue?: number;
 }
 
 function NumberInputWithControls({
@@ -116,9 +117,10 @@ function NumberInputWithControls({
   label,
   value,
   onChange,
+  minValue = 2,
 }: NumberInputWithControlsProps) {
-  const increment = () => onChange(Math.max(2, value + 1));
-  const decrement = () => onChange(Math.max(2, value - 1));
+  const increment = () => onChange(Math.max(minValue, value + 1));
+  const decrement = () => onChange(Math.max(minValue, value - 1));
 
   return (
     <div>
@@ -154,6 +156,7 @@ export default function MetadataForm({
   const queryClient = useQueryClient();
   const [maleForSecondRound, setMaleForSecondRound] = useState(2);
   const [femaleForSecondRound, setFemaleForSecondRound] = useState(2);
+  const [leaderboardCandidate, setLeaderboardCandidate] = useState(5);
 
   const { mutate } = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -187,6 +190,7 @@ export default function MetadataForm({
     const formData = new FormData(e.currentTarget);
     formData.append("maleForSecondRound", maleForSecondRound.toString());
     formData.append("femaleForSecondRound", femaleForSecondRound.toString());
+    formData.append("leaderboardCandidate", leaderboardCandidate.toString());
 
     startTransition(() => {
       mutate(formData);
@@ -230,6 +234,29 @@ export default function MetadataForm({
               </TooltipTrigger>
               <TooltipContent className="border-2 p-2 rounded-md bg-white">
                 <p>Bring to next round</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+
+      <div id="leaderboard" className="grid grid-cols-3 gap-4">
+        <NumberInputWithControls
+          id="leaderboardCandidate"
+          label="Leaderboard Top"
+          value={leaderboardCandidate}
+          onChange={setLeaderboardCandidate}
+          minValue={1}
+        />
+        <div className="col-span-2 mt-auto">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                {" "}
+                <BadgeInfo className="w-8 h-8 text-blue-600" />
+              </TooltipTrigger>
+              <TooltipContent className="border-2 p-2 rounded-md bg-white">
+                <p>Number of top candidates to show on leaderboard</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

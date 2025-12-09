@@ -23,6 +23,7 @@ export async function addMetadata(data: FormData) {
     ...formValues,
     maleForSecondRound: parseInt(formValues.maleForSecondRound as string, 10),
     femaleForSecondRound: parseInt(formValues.femaleForSecondRound as string, 10),
+    leaderboardCandidate: parseInt(formValues.leaderboardCandidate as string, 10) || 5,
   };
 
   console.log(
@@ -40,7 +41,7 @@ export async function addMetadata(data: FormData) {
     );
   }
 
-  const { title, description, maleForSecondRound, femaleForSecondRound } =
+  const { title, description, maleForSecondRound, femaleForSecondRound, leaderboardCandidate } =
     parsedData.data;
 
   // Set previous active metadata entries to inactive
@@ -60,6 +61,7 @@ export async function addMetadata(data: FormData) {
       description,
       maleForSecondRound,
       femaleForSecondRound,
+      leaderboardCandidate,
       active: true,
       round: "preview", // Default round
     },
