@@ -71,10 +71,10 @@ function CandidateCard({ candidate, rank }: { candidate: LeaderboardCandidate; r
         <h3 className="font-semibold text-Ctext truncate">{candidate.name}</h3>
         <p className="text-sm text-Csecondary truncate">{candidate.major}</p>
       </div>
-      <div className="flex-shrink-0 text-right">
+      {/* <div className="flex-shrink-0 text-right">
         <p className="text-lg font-bold text-Cprimary">{candidate.combinedScore}</p>
         <p className="text-xs text-Csecondary">points</p>
-      </div>
+      </div> */}
     </div>
   );
 }
