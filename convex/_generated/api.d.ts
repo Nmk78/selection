@@ -8,13 +8,25 @@
  * @module
  */
 
+import type * as archive from "../archive.js";
+import type * as candidates from "../candidates.js";
+import type * as metadata from "../metadata.js";
+import type * as secretKeys from "../secretKeys.js";
+import type * as votes from "../votes.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  archive: typeof archive;
+  candidates: typeof candidates;
+  metadata: typeof metadata;
+  secretKeys: typeof secretKeys;
+  votes: typeof votes;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
