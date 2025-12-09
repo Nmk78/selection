@@ -7,7 +7,7 @@ import { Crown } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import Confetti from '@/components/Confetti';
 
-export const revalidate = 0; // Disable caching entirely for this page
+export const revalidate = 60; // Revalidate every 60 seconds for better performance
 
 export async function generateMetadata() {
   const ogImageUrl = `${process.env.BASE_URL || "https://example.com"}/logo.webp`;

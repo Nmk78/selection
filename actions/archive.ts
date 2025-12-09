@@ -1,10 +1,8 @@
 "use server";
 import { prisma } from "@/lib/prisma"; // Adjust the path to your Prisma client
-import { Document, MongoClient, ObjectId } from "mongodb";
+import { getMongoDb } from "@/lib/mongodb";
+import { Document } from "mongodb";
 import { getTopCandidates } from "./candidate";
-
-//@ts-ignore
-const client = new MongoClient(process.env.DATABASE_URL);
 
 export async function getArchiveMetadatas() {
   try {
@@ -188,8 +186,7 @@ interface Candidate {
 
 export const getCandidatesWithStatsAndTitles = async (roomId: string) => {
   try {
-    await client.connect();
-    const db = client.db("selectionv2");
+    const db = await getMongoDb();
 
     const candidatesWithStatsDocuments: Document[] = await db
       .collection("Candidate")
@@ -302,8 +299,6 @@ export const getCandidatesWithStatsAndTitles = async (roomId: string) => {
       success: false,
       message: "Failed to fetch candidates.",
     };
-  } finally {
-    await client.close();
   }
 };
 
@@ -392,10 +387,8 @@ export const getArchivedCandidateById = async (candidateId: string) => {
 
 export const getTopCandidatesFromArchive = async (roomId:string) => {
   try {
-    await client.connect();
-    const db = client.db("selectionv2");
+    const db = await getMongoDb();
 
-    const votesCollection = db.collection("Vote");
     const candidatesCollection = db.collection("Candidate");
 
     // Fetch active room metadata
@@ -488,7 +481,5 @@ export const getTopCandidatesFromArchive = async (roomId:string) => {
   } catch (error) {
     console.error("Error fetching top candidates:", error);
     throw new Error("Failed to fetch top candidates.");
-  } finally {
-    await client.close();
   }
 };

@@ -40,26 +40,21 @@ type RoundData = {
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false); // State for archive dropdown
-  const [archives, setArchives] = useState<{ href: string; label: string }[]>(
-    []
-  ); // State to store fetched archives
 
   const { sessionId } = useAuth();
 
-  const { isLoading, error } = useQuery({
+  const { data: archives = [], isLoading, error } = useQuery({
     queryKey: ["nonActiveMetadata"], // Unique key for caching
     queryFn: async () => {
       const fetchedData = await getArchiveMetadatas();
-      //@ts-expect-error  //it was showing error
-      const formattedArchives = fetchedData.data.map((item: RoundData) => ({
+      if (!fetchedData.data) return [];
+      return fetchedData.data.map((item: RoundData) => ({
         href: `/${item.id}`, // Example of generating a URL
         label: item.title || "Untitled", // Use the title or fallback to "Untitled"
       }));
-
-      setArchives(formattedArchives);
-      return formattedArchives;
     },
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes - archives don't change often
   });
 
   const toggleMenu = () => setIsOpen(!isOpen);

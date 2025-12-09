@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { getArchiveMetadatasById, getCandidatesWithStatsAndTitles } from '@/actions/archive';
 import { Skeleton } from '@/components/ui/skeleton'; // ShadCN Skeleton
 
@@ -13,36 +13,41 @@ import { Skeleton } from '@/components/ui/skeleton'; // ShadCN Skeleton
 export default function YearArchivePage() {
   const { archiveId } = useParams(); // Extract archiveId from URL
 
-  // Use React Query to fetch candidates
-  const {data} = useQuery({
-    queryKey: ['room', archiveId],
-    queryFn: async () => {
-      const res = await getArchiveMetadatasById(String(archiveId));
-      if (!res.success) {
-        throw new Error('Failed to fetch metadata');
-      }
-      return res.data; // Return candidates data
-    },
-    enabled: !!archiveId, 
-  });  
-  console.log("🚀 ~ YearArchivePage ~ data:", data)
-
-  const query = useQuery({
-    queryKey: ['candidates', archiveId],
-    queryFn: async () => {
-      const res = await getCandidatesWithStatsAndTitles(String(archiveId));
-      if (!res.success) {
-        throw new Error('Failed to fetch candidates');
-      }
-      return res.data; // Return candidates data
-    },
-    enabled: !!archiveId, // Ensure query runs only when archiveId is defined
+  // Use useQueries for parallel data fetching - improves loading performance
+  const [metadataQuery, candidatesQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ['room', archiveId],
+        queryFn: async () => {
+          const res = await getArchiveMetadatasById(String(archiveId));
+          if (!res.success) {
+            throw new Error('Failed to fetch metadata');
+          }
+          return res.data;
+        },
+        enabled: !!archiveId,
+        staleTime: 5 * 60 * 1000, // 5 minutes - metadata rarely changes
+      },
+      {
+        queryKey: ['candidates', archiveId],
+        queryFn: async () => {
+          const res = await getCandidatesWithStatsAndTitles(String(archiveId));
+          if (!res.success) {
+            throw new Error('Failed to fetch candidates');
+          }
+          return res.data;
+        },
+        enabled: !!archiveId,
+        staleTime: 5 * 60 * 1000, // 5 minutes - archived data rarely changes
+      },
+    ],
   });
 
-  const { data: pastCandidates = [], isLoading, isError } = query;
+  const { data: metadata } = metadataQuery;
+  const { data: pastCandidates = [], isLoading, isError } = candidatesQuery;
 
   // Render skeletons during loading
-  if (isLoading && !data) {
+  if (isLoading || metadataQuery.isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <motion.h1
@@ -99,7 +104,7 @@ export default function YearArchivePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {data && `Selected Students of ${data[0].title}`}
+        {metadata && `Selected Students of ${metadata[0].title}`}
       </motion.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto mb-20">
         {shuffledCandidates.length > 0 ? (
