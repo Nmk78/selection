@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { getMongoDb } from "@/lib/mongodb";
 import { extractKeyFromUrl } from "@/lib/utils";
 import { candidateSchema } from "@/lib/validations";
-import { Candidate } from "@/types/types";
+import { Candidate, LeaderboardCandidate } from "@/types/types";
 
 export async function createCandidate(candidateData: Candidate) {
   // Validate input candidateData using Zod
@@ -317,7 +317,7 @@ export const getCandidatesForJudge = async () => {
       .slice(0, femaleForSecondRound);
 
     // Map candidates to include only the required fields
-    //@ts-ignore
+    // @ts-ignore
     const sanitizeCandidate = (candidate) => ({
       id: candidate._id.toString(),
       name: candidate.name,
@@ -807,8 +807,16 @@ export const deleteImages = async (urls: string[]): Promise<void> => {
   }
 };
 
-export const getLeaderboardCandidates = async () => {
+export const getLeaderboardCandidates = async (): Promise<{
+  topMales: LeaderboardCandidate[];
+  topFemales: LeaderboardCandidate[];
+  leaderboardCandidate: number;
+  title?: string;
+  error?: string;
+}> => {
   try {
+    const db = await getMongoDb();
+
     // Fetch active room metadata
     const activeMetadata = await prisma.metadata.findFirst({
       where: { active: true },
@@ -819,9 +827,6 @@ export const getLeaderboardCandidates = async () => {
     }
 
     const { id, leaderboardCandidate = 5 } = activeMetadata;
-
-    await client.connect();
-    const db = client.db("selectionv2");
 
     const candidatesWithVotes = await db
       .collection("Candidate")
@@ -875,7 +880,7 @@ export const getLeaderboardCandidates = async () => {
           },
         },
       ])
-      .toArray();
+      .toArray() as LeaderboardCandidate[];
 
     // Filter candidates by gender
     const males = candidatesWithVotes.filter(
@@ -885,7 +890,7 @@ export const getLeaderboardCandidates = async () => {
       (candidate) => candidate.gender === "female"
     );
 
-    // Get the top candidates for each gender based on leaderboardCandidate setting
+    // Get the top candidates for each gender
     const topMales = males.slice(0, leaderboardCandidate);
     const topFemales = females.slice(0, leaderboardCandidate);
 
@@ -898,7 +903,5 @@ export const getLeaderboardCandidates = async () => {
   } catch (error) {
     console.error("Error fetching leaderboard candidates:", error);
     throw new Error("Failed to fetch leaderboard candidates.");
-  } finally {
-    await client.close();
   }
 };
