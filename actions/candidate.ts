@@ -823,3 +823,99 @@ export const deleteImages = async (urls: string[]): Promise<void> => {
     throw new Error("Failed to delete the images.");
   }
 };
+
+export const getLeaderboardCandidates = async () => {
+  try {
+    // Fetch active room metadata
+    const activeMetadata = await prisma.metadata.findFirst({
+      where: { active: true },
+    });
+
+    if (!activeMetadata) {
+      return { error: "No active room!", topMales: [], topFemales: [], leaderboardCandidate: 5 };
+    }
+
+    const { id, leaderboardCandidate = 5 } = activeMetadata;
+
+    await client.connect();
+    const db = client.db("selectionv2");
+
+    const candidatesWithVotes = await db
+      .collection("Candidate")
+      .aggregate([
+        { $match: { roomId: id } },
+        {
+          $lookup: {
+            from: "Vote",
+            let: { candidateId: { $toString: "$_id" } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$candidateId", "$$candidateId"] },
+                },
+              },
+            ],
+            as: "voteDetails",
+          },
+        },
+        {
+          $addFields: {
+            totalVotes: {
+              $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
+            },
+            totalRating: {
+              $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0],
+            },
+            combinedScore: {
+              $add: [
+                {
+                  $ifNull: [{ $toInt: { $sum: "$voteDetails.totalVotes" } }, 0],
+                },
+                { $ifNull: [{ $sum: "$voteDetails.totalRating" }, 0] },
+              ],
+            },
+          },
+        },
+        {
+          $sort: { combinedScore: -1 },
+        },
+        {
+          $project: {
+            id: { $toString: "$_id" },
+            name: 1,
+            gender: 1,
+            profileImage: 1,
+            major: 1,
+            totalVotes: 1,
+            totalRating: 1,
+            combinedScore: 1,
+          },
+        },
+      ])
+      .toArray();
+
+    // Filter candidates by gender
+    const males = candidatesWithVotes.filter(
+      (candidate) => candidate.gender === "male"
+    );
+    const females = candidatesWithVotes.filter(
+      (candidate) => candidate.gender === "female"
+    );
+
+    // Get the top candidates for each gender based on leaderboardCandidate setting
+    const topMales = males.slice(0, leaderboardCandidate);
+    const topFemales = females.slice(0, leaderboardCandidate);
+
+    return {
+      topMales,
+      topFemales,
+      leaderboardCandidate,
+      title: activeMetadata.title,
+    };
+  } catch (error) {
+    console.error("Error fetching leaderboard candidates:", error);
+    throw new Error("Failed to fetch leaderboard candidates.");
+  } finally {
+    await client.close();
+  }
+};
