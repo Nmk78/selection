@@ -39,7 +39,7 @@ export default function CandidatePage() {
     <ArchiveCandidateDetailPage
       archiveId={String(archiveId)}
       id={String(id)}
-      candidateDetails={data.data}
+      // candidateDetails={data.data}
     />
   );
 }

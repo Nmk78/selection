@@ -5,7 +5,8 @@
   "scripts": {
     "backend": "npx convex dev",
     "dev": "next dev --turbopack",
-    "build": "npx convex deploy && next build",
+    "build": "next build",
+    "build_and_deploy": "npx convex deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
@@ -63,6 +64,8 @@
     "@vitest/coverage-v8": "^4.0.15",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
-    "typescript": "^5"
-  }
+    "typescript": "^5",
+    "vitest": "^4.0.15"
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
