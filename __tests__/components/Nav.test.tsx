@@ -19,16 +19,16 @@ vi.mock('convex/react', () => ({
 }));
 
 // Mock the api
-vi.mock('@/convex/_generated/api', () => ({
-  api: {
-    archive: {
-      getArchiveMetadatas: 'archive:getArchiveMetadatas',
-    },
-    users: {
-      current: 'users:current',
-    },
-  },
-}));
+// vi.mock('@/convex/_generated/api', () => ({
+//   api: {
+//     archive: {
+//       getArchiveMetadatas: 'archive:getArchiveMetadatas',
+//     },
+//     users: {
+//       current: 'users:current',
+//     },
+//   },
+// }));
 
 // Mock UserButton
 vi.mock('@/components/auth/UserButton', () => ({
