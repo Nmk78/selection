@@ -7,8 +7,10 @@ interface Code {
   code: string;
 }
 
+import { Id } from "@/convex/_generated/dataModel";
+
 interface SecretKeyPrintBtnProps {
-  userId: string | undefined | null;
+  userId: Id<"users"> | undefined | null;
 }
 
 export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {

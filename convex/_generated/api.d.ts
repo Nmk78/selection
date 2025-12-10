@@ -9,9 +9,12 @@
  */
 
 import type * as archive from "../archive.js";
+import type * as auth from "../auth.js";
 import type * as candidates from "../candidates.js";
+import type * as http from "../http.js";
 import type * as metadata from "../metadata.js";
 import type * as secretKeys from "../secretKeys.js";
+import type * as users from "../users.js";
 import type * as votes from "../votes.js";
 
 import type {
@@ -22,9 +25,12 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   archive: typeof archive;
+  auth: typeof auth;
   candidates: typeof candidates;
+  http: typeof http;
   metadata: typeof metadata;
   secretKeys: typeof secretKeys;
+  users: typeof users;
   votes: typeof votes;
 }>;
 

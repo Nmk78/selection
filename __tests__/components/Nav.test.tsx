@@ -1,35 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Nav from '@/components/Nav';
 
-// Mock the archive action
-vi.mock('@/actions/archive', () => ({
-  getArchiveMetadatas: vi.fn().mockResolvedValue({
-    success: true,
-    data: [
-      { id: '2023', title: 'Selection 2023' },
-      { id: '2024', title: 'Selection 2024' },
-    ],
+// Mock convex/react
+vi.mock('convex/react', () => ({
+  useQuery: vi.fn((query) => {
+    if (query === undefined) return null;
+    // Return mock data for archive query
+    return {
+      data: [
+        { _id: '2023', title: 'Selection 2023' },
+        { _id: '2024', title: 'Selection 2024' },
+      ],
+    };
   }),
+  Authenticated: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  Unauthenticated: ({ children }: { children: React.ReactNode }) => null,
 }));
 
-// Create a wrapper with QueryClient
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
+// Mock the api
+vi.mock('@/convex/_generated/api', () => ({
+  api: {
+    archive: {
+      getArchiveMetadatas: 'archive:getArchiveMetadatas',
     },
-  });
+    users: {
+      current: 'users:current',
+    },
+  },
+}));
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
-};
+// Mock UserButton
+vi.mock('@/components/auth/UserButton', () => ({
+  default: () => <div data-testid="user-button">UserButton</div>,
+}));
 
 describe('Nav', () => {
   beforeEach(() => {
@@ -37,34 +41,34 @@ describe('Nav', () => {
   });
 
   it('should render the logo', () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
     const logo = screen.getByAltText('Royal Selection Logo');
     expect(logo).toBeInTheDocument();
   });
 
   it('should render Home link', () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
     expect(screen.getByText('Home')).toBeInTheDocument();
   });
 
   it('should render Check link', () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
     expect(screen.getByText('Check')).toBeInTheDocument();
   });
 
   it('should render Policy link', () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
     expect(screen.getByText('Policy')).toBeInTheDocument();
   });
 
   it('should render Archive button', () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
     const archiveButtons = screen.getAllByText('Archive');
     expect(archiveButtons.length).toBeGreaterThan(0);
   });
 
   it('should toggle mobile menu on button click', async () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
 
     // Find the menu toggle button
     const menuButton = screen.getByRole('button', { name: /toggle menu/i });
@@ -81,7 +85,7 @@ describe('Nav', () => {
   });
 
   it('should toggle archive dropdown on click', async () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
 
     // Find archive button (there may be multiple - one for desktop, one for mobile)
     const archiveButtons = screen.getAllByText('Archive');
@@ -98,7 +102,7 @@ describe('Nav', () => {
   });
 
   it('should have correct navigation links', () => {
-    render(<Nav />, { wrapper: createWrapper() });
+    render(<Nav />);
 
     // Check that navigation links have correct href
     const homeLinks = screen.getAllByRole('link').filter(link =>
@@ -115,16 +119,5 @@ describe('Nav', () => {
       link.getAttribute('href') === '/policy'
     );
     expect(policyLinks.length).toBeGreaterThan(0);
-  });
-
-  it('should use staleTime for archive query optimization', async () => {
-    const { getArchiveMetadatas } = await import('@/actions/archive');
-
-    render(<Nav />, { wrapper: createWrapper() });
-
-    // Wait for the query to complete
-    await waitFor(() => {
-      expect(getArchiveMetadatas).toHaveBeenCalledTimes(1);
-    });
   });
 });

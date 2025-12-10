@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 // Insert multiple secret keys
 export const insertMany = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     keys: v.array(v.string()),
   },
   handler: async (ctx, args) => {
@@ -116,7 +116,7 @@ export const validate = query({
 // Add special secret key
 export const addSpecialKey = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     specialSecretKey: v.string(),
   },
   handler: async (ctx, args) => {
