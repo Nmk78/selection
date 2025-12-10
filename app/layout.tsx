@@ -3,8 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
-import ReactQueryProvider from "./providers";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import ConvexClientProvider from "./ConvexClientProvider";
 import { Metadata } from "next";
 import { Analytics } from '@vercel/analytics/next';
 
@@ -71,22 +70,18 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider afterSignOutUrl="/">
-      <ReactQueryProvider>
+      <ConvexClientProvider>
         <html lang="en">
           <body
-            // className={` h-screen antialiased bg-background flex flex-col items-center`}
             className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
           >
             <Nav />
             {children}
             <Toaster />
-            {process.env.NODE_ENV !== "production" && (
-              <ReactQueryDevtools initialIsOpen={false} />
-            )}
             <Analytics />
           </body>
         </html>
-      </ReactQueryProvider>
+      </ConvexClientProvider>
     </ClerkProvider>
   );
 }

@@ -1,13 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import {
-  addSpecialSecretKey,
-  getAllSpecialSecretKeys,
-} from "@/actions/secretKey";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import {
   Dialog,
   DialogContent,
@@ -21,19 +19,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 export default function SpecialKeyManager({ userId }: { userId: string }) {
   const [specialKey, setSpecialKey] = useState("");
 
-  const {
-    data: specialKeys = [],
-    error,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["specialKeys"],
-    queryFn: async () => {
-      const specialKeys = await getAllSpecialSecretKeys();
-      // console.log("🚀 ~ queryFn: ~ specialKeys:", specialKeys);
-      return Array.isArray(specialKeys.data) ? specialKeys.data : [];
-    },
-  });
+  const specialKeysData = useQuery(api.secretKeys.getAllSpecial);
+  const addSpecialKey = useMutation(api.secretKeys.addSpecialKey);
+
+  const isLoading = specialKeysData === undefined;
+  const specialKeys = specialKeysData?.data ?? [];
 
   const addJudgeKey = async () => {
     if (!specialKey) {
@@ -53,9 +43,8 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
     }
 
     try {
-      await addSpecialSecretKey(userId, specialKey);
+      await addSpecialKey({ userId, specialSecretKey: specialKey });
       setSpecialKey("");
-      refetch(); // Refetch the list of keys after adding a new one
       toast({
         title: "Judge Key Added",
         description: "The judge key has been successfully added to the list.",
@@ -78,7 +67,7 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
           <span>Judge Keys</span>
           <Dialog>
             <DialogTrigger asChild>
-              {!error && !isLoading && (
+              {!isLoading && (
                 <button className=" p-2 text-blue-500 rounded-md">
                   View ({specialKeys.length})
                 </button>
@@ -101,18 +90,12 @@ export default function SpecialKeyManager({ userId }: { userId: string }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4 h-full">
-          {/* <div className="grid grid-cols-2 gap-2"> */}
           <div className="bg-gray-100 p-4 flex items-center rounded-lg shadow-sm space-x-3">
             <h3 className="text-lg font-bold text-end ">Total</h3>
             <div className="text-sm text-gray-500 font-semibold text-end">
               {isLoading ? "Loading.." : specialKeys.length}
             </div>
           </div>
-          {/* <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-              <h3 className="text-lg font-semibold">Used</h3>
-              <div className="text-sm text-gray-500">{specialKeys.length}</div>
-            </div> */}
-          {/* </div> */}
 
           <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <Input

@@ -95,3 +95,15 @@ export interface Rating {
   candidateId: string;
   rating: number;
 }
+
+
+export interface LeaderboardCandidate {
+  id: string;
+  name: string;
+  gender: string;
+  profileImage: string;
+  major: string;
+  totalVotes: number;
+  totalRating: number;
+  combinedScore: number;
+}

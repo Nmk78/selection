@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Loader2, Printer, X } from "lucide-react";
-import { getAllSecretKeys } from "@/actions/secretKey";
+import { Printer, X } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface Code {
   code: string;
@@ -12,13 +13,21 @@ interface SecretKeyPrintBtnProps {
 
 export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
   const [codes, setCodes] = useState<Code[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // Modal visibility state
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  
+  const response = useQuery(api.secretKeys.getAll);
+  
+  // Extract codes from response when it changes
+  useEffect(() => {
+    if (response && response.success) {
+      setCodes(response.data.map((code: string) => ({ code })));
+    } else {
+      setCodes([]);
+    }
+  }, [response]);
 
   const handlePrint = () => {
-    const printableContent = document.getElementById("printable-content"); // Select the printable content
+    const printableContent = document.getElementById("printable-content");
     if (printableContent) {
       const newWindow = window.open("", "_blank");
       newWindow?.document.write(`
@@ -44,7 +53,6 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
           </head>
           <body>
                   <center>Press <kbd>Ctrl</kbd> + <kbd>P</kbd></center>
-
             <div class="printable-content">
               ${printableContent.innerHTML}
             </div>
@@ -58,44 +66,16 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
         </html>
       `);
     }
-    setIsModalVisible(false); // Close the modal after print
+    setIsModalVisible(false);
   };
-
-  const loadSecretKeys = async () => {
-    console.log("loading secret key");
-    setLoading(true);
-    try {
-      const response = await getAllSecretKeys(); // Assuming you have an API route that returns secret keys
-
-      if (response.success) {
-        if (response.data !== undefined) {
-          const secretCodes: Code[] = response.data.map((key: string) => ({
-            code: key,
-          }));
-          setCodes(secretCodes); // Set the mapped array
-          setIsLoaded(true); // Mark data as loaded
-          setLoading(false);
-        }
-      } else {
-        setError("Failed to load secret keys.");
-      }
-    } catch (error) {
-      console.log("🚀 ~ loadSecretKeys ~ error:", error);
-      setError("An error occurred while loading secret keys.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // UseEffect will only run if userId is available
-  useEffect(() => {
-    if (userId) {
-      loadSecretKeys();
-    }
-  }, [userId]);
 
   if (!userId) {
-    return null; // Return null instead of early return to ensure hooks are still called
+    return null;
+  }
+
+  // Show loading state while fetching data
+  if (response === undefined) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -107,18 +87,11 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
           onClick={() => {
             setIsModalVisible(true);
           }}
-          disabled={!isLoaded || loading}
+          disabled={codes.length === 0}
         >
-          {loading ? (
-            <Loader2 className="mr-2 animate-spin h-4 w-4 text-blue-600" />
-          ) : (
-            <Printer className="mr-2 h-4 w-4 text-blue-600" />
-          )}
+          <Printer className="mr-2 h-4 w-4 text-blue-600" />
         </button>
       </div>
-
-      {/* Error message */}
-      {error && <p className="text-sm font-light text-right">{error}</p>}
 
       {/* Modal */}
       {isModalVisible && (
@@ -134,12 +107,13 @@ export default function SecretKeyPrintBtn({ userId }: SecretKeyPrintBtnProps) {
                 <button
                   onClick={handlePrint}
                   className="text-blue-700 font-bold bg-transparent py-2 px-4 rounded"
+                  disabled={codes.length === 0}
                 >
                   Print
                 </button>
                 <button
                   className="bg-transparent text-black"
-                  onClick={() => setIsModalVisible(false)} // Close the modal
+                  onClick={() => setIsModalVisible(false)}
                 >
                   <X className="w-4 h-4" />
                 </button>

@@ -9,29 +9,21 @@ import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { MultiImageUploader } from "../MultiImageUploader";
 import { ImageUploader } from "../ImageUploader";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  createCandidate,
-  updateCandidate,
-  deleteCandidate,
-  getCandidateById,
-  deleteImage,
-} from "@/actions/candidate";
-import { getActiveMetadata } from "@/actions/metadata";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import { X } from "lucide-react";
 
 interface CandidateFormProps {
   closeModal: () => void;
-  candidateId?: string; // Optional candidateId for edit mode
+  candidateId?: string;
 }
 
 export default function CandidateForm({
   closeModal,
   candidateId,
 }: CandidateFormProps) {
-  const queryClient = useQueryClient();
-
   interface FormData {
     name: string;
     gender: "male" | "female";
@@ -44,6 +36,7 @@ export default function CandidateForm({
     profileImage: string | null;
     carouselImages: string[];
   }
+
   const [formData, setFormData] = useState<FormData>({
     name: "",
     gender: "male",
@@ -63,84 +56,34 @@ export default function CandidateForm({
   const profileImageUploaderRef = useRef(null);
   const carouselImagesUploaderRef = useRef(null);
 
-  const { mutate: createCandidateMutation } = useMutation({
-    mutationFn: async () => {
-      setLoading(true);
-      await createNewCandidate();
-    },
-    onSuccess: () => {
-      setLoading(false);
-      toast({
-        title: "Success",
-        description: "Candidate saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      closeModal();
-    },
-    onError: (err: { message: string }) => { // Renamed _err to err
-      console.error("🚀 ~ Error in createCandidateMutation:", err);
-      setLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to save candidate.",
-      });
-    },
-  });
-  
-  const { mutate: editCandidateMutation } = useMutation({
-    mutationFn: async () => {
-      setLoading(true);
-      await editCandidate();
-    },
-    onSuccess: () => {
-      setLoading(false);
-      toast({
-        title: "Success",
-        description: "Candidate edited successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
-      closeModal();
-    },
-    onError: (err: { message: string }) => { // Renamed _err to err
-      console.error("🚀 ~ Error in editCandidateMutation:", err);
-      setLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to edit candidate.",
-      });
-    },
-  });
-  
+  // Convex queries and mutations
+  const candidate = useQuery(
+    api.candidates.getById,
+    candidateId ? { id: candidateId as Id<"candidates"> } : "skip"
+  );
+  const createCandidateMutation = useMutation(api.candidates.create);
+  const updateCandidateMutation = useMutation(api.candidates.update);
+  const deleteCandidateMutation = useMutation(api.candidates.remove);
+  const removeImageMutation = useMutation(api.candidates.removeImage);
 
   useEffect(() => {
-    if (candidateId) {
-      // Fetch the candidate data for editing if candidateId is provided
-      // Example: Use a function to get the candidate data by ID
-      // You would need to implement this function
-      const fetchCandidate = async () => {
-        setLoading(true);
-
-        const candidate = await getCandidateById(candidateId);
-        setFormData({
-          name: candidate.name,
-          gender: candidate.gender,
-          major: candidate.major,
-          age: String(candidate.age),
-          height: String(candidate.height),
-          weight: String(candidate.weight),
-          intro: candidate.intro,
-          hobbies: candidate.hobbies,
-          profileImage: candidate.profileImage,
-          carouselImages: candidate.carouselImages,
-        });
-      };
-      fetchCandidate();
-      setLoading(false);
+    if (candidate) {
+      setFormData({
+        name: candidate.name,
+        gender: candidate.gender,
+        major: candidate.major,
+        age: String(candidate.age),
+        height: String(candidate.height),
+        weight: String(candidate.weight),
+        intro: candidate.intro,
+        hobbies: candidate.hobbies,
+        profileImage: candidate.profileImage,
+        carouselImages: candidate.carouselImages,
+      });
     }
-  }, [candidateId]);
+  }, [candidate]);
 
-
-  if (candidateId && !formData) return <p>Loading...</p>;
+  if (candidateId && candidate === undefined) return <p>Loading...</p>;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -174,61 +117,49 @@ export default function CandidateForm({
   };
 
   const removeAdditionalImage = async (index: number) => {
-    if (!candidateId) {
-      return;
-    }
+    if (!candidateId) return;
+
     try {
       const imageToDelete = formData.carouselImages[index];
+      await removeImageMutation({
+        candidateId: candidateId as Id<"candidates">,
+        imageUrl: imageToDelete,
+      });
 
-      // Perform the deletion
-      const res = await deleteImage(imageToDelete, candidateId);
-      // console.log("🚀 ~ deleteImage ~ res:", res);
-
-      // Update state only after successful deletion
-      if (res.success && res.deletedCount > 0) {
-        toast({
-          title: "Image Deleted",
-          description: "Image successfully deleted",
-        });
-        setFormData((prev) => ({
-          ...prev,
-          carouselImages: prev.carouselImages.filter((_, i) => i !== index),
-        }));
-      } else {
-        throw new Error("Failed to delete the image from the server.");
-      }
+      toast({
+        title: "Image Deleted",
+        description: "Image successfully deleted",
+      });
+      setFormData((prev) => ({
+        ...prev,
+        carouselImages: prev.carouselImages.filter((_, i) => i !== index),
+      }));
     } catch (error) {
       console.error(`Failed to delete image at index ${index}:`, error);
     }
   };
 
   const removeProfileImage = async (url: string) => {
-    if (!candidateId) {
-      return;
-    }
-    try {
-      const res = await deleteImage(url, candidateId);
-      // console.log("🚀 ~ deleteImage ~ res:", res);
+    if (!candidateId) return;
 
-      // Update state only after successful deletion
-      if (res.success && res.deletedCount > 0) {
-        toast({
-          title: "Image Deleted",
-          description: "Profile image successfully deleted",
-        });
-        setFormData((prev) => ({
-          ...prev,
-          profileImage: null,
-        }));
-      } else {
-        throw new Error("Failed to delete the image from the server.");
-      }
+    try {
+      await removeImageMutation({
+        candidateId: candidateId as Id<"candidates">,
+        imageUrl: url,
+      });
+
+      toast({
+        title: "Image Deleted",
+        description: "Profile image successfully deleted",
+      });
+      setFormData((prev) => ({
+        ...prev,
+        profileImage: null,
+      }));
     } catch (error) {
       console.error("Failed to delete profile image", error);
     }
   };
-
-
 
   const uploadProfileImage = async () => {
     try {
@@ -243,18 +174,15 @@ export default function CandidateForm({
           return null;
         }
       }
-      console.log("Uploading profile image...");
       //@ts-expect-error //Hide red errors
       const profileRes = await profileImageUploaderRef.current.startUpload();
-      console.log("Profile image upload response:", profileRes);
 
       if (!profileRes || profileRes.length === 0) {
-        console.warn("Profile image upload failed.");
         toast({
           title: "Failed",
           description: "Profile image upload failed.",
         });
-        return null; // Return null if upload fails
+        return null;
       }
 
       toast({
@@ -262,7 +190,6 @@ export default function CandidateForm({
         description: "Profile image uploaded.",
       });
 
-      // Return the URL of the uploaded profile image
       return profileRes[0]?.url;
     } catch (error) {
       console.error("Error uploading profile image:", error);
@@ -270,42 +197,32 @@ export default function CandidateForm({
         title: "Error",
         description: "Error while uploading profile image.",
       });
-      return null; // Return null if upload fails
+      return null;
     }
   };
 
   const uploadCarouselImages = async () => {
     try {
-      // console.log(
-      // "🚀 ~ uploadCarouselImages ~ carouselImagesUploaderRef.current:",
-      // carouselImagesUploaderRef.current
-      // );
-
       if (!carouselImagesUploaderRef.current) {
         if (candidateId) {
-          console.log("Edit mode and no ref");
           return null;
         } else {
           toast({
             title: "Failed",
-            description:
-              "Failed to upload additional images. Please try again.",
+            description: "Failed to upload additional images. Please try again.",
           });
           return null;
         }
       }
-      console.log("Uploading additional images...");
       //@ts-expect-error //Hide red errors
       const carouselRes = await carouselImagesUploaderRef.current.startUpload();
-      console.log("Additional images upload response:", carouselRes);
 
       if (!carouselRes || carouselRes.length === 0) {
-        console.warn("Additional image upload failed.");
         toast({
           title: "Failed",
           description: "Additional image upload failed.",
         });
-        return []; 
+        return [];
       }
 
       toast({
@@ -313,186 +230,115 @@ export default function CandidateForm({
         description: "Additional images uploaded.",
       });
 
-      return carouselRes.map((image: { url: string; }) => image.url);
+      return carouselRes.map((image: { url: string }) => image.url);
     } catch (error) {
       console.error("Error uploading additional images:", error);
       toast({
         title: "Error",
         description: "Error while uploading additional images.",
       });
-      return []; // Return empty array if upload fails
+      return [];
     }
   };
-
-  const createNewCandidate = async () => {
-    try {
-      setLoading(true);
-      const currentlyActiveRoom = await getActiveMetadata();
-      console.log("Currently active room:", currentlyActiveRoom);
-
-      if (!currentlyActiveRoom || currentlyActiveRoom.length === 0) {
-        toast({ title: "Error", description: "No active room found." });
-        console.error("No active room found");
-        return;
-      }
-      // Upload the profile image and carousel images
-      const profileImageUrl = await uploadProfileImage();
-      const carouselImageUrls = await uploadCarouselImages();
-
-      if (!profileImageUrl) {
-        toast({
-          title: "Failed",
-          description: "Profile image is required.",
-        });
-        return;
-      }
-
-      if (carouselImageUrls.length === 0) {
-        toast({
-          title: "Failed",
-          description: "At least one carousel image is required.",
-        });
-        return;
-      }
-      // Update formData with the uploaded image URLs
-      const payload = {
-        ...formData,
-        age: parseInt(formData.age, 10),
-        height: parseInt(formData.height, 10),
-        weight: parseInt(formData.weight, 10),
-        profileImage: profileImageUrl, // Ensure valid fallback
-        carouselImages: carouselImageUrls,
-
-        roomId: currentlyActiveRoom[0].id,
-      };
-
-      console.log("Updated payload:", payload);
-      createCandidate(payload);
-    } catch (error) {
-      console.error("Error creating new candidate:", error);
-      toast({
-        title: "Error",
-        description: "Error during candidate creation.",
-      });
-    }
-  };
-
-  const editCandidate = async () => {
-    console.log("🛠️ Starting editCandidate function");
-  
-    try {
-      setLoading(true);
-      console.log("🔄 Loading state set to true");
-  
-      // Step 1: Fetch currently active room
-      const currentlyActiveRoom = await getActiveMetadata();
-      console.log("📂 Currently active room metadata fetched:", currentlyActiveRoom);
-  
-      if (!currentlyActiveRoom || currentlyActiveRoom.length === 0) {
-        toast({ title: "Error", description: "No active room found." });
-        console.error("❌ No active room found, stopping execution");
-        setLoading(false);
-        return;
-      }
-  
-      // Step 2: Upload images
-      const profileImageUrl = await uploadProfileImage();
-      console.log("📸 Uploaded profile image URL:", profileImageUrl);
-
-      const carouselImageUrls = await uploadCarouselImages();
-      console.log("📸 Uploaded carousel image URLs:", carouselImageUrls);
-
-      const payload = {
-        ...formData,
-        age: parseInt(formData.age, 10),
-        height: parseInt(formData.height, 10),
-        weight: parseInt(formData.weight, 10),
-        // profileImage: profileImageUrl, // Ensure valid fallback
-        profileImage: profileImageUrl ? profileImageUrl : formData.profileImage,
-        carouselImages:
-          carouselImageUrls?.length > 0
-            ? [...formData.carouselImages, ...carouselImageUrls]
-            : formData.carouselImages,
-        id: candidateId,
-        roomId: currentlyActiveRoom[0].id,
-      };
-
-      if(!payload.profileImage || payload.carouselImages.length < 1){
-        toast({ title: "Error", description: "Incomplete form!" });
-        return
-      }
-  
-      console.log("📝 Update payload prepared:", payload);
-  
-      // Step 4: Call updateCandidate function
-      const res = await updateCandidate(payload);
-      if(res.status === "success"){
-        console.log("✅ Candidate updated successfully");
-      }
-    } catch (error) {
-      console.error("❌ Error editing candidate:", error);
-      toast({
-        title: "Error",
-        description: "Error while editing candidate.",
-      });
-    } finally {
-      console.log("🔄 Setting loading state back to false");
-      setLoading(false);
-    }
-  };
-  
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
-      console.log("Form submission started");
+      const profileImageUrl = await uploadProfileImage();
+      const carouselImageUrls = await uploadCarouselImages();
+
       if (!candidateId) {
-        createCandidateMutation(); // Use the hook outside of condition
+        // Create new candidate
+        if (!profileImageUrl) {
+          toast({ title: "Failed", description: "Profile image is required." });
+          setLoading(false);
+          return;
+        }
+
+        if (!carouselImageUrls || carouselImageUrls.length === 0) {
+          toast({
+            title: "Failed",
+            description: "At least one carousel image is required.",
+          });
+          setLoading(false);
+          return;
+        }
+
+        await createCandidateMutation({
+          name: formData.name,
+          intro: formData.intro,
+          gender: formData.gender,
+          major: formData.major,
+          profileImage: profileImageUrl,
+          carouselImages: carouselImageUrls,
+          height: parseInt(formData.height, 10),
+          age: parseInt(formData.age, 10),
+          weight: parseInt(formData.weight, 10),
+          hobbies: formData.hobbies,
+        });
+
+        toast({ title: "Success", description: "Candidate saved successfully." });
       } else {
-        editCandidateMutation(); // Use the hook outside of condition
+        // Update existing candidate
+        const finalProfileImage = profileImageUrl || formData.profileImage || "";
+        const finalCarouselImages =
+          carouselImageUrls && carouselImageUrls.length > 0
+            ? [...formData.carouselImages, ...carouselImageUrls]
+            : formData.carouselImages;
+
+        if (!finalProfileImage || finalCarouselImages.length < 1) {
+          toast({ title: "Error", description: "Incomplete form!" });
+          setLoading(false);
+          return;
+        }
+
+        await updateCandidateMutation({
+          id: candidateId as Id<"candidates">,
+          name: formData.name,
+          intro: formData.intro,
+          gender: formData.gender,
+          major: formData.major,
+          profileImage: finalProfileImage,
+          carouselImages: finalCarouselImages,
+          height: parseInt(formData.height, 10),
+          age: parseInt(formData.age, 10),
+          weight: parseInt(formData.weight, 10),
+          hobbies: formData.hobbies,
+        });
+
+        toast({ title: "Success", description: "Candidate edited successfully." });
       }
+
+      closeModal();
     } catch (error) {
-      console.error("🚀 ~ handleSubmit ~ error:", error);
-      toast({
-        title: "Error",
-        description: "Something went wrong.",
-      });
+      console.error("Error saving candidate:", error);
+      toast({ title: "Error", description: "Something went wrong." });
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleDelete = async () => {
     if (!candidateId) return;
 
     try {
       setDeleteLoading(true);
-      await deleteCandidate(candidateId);
-      toast({
-        title: "Deleted",
-        description: "Candidate deleted successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      await deleteCandidateMutation({ id: candidateId as Id<"candidates"> });
+      toast({ title: "Deleted", description: "Candidate deleted successfully." });
       closeModal();
     } catch (err) {
-      console.log("🚀 ~ handleDelete ~ err:", err);
-      toast({
-        title: "Error",
-        description: "Failed to delete candidate.",
-      });
+      console.error("handleDelete error:", err);
+      toast({ title: "Error", description: "Failed to delete candidate." });
     } finally {
       setDeleteLoading(false);
     }
   };
+
   return (
     <div className="w-full max-w-7xl mx-auto">
-      <form
-        className="w-full h-[550px] overflow-y-scroll scroll-area grid grid-cols-1 lg:grid-cols-2 gap-6"
-      >
+      <form className="w-full h-[550px] overflow-y-scroll scroll-area grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
@@ -523,8 +369,6 @@ export default function CandidateForm({
                 onValueChange={(value) => {
                   if (value === "male" || value === "female") {
                     setFormData((prev) => ({ ...prev, gender: value }));
-                  } else {
-                    console.error("Invalid gender value:", value);
                   }
                 }}
                 required
@@ -542,7 +386,7 @@ export default function CandidateForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="height">Age</Label>
+              <Label htmlFor="age">Age</Label>
               <Input
                 id="age"
                 name="age"
@@ -617,7 +461,7 @@ export default function CandidateForm({
                     onClick={() => handleRemoveHobby(index)}
                     className="ml-2 text-xs font-bold"
                   >
-                    ×
+                    x
                   </button>
                 </Badge>
               ))}
@@ -634,9 +478,9 @@ export default function CandidateForm({
                   width={200}
                   height={200}
                   className="rounded-lg object-cover aspect-square w-40 h-40"
-                  />
+                />
                 <button
-                  onClick={() => removeProfileImage(formData.profileImage!)} // Non-null assertion
+                  onClick={() => removeProfileImage(formData.profileImage!)}
                   className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
                 >
                   <X size={16} />

@@ -11,56 +11,20 @@ import {
   X,
   Archive,
   TicketCheck,
-  Loader2,
   ScrollText,
 } from "lucide-react";
 import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
-import { getArchiveMetadatas } from "@/actions/archive";
-
-type RoundData = {
-  id: string;
-  title: string;
-  description: string;
-  active: boolean;
-  round:
-    | "preview"
-    | "first"
-    | "firstVotingClosed"
-    | "secondPreview"
-    | "second"
-    | "secondVotingClosed"
-    | "result"; // Enum for known round states
-  maleForSecondRound: number;
-  femaleForSecondRound: number;
-  createdAt: Date; // Use `Date` type for date fields
-  updatedAt: Date; // Include this if necessary
-};
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false); // State for archive dropdown
-  const [archives, setArchives] = useState<{ href: string; label: string }[]>(
-    []
-  ); // State to store fetched archives
 
   const { sessionId } = useAuth();
 
-  const { isLoading, error } = useQuery({
-    queryKey: ["nonActiveMetadata"], // Unique key for caching
-    queryFn: async () => {
-      const fetchedData = await getArchiveMetadatas();
-      //@ts-expect-error  //it was showing error
-      const formattedArchives = fetchedData.data.map((item: RoundData) => ({
-        href: `/${item.id}`, // Example of generating a URL
-        label: item.title || "Untitled", // Use the title or fallback to "Untitled"
-      }));
-
-      setArchives(formattedArchives);
-      return formattedArchives;
-    },
-    refetchOnWindowFocus: false,
-  });
+  const archiveQueryResult = useQuery(api.archive.getArchiveMetadatas);
+  const archives = archiveQueryResult?.data || [];
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleArchive = () => setArchiveOpen(!archiveOpen);
@@ -88,20 +52,11 @@ export default function Nav() {
       : []),
   ];
 
-  // Fetch archives from backend
-  // useEffect(() => {
-  //   const fetchArchives = async () => {
-  //     try {
-  //       const response = await fetch("/api/archives"); // Replace with your backend endpoint
-  //       const data = await response.json();
-  //       setArchives(data); // Assuming the backend sends an array of { href, label }
-  //     } catch (error) {
-  //       console.error("Failed to fetch archives:", error);
-  //     }
-  //   };
-
-  //   fetchArchives();
-  // }, []);
+  // Transform the archive data to match the expected format
+  const transformedArchives = archives?.map((item) => ({
+    href: `/${item._id}`, // Using _id from Convex
+    label: item.title || "Untitled",
+  })) || [];
 
   return (
     <nav className="bg-background w-full shadow-lg sticky top-0 z-50">
@@ -144,8 +99,7 @@ export default function Nav() {
                     transition={{ duration: 0.3 }}
                   >
                     <ul className="py-2">
-                      {!error && isLoading && <Loader2 className="w-5 h-5" />}
-                      {archives.map((item) => (
+                      {transformedArchives.map((item) => (
                         <li key={item.href}>
                           <Link
                             prefetch
@@ -234,7 +188,7 @@ export default function Nav() {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {archives.map((item) => (
+                      {transformedArchives.map((item) => (
                         <MobileNavLink
                           toggleMenu={toggleMenu}
                           key={item.href}

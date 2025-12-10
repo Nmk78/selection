@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { validateKey } from '@/actions/secretKey'
 
 export function KeyInputForm() {
   const [key, setKey] = useState('')
@@ -15,10 +14,9 @@ export function KeyInputForm() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      await validateKey(key)
       router.push(`/check?key=${encodeURIComponent(key)}`)
     } catch (error) {
-      console.error('Error validating key:', error)
+      console.error('Error navigating:', error)
     } finally {
       setIsLoading(false)
     }
@@ -46,4 +44,3 @@ export function KeyInputForm() {
     </form>
   )
 }
-

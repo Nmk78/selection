@@ -4,45 +4,24 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
-import { getArchiveMetadatasById, getCandidatesWithStatsAndTitles } from '@/actions/archive';
-import { Skeleton } from '@/components/ui/skeleton'; // ShadCN Skeleton
-
-
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function YearArchivePage() {
-  const { archiveId } = useParams(); // Extract archiveId from URL
+  const { archiveId } = useParams();
+  const roomId = archiveId as Id<"metadata">;
 
-  // Use React Query to fetch candidates
-  const {data} = useQuery({
-    queryKey: ['room', archiveId],
-    queryFn: async () => {
-      const res = await getArchiveMetadatasById(String(archiveId));
-      if (!res.success) {
-        throw new Error('Failed to fetch metadata');
-      }
-      return res.data; // Return candidates data
-    },
-    enabled: !!archiveId, 
-  });  
-  console.log("🚀 ~ YearArchivePage ~ data:", data)
+  const metadata = useQuery(api.archive.getArchiveMetadataById, { id: roomId });
+  const candidatesData = useQuery(api.archive.getCandidatesWithStatsAndTitles, { roomId });
 
-  const query = useQuery({
-    queryKey: ['candidates', archiveId],
-    queryFn: async () => {
-      const res = await getCandidatesWithStatsAndTitles(String(archiveId));
-      if (!res.success) {
-        throw new Error('Failed to fetch candidates');
-      }
-      return res.data; // Return candidates data
-    },
-    enabled: !!archiveId, // Ensure query runs only when archiveId is defined
-  });
-
-  const { data: pastCandidates = [], isLoading, isError } = query;
+  const isLoading = metadata === undefined || candidatesData === undefined;
+  const isError = metadata?.success === false || candidatesData?.success === false;
+  const pastCandidates = candidatesData?.data ?? [];
 
   // Render skeletons during loading
-  if (isLoading && !data) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-romantic-bg to-romantic-secondary py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <motion.h1
@@ -81,14 +60,12 @@ export default function YearArchivePage() {
     );
   }
 
-  // const shuffledCandidates =       pastCandidates.sort(() => Math.random() - 0.5);
   const shuffledCandidates = [
     ...pastCandidates.filter((candidate) => candidate.title !== null),
     ...pastCandidates
       .filter((candidate) => candidate.title === null)
       .sort(() => Math.random() - 0.5),
   ];
-  
 
   // Render candidates data
   return (
@@ -99,7 +76,7 @@ export default function YearArchivePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {data && `Selected Students of ${data[0].title}`}
+        {metadata?.data && `Selected Students of ${metadata.data.title}`}
       </motion.h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto mb-20">
         {shuffledCandidates.length > 0 ? (
@@ -115,8 +92,8 @@ export default function YearArchivePage() {
                 <Image
                   src={candidate.profileImage}
                   alt={candidate.name}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{ objectFit: 'cover' }}
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
@@ -129,10 +106,10 @@ export default function YearArchivePage() {
                   </p>
                   <div className="max-h-0 overflow-hidden group-hover:max-h-[500px] transition-all duration-500">
                     <p className="text-sm sm:text-base mb-4">
-                      {candidate.intro.slice(0,200)}....
+                      {candidate.intro.slice(0, 200)}....
                     </p>
                     <Link
-                    prefetch
+                      prefetch
                       href={`/archive/${archiveId}/${candidate.id}`}
                       className="inline-flex items-center text-romantic-accent hover:text-romantic-primary transition-all duration-300 font-semibold text-lg"
                     >
