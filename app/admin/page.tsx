@@ -8,13 +8,14 @@ import CurrentResults from "@/components/admin/CurrentResult";
 import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
-import { Eye, EyeOff, Loader2, X, Shield, AlertTriangle } from "lucide-react";
+import InviteManager from "@/components/admin/InviteManager";
+import { Eye, EyeOff, Loader2, X, AlertTriangle } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
 import CandidateForm from "@/components/admin/CandidateForm";
 import { Id } from "@/convex/_generated/dataModel";
-import { Authenticated, Unauthenticated, useQuery, useMutation } from "convex/react";
+import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
 import { motion } from "framer-motion";
@@ -49,8 +50,6 @@ function AdminContent() {
 
   const user = useQuery(api.users.current);
   const isAdmin = useQuery(api.users.isAdmin);
-  const makeFirstAdmin = useMutation(api.users.makeFirstAdmin);
-  const [makingAdmin, setMakingAdmin] = useState(false);
 
   const userId = user?._id;
 
@@ -59,17 +58,6 @@ function AdminContent() {
   const closeMetaDataModal = () => {
     setmetaDataModal(null);
     setEditingMetadata(null);
-  };
-
-  const handleMakeAdmin = async () => {
-    setMakingAdmin(true);
-    try {
-      await makeFirstAdmin();
-    } catch (error) {
-      console.error("Failed to make admin:", error);
-    } finally {
-      setMakingAdmin(false);
-    }
   };
 
   // Loading state
@@ -88,7 +76,7 @@ function AdminContent() {
     );
   }
 
-  // Not admin - show make admin option or access denied
+  // Not admin - access denied
   if (!isAdmin) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-4">
@@ -103,31 +91,14 @@ function AdminContent() {
                 <AlertTriangle className="w-8 h-8 text-amber-600" />
               </div>
               <CardTitle className="text-xl text-amber-800">
-                Admin Access Required
+                Access Denied
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-amber-700">
-                You need admin privileges to access this dashboard. If you are
-                the first user, you can claim admin access.
+                You don&apos;t have admin privileges. Please contact an administrator
+                if you need access.
               </p>
-              <Button
-                onClick={handleMakeAdmin}
-                disabled={makingAdmin}
-                className="bg-Cprimary hover:bg-Cprimary/90"
-              >
-                {makingAdmin ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Setting up...
-                  </>
-                ) : (
-                  <>
-                    <Shield className="w-4 h-4 mr-2" />
-                    Become Admin
-                  </>
-                )}
-              </Button>
             </CardContent>
           </Card>
         </motion.div>
@@ -136,7 +107,7 @@ function AdminContent() {
   }
 
   return (
-    <div className="container max-w-7xl h-[82vh] mx-auto p-4 select-none">
+    <div className="container max-w-7xl min-h-[82vh] mx-auto p-4 select-none">
       <div className="h-full flex flex-col md:flex-none md:grid grid-cols-1 md:grid-cols-7 md:grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)] w-full">
         <Card className="col-span-1 row-span-3 md:col-span-4 md:row-span-4">
           <CardHeader className="flex justify-between">
@@ -212,6 +183,8 @@ function AdminContent() {
             </CardContent>
           </Card>
         )}
+
+        <InviteManager />
       </div>
 
       {activeModal && (

@@ -91,4 +91,14 @@ export default defineSchema({
     .index("by_roomId", ["roomId"])
     .index("by_candidateId", ["candidateId"])
     .index("by_roomId_candidateId", ["roomId", "candidateId"]),
+
+  // Invites table for invite-only access
+  invites: defineTable({
+    email: v.string(),
+    role: v.union(v.literal("admin"), v.literal("user")),
+    invitedBy: v.optional(v.id("users")),
+    used: v.boolean(),
+    usedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("by_email", ["email"]),
 });
