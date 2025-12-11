@@ -27,7 +27,8 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
     setIsLoading(true);
 
     try {
-      await signIn("google", { redirectTo: "/admin" });
+      const res = await signIn("google", { redirectTo: "/admin" });
+      console.log("🚀 ~ handleGoogleSignIn ~ res:", res)
       onSuccess?.();
     } catch (err) {
       setError(
