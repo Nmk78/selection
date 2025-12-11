@@ -9,8 +9,9 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "@/hooks/use-toast";
 import { parse } from "papaparse";
+import { Id } from "@/convex/_generated/dataModel";
 
-export default function SecretKeyManager({ userId }: { userId: string }) {
+export default function SecretKeyManager({ userId }: { userId: Id<"users"> }) {
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "processing" | "success" | "error"
   >("idle");

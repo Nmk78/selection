@@ -12,24 +12,24 @@ import {
   Archive,
   TicketCheck,
   ScrollText,
+  LogIn,
 } from "lucide-react";
-import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import UserButton from "@/components/auth/UserButton";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
-  const [archiveOpen, setArchiveOpen] = useState(false); // State for archive dropdown
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
-  const { sessionId } = useAuth();
-
+  const user = useQuery(api.users.current);
   const archiveQueryResult = useQuery(api.archive.getArchiveMetadatas);
   const archives = archiveQueryResult?.data || [];
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleArchive = () => setArchiveOpen(!archiveOpen);
 
-  const menuItems = [
+  const baseMenuItems = [
     { href: "/", icon: <Home className="w-5 h-5" />, label: "Home" },
     {
       href: "/check",
@@ -41,22 +41,21 @@ export default function Nav() {
       icon: <ScrollText className="w-5 h-5" />,
       label: "Policy",
     },
-    ...(sessionId
-      ? [
-          {
-            href: "/admin",
-            icon: <Crown className="w-5 h-5" />,
-            label: "Admin",
-          },
-        ]
-      : []),
   ];
 
-  // Transform the archive data to match the expected format
-  const transformedArchives = archives?.map((item) => ({
-    href: `/${item._id}`, // Using _id from Convex
-    label: item.title || "Untitled",
-  })) || [];
+  const adminMenuItem = {
+    href: "/admin",
+    icon: <Crown className="w-5 h-5" />,
+    label: "Admin",
+  };
+
+  const menuItems = user ? [...baseMenuItems, adminMenuItem] : baseMenuItems;
+
+  const transformedArchives =
+    archives?.map((item) => ({
+      href: `/${item._id}`,
+      label: item.title || "Untitled",
+    })) || [];
 
   return (
     <nav className="bg-background w-full shadow-lg sticky top-0 z-50">
@@ -70,6 +69,7 @@ export default function Nav() {
                 width={50}
                 height={50}
                 className="h-12 md:h-20 w-auto"
+                priority
               />
             </Link>
           </div>
@@ -96,37 +96,53 @@ export default function Nav() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <ul className="py-2">
-                      {transformedArchives.map((item) => (
-                        <li key={item.href}>
-                          <Link
-                            prefetch
-                            onClick={toggleArchive}
-                            href={`/archive${item.href}`}
-                            className="block px-4 py-2 text-Cprimary hover:bg-gray-100 transition"
-                          >
-                            {item.label}
-                          </Link>
+                      {transformedArchives.length === 0 ? (
+                        <li className="px-4 py-2 text-muted-foreground text-sm">
+                          No archives yet
                         </li>
-                      ))}
+                      ) : (
+                        transformedArchives.map((item) => (
+                          <li key={item.href}>
+                            <Link
+                              prefetch
+                              onClick={toggleArchive}
+                              href={`/archive${item.href}`}
+                              className="block px-4 py-2 text-Cprimary hover:bg-gray-100 transition"
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))
+                      )}
                     </ul>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            <SignedIn>
+            <Authenticated>
               <UserButton />
-            </SignedIn>
+            </Authenticated>
+
+            <Unauthenticated>
+              <Link
+                href="/signin"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-Cprimary text-white font-medium hover:bg-Cprimary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <LogIn className="w-4 h-4" />
+                Sign In
+              </Link>
+            </Unauthenticated>
           </div>
 
           {/* Mobile Menu */}
-          <div className="flex justify-center md:hidden">
-            <SignedIn>
+          <div className="flex justify-center md:hidden gap-2">
+            <Authenticated>
               <UserButton />
-            </SignedIn>
+            </Authenticated>
             <button
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-Cprimary focus:outline-none focus:ring-inset"
@@ -153,11 +169,11 @@ export default function Nav() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden absolute max-w-fit px-5 top-24 right-6 w-full bg-background shadow-lg z-50"
+            className="md:hidden absolute max-w-fit px-5 top-24 right-6 w-full bg-background shadow-lg z-50 rounded-lg"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <motion.div className="px-2 pt-2 pb-3 space-y-1 divide-y-2 flex flex-col items-end">
               {menuItems.map((item) => (
@@ -170,11 +186,22 @@ export default function Nav() {
                   {item.label}
                 </MobileNavLink>
               ))}
+
+              <Unauthenticated>
+                <MobileNavLink
+                  toggleMenu={toggleMenu}
+                  href="/signin"
+                  icon={<LogIn className="w-5 h-5" />}
+                >
+                  Sign In
+                </MobileNavLink>
+              </Unauthenticated>
+
               {/* Archive in Mobile Menu */}
-              <div>
+              <div className="w-full">
                 <button
                   onClick={toggleArchive}
-                  className="flex items-center font-medium text-Cprimary hover:text-Caccent transition duration-300 px-3"
+                  className="flex items-center font-medium text-Cprimary hover:text-Caccent transition duration-300 px-3 py-2 w-full justify-end"
                 >
                   <Archive className="w-5 h-5 mr-2" />
                   Archive
@@ -186,18 +213,24 @@ export default function Nav() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      {transformedArchives.map((item) => (
-                        <MobileNavLink
-                          toggleMenu={toggleMenu}
-                          key={item.href}
-                          href={`/archive${item.href}`}
-                          icon={null}
-                        >
-                          {item.label}
-                        </MobileNavLink>
-                      ))}
+                      {transformedArchives.length === 0 ? (
+                        <p className="text-sm text-muted-foreground px-3 py-2 text-right">
+                          No archives yet
+                        </p>
+                      ) : (
+                        transformedArchives.map((item) => (
+                          <MobileNavLink
+                            toggleMenu={toggleMenu}
+                            key={item.href}
+                            href={`/archive${item.href}`}
+                            icon={null}
+                          >
+                            {item.label}
+                          </MobileNavLink>
+                        ))
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>

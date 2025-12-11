@@ -1,14 +1,13 @@
 import localFont from "next/font/local";
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
 import ConvexClientProvider from "./ConvexClientProvider";
 import { Metadata } from "next";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/next";
 
 const quindelia = localFont({
-  src: "./fonts/quindelia.regular.ttf", // Correct lowercase
+  src: "./fonts/quindelia.regular.ttf",
   variable: "--font-quindelia",
 });
 
@@ -28,7 +27,6 @@ export const metadata: Metadata = {
   description:
     "Join the PU Selection App to vote and help select the university's King, Queen, Prince, and Princess. Participate in two exciting voting rounds to make your voice heard!",
 
-  // Open Graph Tags for social media sharing
   openGraph: {
     title: "PU Selection - Engage and Vote!",
     description:
@@ -41,11 +39,10 @@ export const metadata: Metadata = {
       },
     ],
     type: "website",
-    locale: "en_US", // Add appropriate locale
+    locale: "en_US",
     siteName: "PU Selection",
   },
 
-  // Twitter Card Tags
   twitter: {
     card: "summary_large_image",
     title: "PU Selection - Be the Judge!",
@@ -54,13 +51,9 @@ export const metadata: Metadata = {
     images: [`${process.env.BASE_URL || "https://example.com"}/logo.webp`],
   },
 
-  // Favicon
   icons: {
     icon: "/favicon.ico",
   },
-
-  // Canonical URL
-  // canonical: process.env.BASE_URL || "https://example.com",
 };
 
 export default function RootLayout({
@@ -69,19 +62,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider afterSignOutUrl="/">
-      <ConvexClientProvider>
-        <html lang="en">
-          <body
-            className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
-          >
-            <Nav />
-            {children}
-            <Toaster />
-            <Analytics />
-          </body>
-        </html>
-      </ConvexClientProvider>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
+      >
+        <ConvexClientProvider>
+          <Nav />
+          {children}
+          <Toaster />
+        </ConvexClientProvider>
+        <Analytics />
+      </body>
+    </html>
   );
 }

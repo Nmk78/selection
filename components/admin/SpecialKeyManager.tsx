@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Id } from "@/convex/_generated/dataModel";
 
-export default function SpecialKeyManager({ userId }: { userId: string }) {
+export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
   const [specialKey, setSpecialKey] = useState("");
 
   const specialKeysData = useQuery(api.secretKeys.getAllSpecial);
