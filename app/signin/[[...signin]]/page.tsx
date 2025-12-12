@@ -28,6 +28,7 @@ export default function SignInPage() {
 
 function SignInContent({ onSuccess }: { onSuccess: () => void }) {
   const hasUsers = useQuery(api.users.hasUsers);
+  console.log("🚀 ~ SignInContent ~ hasUsers:", hasUsers)
 
   if (hasUsers === undefined) {
     return (

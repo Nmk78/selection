@@ -48,7 +48,11 @@ function AdminContent() {
   const [candidateId, setCandidateId] = useState<string | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
 
+  
   const user = useQuery(api.users.current);
+  console.log("🚀 ~ AdminContent ~ user:", user)
+
+
   const isAdmin = useQuery(api.users.isAdmin);
 
   const userId = user?._id;
