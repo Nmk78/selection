@@ -1,101 +1,13 @@
-// "use client";
-
-// import { useTransition } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { Textarea } from "@/components/ui/textarea";
-// import { toast } from "@/hooks/use-toast";
-// import { addMetadata } from "@/actions/metadata";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-// export default function MetadataForm({ closeModal }: any) {
-//   const [isPending, startTransition] = useTransition();
-//   const queryClient = useQueryClient();
-
-//   const {mutate} = useMutation({
-//     mutationFn: async (formData: FormData) => {
-//       // Your API call for adding metadata
-//       await addMetadata(formData);
-//     },
-//     onSuccess: () => {
-//       // Show success toast notification
-//       toast({
-//         title: "Success",
-//         description: "Metadata saved successfully.",
-//       });
-//       queryClient.invalidateQueries({ queryKey: ["metadata"] });
-
-//       // Close the modal after success
-//       closeModal();
-//     },
-//     onError: (err: { message: any; }) => {
-//       // Show error toast notification
-//       toast({
-//         title: "Error",
-//         //@ts-ignore
-//         description: err?.message || "Failed to save metadata.",
-//       });
-//     },
-//   });
-
-//   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault(); // Prevent default form submission
-
-//     if (!e.currentTarget) {
-//       toast({ title: "Error", description: "Form submission failed." });
-//       return;
-//     }
-
-//     const formData = new FormData(e.currentTarget);
-
-//     // Wrap the mutation call inside startTransition for smooth UI updates
-//     startTransition(() => {
-//       mutate(formData);
-//     });
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
-//       <div>
-//         <label htmlFor="title" className="block font-medium">
-//           Title
-//         </label>
-//         <Input
-//           id="title"
-//           name="title"
-//           type="text"
-//           required
-//           aria-required="true"
-//         />
-//       </div>
-//       <div>
-//         <label htmlFor="description" className="block font-medium">
-//           Description
-//         </label>
-//         <Textarea
-//           id="description"
-//           name="description"
-//           rows={4}
-//           required
-//           aria-required="true"
-//         />
-//       </div>
-//       <Button type="submit" disabled={isPending} className="w-full">
-//         {isPending ? "Saving..." : "Save Metadata"}
-//       </Button>
-//     </form>
-//   );
-// }
-
 "use client";
 
-import { useTransition, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { addMetadata } from "@/actions/metadata";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { Plus, Minus, BadgeInfo } from "lucide-react";
 import {
   TooltipProvider,
@@ -110,6 +22,15 @@ interface NumberInputWithControlsProps {
   value: number;
   onChange: (value: number) => void;
   minValue?: number;
+}
+
+interface MetadataFormData {
+  _id?: Id<"metadata">;
+  title: string;
+  description: string;
+  maleForSecondRound: number;
+  femaleForSecondRound: number;
+  leaderBoardCandidates: number;
 }
 
 function NumberInputWithControls({
@@ -149,52 +70,76 @@ function NumberInputWithControls({
 
 export default function MetadataForm({
   closeModal,
+  initialData,
 }: {
   closeModal: () => void;
+  initialData?: MetadataFormData | null;
 }) {
-  const [isPending, startTransition] = useTransition();
-  const queryClient = useQueryClient();
-  const [maleForSecondRound, setMaleForSecondRound] = useState(2);
-  const [femaleForSecondRound, setFemaleForSecondRound] = useState(2);
-  const [leaderboardCandidate, setLeaderboardCandidate] = useState(5);
+  const [isPending, setIsPending] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [maleForSecondRound, setMaleForSecondRound] = useState(5);
+  const [femaleForSecondRound, setFemaleForSecondRound] = useState(5);
+  const [candidatesForLeaderboard, setCandidatesForLeaderboard] = useState(5);
 
-  const { mutate } = useMutation({
-    mutationFn: async (formData: FormData) => {
-      await addMetadata(formData);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Metadata saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["metadata", "archive"] });
+  const createMetadata = useMutation(api.metadata.create);
+  const editMetadata = useMutation(api.metadata.edit);
+
+  // Initialize form with existing data if editing
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setDescription(initialData.description);
+      setMaleForSecondRound(initialData.maleForSecondRound);
+      setFemaleForSecondRound(initialData.femaleForSecondRound);
+      setCandidatesForLeaderboard(initialData.leaderBoardCandidates);
+    }
+  }, [initialData]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsPending(true);
+
+    try {
+      if (initialData && initialData._id) {
+        // Editing existing metadata
+        await editMetadata({
+          id: initialData._id,
+          title: title || undefined,
+          description: description || undefined,
+          maleForSecondRound: maleForSecondRound,
+          femaleForSecondRound: femaleForSecondRound,
+          leaderBoardCandidates: candidatesForLeaderboard,
+        });
+
+        toast({
+          title: "Success",
+          description: "Metadata updated successfully.",
+        });
+      } else {
+        // Creating new metadata
+        await createMetadata({
+          title,
+          description,
+          maleForSecondRound,
+          femaleForSecondRound,
+          leaderBoardCandidates: candidatesForLeaderboard,
+        });
+
+        toast({
+          title: "Success",
+          description: "Metadata saved successfully.",
+        });
+      }
       closeModal();
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (err: { message: any }) => {
+    } catch (error) {
       toast({
         title: "Error",
-        description: err?.message || "Failed to save metadata.",
+        description: error instanceof Error ? error.message : "Failed to save metadata.",
       });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!e.currentTarget) {
-      toast({ title: "Error", description: "Form submission failed." });
-      return;
+    } finally {
+      setIsPending(false);
     }
-
-    const formData = new FormData(e.currentTarget);
-    formData.append("maleForSecondRound", maleForSecondRound.toString());
-    formData.append("femaleForSecondRound", femaleForSecondRound.toString());
-    formData.append("leaderboardCandidate", leaderboardCandidate.toString());
-
-    startTransition(() => {
-      mutate(formData);
-    });
   };
 
   return (
@@ -207,6 +152,8 @@ export default function MetadataForm({
           id="title"
           name="title"
           type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           required
           aria-required="true"
         />
@@ -244,8 +191,8 @@ export default function MetadataForm({
         <NumberInputWithControls
           id="leaderboardCandidate"
           label="Leaderboard Top"
-          value={leaderboardCandidate}
-          onChange={setLeaderboardCandidate}
+          value={candidatesForLeaderboard}
+          onChange={setCandidatesForLeaderboard}
           minValue={1}
         />
         <div className="col-span-2 mt-auto">
@@ -270,13 +217,15 @@ export default function MetadataForm({
           id="description"
           name="description"
           rows={4}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           required
           aria-required="true"
         />
       </div>
 
       <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Saving..." : "Save Metadata"}
+        {isPending ? "Saving..." : initialData ? "Update Metadata" : "Save Metadata"}
       </Button>
     </form>
   );

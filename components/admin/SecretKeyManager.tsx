@@ -5,34 +5,19 @@ import { useDropzone } from "react-dropzone";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useMutation } from "@tanstack/react-query";
-import { insertSecretKeys } from "@/actions/secretKey";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { toast } from "@/hooks/use-toast";
 import { parse } from "papaparse";
+import { Id } from "@/convex/_generated/dataModel";
 
-export default function SecretKeyManager({ userId }: { userId: string }) {
+export default function SecretKeyManager({ userId }: { userId: Id<"users"> }) {
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "processing" | "success" | "error"
   >("idle");
   const [progress, setProgress] = useState(0);
 
-  // Define mutation for inserting secret keys
-  const { mutate } = useMutation({
-    mutationFn: async ({
-      userId,
-      keys,
-    }: {
-      userId: string;
-      keys: string[];
-    }) => {
-      // Directly calling the server action `insertSecretKeys` instead of API call
-      const response = await insertSecretKeys(userId, keys);
-      if (!response.success) {
-        throw new Error(response.message || "Unknown error occurred.");
-      }
-      return response;
-    },
-  });
+  const insertKeys = useMutation(api.secretKeys.insertMany);
 
   // Handle file drop
   const onDrop = useCallback(
@@ -47,8 +32,6 @@ export default function SecretKeyManager({ userId }: { userId: string }) {
         skipEmptyLines: true,
         delimiter: ",",
         complete: async (results: { data: string[][] }) => {
-          console.log("Parsed Results:", results);
-
           const rows = results.data as string[][];
           if (!rows.length || !rows[0].length) {
             toast({
@@ -63,30 +46,24 @@ export default function SecretKeyManager({ userId }: { userId: string }) {
           const keys = rows.flat();
           setProgress(50);
 
-          mutate(
-            { userId, keys },
-            {
-              onSuccess: (response) => {
-                toast({
-                  title: "Upload Successful",
-                  description: response.message,
-                });
-                setUploadStatus("success");
-                setProgress(100);
-              },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onError: (error: any) => {
-                console.error("Mutation Error:", error);
-                toast({
-                  title: "Upload Failed",
-                  description: error.message || "Unknown error.",
-                  variant: "destructive",
-                });
-                setUploadStatus("error");
-                setProgress(100);
-              },
-            }
-          );
+          try {
+            const response = await insertKeys({ userId, keys });
+            toast({
+              title: "Upload Successful",
+              description: response.message,
+            });
+            setUploadStatus("success");
+            setProgress(100);
+          } catch (error) {
+            console.error("Mutation Error:", error);
+            toast({
+              title: "Upload Failed",
+              description: error instanceof Error ? error.message : "Unknown error.",
+              variant: "destructive",
+            });
+            setUploadStatus("error");
+            setProgress(100);
+          }
         },
         error: (error: Error) => {
           console.error("CSV Parsing Error:", error);
@@ -99,7 +76,7 @@ export default function SecretKeyManager({ userId }: { userId: string }) {
         },
       });
     },
-    [mutate, userId]
+    [insertKeys, userId]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

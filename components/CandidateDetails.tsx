@@ -19,11 +19,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "@/hooks/use-toast";
-import { voteForCandidate } from "@/actions/vote";
-import { Candidate } from "@prisma/client";
 import { Badge } from "./ui/badge";
+
+interface CandidateProps {
+  id: string;
+  name: string;
+  major: string;
+  age: number;
+  gender: "male" | "female";
+  height: number;
+  weight: number;
+  intro: string;
+  hobbies: string[];
+  carouselImages: string[];
+  profileImage: string;
+}
 
 export default function CandidateDetails({
   id,
@@ -37,53 +51,40 @@ export default function CandidateDetails({
   hobbies,
   carouselImages,
   profileImage,
-}: Candidate) {
-  console.log("🚀 ~ carouselImages:", carouselImages);
+}: CandidateProps) {
   const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
-  /// TODO Add SEO Metadata
   const [voting, setVoting] = useState(false);
-  // Mutation using React Query
-  const { mutate: voteCandidate } = useMutation({
-    mutationFn: async ({
-      candidateId,
-      secretKey,
-    }: {
-      candidateId: string;
-      secretKey: string;
-    }) => {
-      setVoting(true);
-      // Ensure voteForCandidate is returning the expected result
-      const res = await voteForCandidate(candidateId, secretKey);
-      console.log("🚀 ~ res:", res); // Log the response for debugging
-      toast({
-        title: res.success ? "Succeed" : "Failed",
-        description: res.message,
-      });
-      setVoting(false);
-      return res;
-    },
-    onError: (error) => {
-      console.error("Failed to record vote:", error);
-      toast({
-        title: "Error",
-        description: "Something went wrong while voting.",
-      });
-    },
-  });
+  const voteForCandidate = useMutation(api.votes.voteForCandidate);
 
   // Form submission handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevents the form from submitting the traditional way
+    e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
     const candidateId = formData.get("candidateId") as string;
     const secretKey = formData.get("secretKey") as string;
 
-    console.log("Form submitting", { candidateId, secretKey });
+    setVoting(true);
+    try {
+      const res = await voteForCandidate({
+        candidateId: candidateId as Id<"candidates">,
+        secretKey,
+      });
 
-    // Call the mutation with the gathered data, without using `await`
-    voteCandidate({ candidateId, secretKey });
+      toast({
+        title: res.success ? "Success" : "Failed",
+        description: res.message,
+      });
+    } catch (error) {
+      console.error("Failed to record vote:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong while voting.",
+      });
+    } finally {
+      setVoting(false);
+    }
   };
 
   return (
@@ -239,10 +240,6 @@ export default function CandidateDetails({
                 {voting ? "Please wait" : "Vote"}
               </Button>
             </form>
-
-            {/* <DialogFooter>
-                
-              </DialogFooter> */}
           </DialogContent>
         </Dialog>
       </CardFooter>
