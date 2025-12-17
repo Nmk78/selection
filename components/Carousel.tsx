@@ -18,7 +18,7 @@ export default function CarouselComponent() {
     return (
       <div className="w-full max-w-7xl md:mt-2 mx-auto overflow-hidden">
         <div className="p-0 ">
-          <Carousel className="w-full rounded-none md:rounded-xl">
+          <Carousel className="w-full rounded-none md:rounded-t-xl">
             <CarouselContent>
               {[...Array(4)].map((_, index) => (
                 <CarouselItem key={index} className="relative rounded-none pl-0 md:basis-1/2 lg:basis-1/5">
@@ -51,7 +51,7 @@ export default function CarouselComponent() {
   const randomImages = [...images].sort(() => Math.random() - 0.5);
 
   return (
-    <Card className="w-full max-w-7xl rounded-none md:mt-2 mx-auto overflow-hidden">
+    <Card className="w-full max-w-7xl rounded-none md:rounded-t-xl md:mt-2 mx-auto overflow-hidden">
       <CardContent className="p-0 rounded-none md:rounded-xl">
         <Carousel
           plugins={[plugin.current]}
@@ -73,8 +73,8 @@ export default function CarouselComponent() {
                   />
                 </div>
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-                  <span className="text-white font-thin font-quindelia text-sm sm:text-base relative inline-block px-2 py-1 bg-gray-600 bg-opacity-20 rounded">
-                    {index + 1} of {randomImages.length}
+                  <span className="text-white font-thin text-sm sm:text-base relative inline-block px-2 py-1 bg-gray-600 bg-opacity-20 rounded-full">
+                    {index + 1} / {randomImages.length}
                   </span>
                 </div>
               </CarouselItem>

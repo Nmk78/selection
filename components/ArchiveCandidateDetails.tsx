@@ -88,7 +88,7 @@ export function ArchiveCandidateDetailPage({ archiveId, id }: CandidateDetailPag
           content={`Get to know ${candidateData.name}'s achievements, hobbies, and background.`}
         />
         <meta property="og:image" content={candidateData.profileImage} />
-        <meta property="og:url" content={`https://example.com/archive/${archiveId}/candidate/${id}`} />
+        <meta property="og:url" content={`http://localhost:3000/archive/${archiveId}/candidate/${id}`} />
         <meta name="keywords" content={`candidate, ${candidateData.major}, ${candidateData.name}`} />
       </Head>
 

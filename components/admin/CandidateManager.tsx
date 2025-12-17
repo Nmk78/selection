@@ -34,8 +34,8 @@ export default function CandidateManager({
   const isLoading = candidates === undefined;
 
   return (
-    <Card className={`md:overflow-hidden ${classes}`}>
-      <CardHeader>
+    <div className={`md:overflow-hidden w-full ${classes}`}>
+      {/* <CardHeader>
         <CardTitle className="flex justify-between items-center">
           <span>Candidates</span>
           <Button
@@ -46,9 +46,8 @@ export default function CandidateManager({
             <Plus className="w-4 h-4" />
           </Button>
         </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[38vh] pb-5">
+      </CardHeader> */}
+        <ScrollArea className="h-[38vh] pb-5 w-full">
           <Table>
             <TableHeader>
               <TableRow>
@@ -92,7 +91,6 @@ export default function CandidateManager({
             </TableBody>
           </Table>
         </ScrollArea>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ export const current = query({
   args: {},
   handler: async (ctx) => {
     const userId = await auth.getUserId(ctx);
+    console.log("🚀 ~ userId:", userId)
     if (!userId) {
       return null;
     }

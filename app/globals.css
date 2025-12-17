@@ -170,6 +170,10 @@ body {
   }
 }
 
+.animate-gradient {
+  animation: gradient-animation 3s ease infinite;
+}
+
 .text-gradient {
   font-size: 2rem; /* Adjust the font size as needed */
   font-weight: bold;
@@ -236,4 +240,136 @@ body {
 
 .animate-fade-in {
   animation: fade-in 0.5s ease-out forwards;
+}
+
+/* Energetic Flame/Energy Background Animations */
+@keyframes flame-flicker {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scaleY(1) translateY(0);
+  }
+  25% {
+    opacity: 1;
+    transform: scaleY(1.1) translateY(-5px);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scaleY(0.95) translateY(5px);
+  }
+  75% {
+    opacity: 1;
+    transform: scaleY(1.05) translateY(-3px);
+  }
+}
+
+@keyframes flame-wave {
+  0% {
+    background-position: 0% 50%;
+    transform: translateX(0);
+  }
+  50% {
+    background-position: 100% 50%;
+    transform: translateX(20px);
+  }
+  100% {
+    background-position: 0% 50%;
+    transform: translateX(0);
+  }
+}
+
+@keyframes energy-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes energy-wave {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+}
+
+.flame-layer-1 {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 69, 0, 0.4) 20%,
+    rgba(255, 140, 0, 0.5) 40%,
+    rgba(255, 215, 0, 0.4) 60%,
+    rgba(255, 69, 0, 0.3) 80%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: flame-flicker 2s ease-in-out infinite,
+             flame-wave 8s ease-in-out infinite;
+  filter: blur(20px);
+}
+
+.flame-layer-2 {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 20, 147, 0.3) 25%,
+    rgba(255, 69, 0, 0.5) 50%,
+    rgba(255, 165, 0, 0.4) 75%,
+    transparent 100%
+  );
+  background-size: 100% 250%;
+  animation: flame-flicker 2.5s ease-in-out infinite reverse,
+             flame-wave 10s ease-in-out infinite reverse;
+  filter: blur(25px);
+  transform: translateX(10%);
+}
+
+.flame-layer-3 {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 0, 0, 0.3) 30%,
+    rgba(255, 140, 0, 0.4) 60%,
+    rgba(255, 215, 0, 0.3) 90%,
+    transparent 100%
+  );
+  background-size: 100% 300%;
+  animation: flame-flicker 3s ease-in-out infinite,
+             flame-wave 12s ease-in-out infinite;
+  filter: blur(30px);
+  transform: translateX(-10%);
+}
+
+.energy-particles {
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 69, 0, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(255, 140, 0, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 60% 20%, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 90% 50%, rgba(255, 0, 0, 0.3) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: energy-pulse 4s ease-in-out infinite,
+             flame-wave 15s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.energy-waves {
+  background: 
+    radial-gradient(ellipse at center, rgba(255, 69, 0, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse at center, rgba(255, 140, 0, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse at center, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+  background-size: 150% 150%;
+  animation: energy-wave 6s ease-in-out infinite;
+  opacity: 0.5;
 }

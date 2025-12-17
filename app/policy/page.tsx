@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChevronRight, ChevronLeft, Users, UserCheck, Award, Calculator, EqualApproximately } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Users, UserCheck, Award, Calculator, EqualApproximately, Crown, Sparkles, ScrollText } from 'lucide-react'
 
 const policySteps = [
   {
@@ -53,62 +53,138 @@ export default function VotingPolicy() {
   }
 
   return (
-    <div className="max-w-4xl md:my-5 mx-auto p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl shadow-lg">
-      <h1 className="text-4xl font-bold text-center mb-8 text-indigo-900">Voting Policy</h1>
-      
-      <div className="relative h-80 mb-8">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0 flex flex-col items-center justify-center text-center"
-          >
-            <div className="bg-white p-6 rounded-full mb-4 shadow-md">
-              {policySteps[currentStep].icon}
-            </div>
-            <h2 className="text-2xl font-semibold mb-2 text-indigo-800">{policySteps[currentStep].title}</h2>
-            <p className="text-lg text-gray-600">{policySteps[currentStep].content}</p>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      <div className="flex justify-between mb-8">
-        <Button onClick={prevStep} variant="outline" className="flex items-center">
-          <ChevronLeft className="mr-2" /> Previous
-        </Button>
-        <div className="flex space-x-2">
-          {policySteps.map((_, index) => (
-            <motion.div
-              key={index}
-              className={`w-3 h-3 rounded-full ${index === currentStep ? 'bg-indigo-600' : 'bg-indigo-200'}`}
-              animate={{ scale: index === currentStep ? 1.2 : 1 }}
-            />
-          ))}
+    <div className="max-w-5xl mx-auto p-4 md:p-6 py-8">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <ScrollText className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+          <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+            Voting Policy
+          </h1>
+          <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
         </div>
-        <Button onClick={nextStep} variant="outline" className="flex items-center">
-          Next <ChevronRight className="ml-2" />
-        </Button>
-      </div>
+        <p className="text-sm md:text-base text-gray-600 mt-2">
+          Understand how the selection process works
+        </p>
+      </motion.div>
 
-      <Card className="mb-8">
-        <CardContent className="p-6">
-          <h3 className="text-2xl font-semibold mb-4 text-indigo-800">Vote Calculation Demo</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className=' col-span-2'>
-              <Label htmlFor="regularVotes">Regular Votes</Label>
+      {/* Policy Steps Carousel */}
+      <Card className="mb-6 rounded-2xl shadow-xl border-2 border-gray-200/50 bg-gradient-to-br from-white to-gray-50/30 overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 pb-4">
+          <CardTitle className="flex items-center justify-center gap-3 text-xl md:text-2xl font-bold text-white">
+            <Sparkles className="w-5 h-5 md:w-6 md:h-6 animate-pulse" />
+            <span>Selection Process</span>
+            <Sparkles className="w-5 h-5 md:w-6 md:h-6 animate-pulse" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 md:p-8">
+          <div className="relative h-96 mb-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -50, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+                className="absolute inset-0 flex flex-col items-center justify-center text-center"
+              >
+                <motion.div
+                  className={`p-6 md:p-8 rounded-2xl mb-6 shadow-xl ${
+                    currentStep === 0
+                      ? "bg-gradient-to-br from-blue-100 to-blue-200"
+                      : currentStep === 1
+                      ? "bg-gradient-to-br from-green-100 to-green-200"
+                      : currentStep === 2
+                      ? "bg-gradient-to-br from-purple-100 to-purple-200"
+                      : currentStep === 3
+                      ? "bg-gradient-to-br from-amber-100 to-amber-200"
+                      : "bg-gradient-to-br from-pink-100 to-pink-200"
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="text-purple-700">
+                    {policySteps[currentStep].icon}
+                  </div>
+                </motion.div>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+                  {policySteps[currentStep].title}
+                </h2>
+                <p className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed">
+                  {policySteps[currentStep].content}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center mb-6">
+            <Button
+              onClick={prevStep}
+              variant="outline"
+              className="flex items-center gap-2 border-2 hover:bg-purple-50 hover:border-purple-300"
+            >
+              <ChevronLeft className="w-4 h-4" /> Previous
+            </Button>
+            <div className="flex space-x-2">
+              {policySteps.map((_, index) => (
+                <motion.button
+                  key={index}
+                  onClick={() => setCurrentStep(index)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentStep
+                      ? 'bg-gradient-to-r from-purple-600 to-amber-600'
+                      : 'bg-gray-300'
+                  }`}
+                  animate={{
+                    scale: index === currentStep ? 1.3 : 1,
+                  }}
+                  whileHover={{ scale: 1.2 }}
+                />
+              ))}
+            </div>
+            <Button
+              onClick={nextStep}
+              variant="outline"
+              className="flex items-center gap-2 border-2 hover:bg-purple-50 hover:border-purple-300"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Vote Calculation Demo */}
+      <Card className="mb-6 rounded-2xl shadow-xl border-2 border-gray-200/50 bg-gradient-to-br from-white to-gray-50/30 overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 pb-4">
+          <CardTitle className="flex items-center justify-center gap-3 text-xl md:text-2xl font-bold text-white">
+            <Calculator className="w-5 h-5 md:w-6 md:h-6" />
+            <span>Vote Calculation Demo</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 md:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+            <div className="md:col-span-2">
+              <Label htmlFor="regularVotes" className="text-sm font-semibold text-gray-700 mb-2 block">
+                Regular Votes
+              </Label>
               <Input
                 id="regularVotes"
                 type="number"
                 value={regularVotes}
                 onChange={(e) => setRegularVotes(Number(e.target.value))}
                 min={0}
+                className="h-12 text-base border-2 focus:border-purple-400"
               />
             </div>
             <div>
-              <Label htmlFor="dressingScore">Dressing Score (1-10)</Label>
+              <Label htmlFor="dressingScore" className="text-sm font-semibold text-gray-700 mb-2 block">
+                Dressing Score (1-10)
+              </Label>
               <Input
                 id="dressingScore"
                 type="number"
@@ -116,10 +192,13 @@ export default function VotingPolicy() {
                 onChange={(e) => setDressingScore(Number(e.target.value))}
                 min={1}
                 max={10}
+                className="h-12 text-base border-2 focus:border-purple-400"
               />
             </div>
             <div>
-              <Label htmlFor="performanceScore">Performance Score (1-10)</Label>
+              <Label htmlFor="performanceScore" className="text-sm font-semibold text-gray-700 mb-2 block">
+                Performance Score (1-10)
+              </Label>
               <Input
                 id="performanceScore"
                 type="number"
@@ -127,10 +206,13 @@ export default function VotingPolicy() {
                 onChange={(e) => setPerformanceScore(Number(e.target.value))}
                 min={1}
                 max={10}
+                className="h-12 text-base border-2 focus:border-purple-400"
               />
             </div>
             <div>
-              <Label htmlFor="qaScore">Q&A Score (1-10)</Label>
+              <Label htmlFor="qaScore" className="text-sm font-semibold text-gray-700 mb-2 block">
+                Q&A Score (1-10)
+              </Label>
               <Input
                 id="qaScore"
                 type="number"
@@ -138,31 +220,45 @@ export default function VotingPolicy() {
                 onChange={(e) => setQaScore(Number(e.target.value))}
                 min={1}
                 max={10}
+                className="h-12 text-base border-2 focus:border-purple-400"
               />
             </div>
-            <div className=''>
-              <Label htmlFor="numJudges">Number of Judges</Label>
+            <div>
+              <Label htmlFor="numJudges" className="text-sm font-semibold text-gray-700 mb-2 block">
+                Number of Judges
+              </Label>
               <Input
                 id="numJudges"
                 type="number"
                 value={numJudges}
                 onChange={(e) => setNumJudges(Number(e.target.value))}
                 min={1}
+                className="h-12 text-base border-2 focus:border-purple-400"
               />
             </div>
           </div>
           <motion.div
-            className="text-2xl font-bold text-center p-4 bg-indigo-100 rounded-lg"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+            className="text-2xl md:text-3xl font-bold text-center p-6 bg-gradient-to-r from-purple-100 via-amber-100 to-purple-100 rounded-xl border-2 border-purple-200"
+            animate={{ scale: [1, 1.02, 1] }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
           >
-            Final Score: {calculateFinalScore().toFixed(2)}
+            <span className="text-gray-700 mr-2">Final Score:</span>
+            <span className="bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+              {calculateFinalScore().toFixed(2)}
+            </span>
           </motion.div>
         </CardContent>
       </Card>
 
-      <div className="text-center text-gray-600">
-        <p>For more information, please contact the event organizers.</p>
+      {/* Footer */}
+      <div className="text-center">
+        <Card className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200/50 rounded-xl">
+          <CardContent className="p-4 md:p-6">
+            <p className="text-sm md:text-base text-gray-600">
+              For more information, please contact the event organizers.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

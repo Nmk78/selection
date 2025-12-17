@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CurrentResults from "@/components/admin/CurrentResult";
 import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
 import InviteManager from "@/components/admin/InviteManager";
-import { Eye, EyeOff, Loader2, X, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Loader2, X, AlertTriangle, Plus } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
@@ -48,10 +49,10 @@ function AdminContent() {
   const [candidateId, setCandidateId] = useState<string | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
 
-  
   const user = useQuery(api.users.current);
-  console.log("🚀 ~ AdminContent ~ user:", user)
+  console.log("🚀 ~ AdminContent ~ user:", user);
 
+  // return (<div>Admin</div>)
 
   const isAdmin = useQuery(api.users.isAdmin);
 
@@ -100,8 +101,8 @@ function AdminContent() {
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-amber-700">
-                You don&apos;t have admin privileges. Please contact an administrator
-                if you need access.
+                You don&apos;t have admin privileges. Please contact an
+                administrator if you need access.
               </p>
             </CardContent>
           </Card>
@@ -137,12 +138,55 @@ function AdminContent() {
 
         <RoundManager />
 
-        <CandidateManager
-          classes="h-full md:col-span-2 row-span-3 md:row-span-5"
-          setActiveModal={setActiveModal}
-          setEditModal={setEditModal}
-          setCandidateId={setCandidateId}
-        />
+        <Card className="h-full md:col-span-2 row-span-3 md:row-span-5 flex flex-col overflow-hidden">
+          <Tabs
+            defaultValue="candidates"
+            className="flex-1 flex flex-col h-full"
+          >
+            <CardHeader className="pb-3 border-b">
+              <div className="flex justify-between items-center">
+                <TabsList className="grid w-auto grid-cols-2">
+                  <TabsTrigger value="candidates" className="px-4">
+                    Candidates
+                  </TabsTrigger>
+                  <TabsTrigger value="invites" className="px-4">
+                    Invites
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="candidates" className="mt-0">
+                  <Button
+                    onClick={() => setActiveModal(true)}
+                    size="sm"
+                    className="bg-transparent p-0 shadow-none hover:bg-transparent"
+                    aria-label="Add new candidate"
+                  >
+                    <Plus className="w-10 h-10 text-blue-800" />
+                    {/* Add Candidate */}
+                  </Button>
+                </TabsContent>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col overflow-hidden p-6">
+              <TabsContent
+                value="candidates"
+                className="flex-1 mt-0 data-[state=active]:flex flex-col"
+              >
+                <CandidateManager
+                  classes="h-full w-full"
+                  setActiveModal={setActiveModal}
+                  setEditModal={setEditModal}
+                  setCandidateId={setCandidateId}
+                />
+              </TabsContent>
+              <TabsContent
+                value="invites"
+                className="flex-1 mt-0 data-[state=active]:flex flex-col"
+              >
+                <InviteManager />
+              </TabsContent>
+            </CardContent>
+          </Tabs>
+        </Card>
 
         <ArchiveManager
           setMetaDataModal={(param, archiveData) => {
@@ -164,11 +208,7 @@ function AdminContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {userId ? (
-              <SecretKeyManager userId={userId} />
-            ) : (
-              <SkeletonLoader />
-            )}
+            {userId ? <SecretKeyManager userId={userId} /> : <SkeletonLoader />}
           </CardContent>
         </Card>
 
@@ -187,8 +227,6 @@ function AdminContent() {
             </CardContent>
           </Card>
         )}
-
-        <InviteManager />
       </div>
 
       {activeModal && (

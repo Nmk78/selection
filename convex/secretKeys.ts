@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 // Insert multiple secret keys
 export const insertMany = mutation({
@@ -176,6 +177,109 @@ export const getAllSpecial = query({
     return {
       success: true,
       data: specialKeys.map((k) => k.specialSecretKey),
+    };
+  },
+});
+
+// Generate and insert a given amount of unique secret keys
+export const generateAndInsert = mutation({
+  args: {
+    amount: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Validate amount
+    const userId = await ctx.auth.getUserIdentity();
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+    if (args.amount <= 0 || args.amount > 1000) {
+      throw new Error("Amount must be between 1 and 1000");
+    }
+
+    const activeMetadata = await ctx.db
+      .query("metadata")
+      .withIndex("by_active", (q) => q.eq("active", true))
+      .first();
+
+    if (!activeMetadata) {
+      throw new Error("No active room!");
+    }
+
+    // Get all existing secret keys for this room to check uniqueness
+    const existingKeys = await ctx.db
+      .query("secretKeys")
+      .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
+      .collect();
+
+    const existingKeySet = new Set(
+      existingKeys.map((k) => k.secretKey.toLowerCase().trim())
+    );
+
+    // URL-safe characters: alphanumeric (0-9, a-z)
+    // Using lowercase for consistency with how keys are stored
+    const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+    const keyLength = 3;
+    const maxAttempts = args.amount * 100; // Prevent infinite loops
+
+    const generatedKeys: string[] = [];
+    let attempts = 0;
+
+    while (generatedKeys.length < args.amount && attempts < maxAttempts) {
+      attempts++;
+
+      // Generate a random 3-character key
+      let key = "";
+      for (let i = 0; i < keyLength; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        key += chars[randomIndex];
+      }
+
+      // Check if key is unique (not in existing keys and not in generated keys)
+      if (!existingKeySet.has(key) && !generatedKeys.includes(key)) {
+        generatedKeys.push(key);
+        existingKeySet.add(key); // Add to set to prevent duplicates in this batch
+      }
+    }
+
+    if (generatedKeys.length < args.amount) {
+      throw new Error(
+        `Failed to generate ${args.amount} unique keys. Generated ${generatedKeys.length} keys after ${attempts} attempts.`
+      );
+    }
+
+    // Insert the generated keys (same logic as insertMany)
+    let insertedCount = 0;
+    for (const key of generatedKeys) {
+      const normalizedKey = key.toLowerCase().trim();
+
+      // Double-check uniqueness before inserting
+      const existing = await ctx.db
+        .query("secretKeys")
+        .withIndex("by_secretKey_roomId", (q) =>
+          q.eq("secretKey", normalizedKey).eq("roomId", activeMetadata._id)
+        )
+        .first();
+
+      if (!existing) {
+        await ctx.db.insert("secretKeys", {
+          adminId: userId.subject as Id<"users">,
+          roomId: activeMetadata._id,
+          secretKey: normalizedKey,
+          firstRoundMale: false,
+          firstRoundFemale: false,
+          secondRoundMale: false,
+          secondRoundFemale: false,
+        });
+        insertedCount++;
+      }
+    }
+
+    return {
+      success: true,
+      message: `Generated and inserted ${insertedCount} unique secret keys.`,
+      keysGenerated: generatedKeys.length,
+      keysInserted: insertedCount,
+      keys: generatedKeys,
     };
   },
 });
