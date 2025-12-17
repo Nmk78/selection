@@ -30,6 +30,7 @@ function CandidateCard({
   rank: number;
   isMale: boolean;
 }) {
+  console.log("🚀 ~ CandidateCard ~ rank:", rank)
   return (
     <Link
       href={`/candidate/${candidate._id}`}

@@ -18,6 +18,7 @@ interface SignInFormProps {
 }
 
 export default function SignInForm({ onSuccess }: SignInFormProps) {
+  console.log("🚀 ~ SignInForm ~ onSuccess:", onSuccess)
   const { signIn } = useAuthActions();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

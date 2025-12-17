@@ -21,7 +21,6 @@ export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
 
-  const user = useQuery(api.users.current);
   const archiveQueryResult = useQuery(api.archive.getArchiveMetadatas);
   const archives = archiveQueryResult?.data || [];
 

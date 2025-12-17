@@ -26,6 +26,7 @@ export default function CandidateManager({
   setCandidateId,
   classes = "",
 }: CandidateManagerProps) {
+  console.log("🚀 ~ CandidateManager ~ setActiveModal:", setActiveModal)
   const candidates = useQuery(api.candidates.getAll);
 
   const isLoading = candidates === undefined;

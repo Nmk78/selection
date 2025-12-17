@@ -16,6 +16,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [showGlass, setShowGlass] = useState(false);
   const [isInViewport, setIsInViewport] = useState(false);
+  console.log("🚀 ~ CandidateCard ~ isInViewport:", isInViewport)
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
