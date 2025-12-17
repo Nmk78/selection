@@ -161,9 +161,9 @@ export default function Nav() {
               </AnimatePresence>
             </div>
 
-            <div className="h-6 w-px bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-2" />
 
             <Authenticated>
+            <div className="h-6 w-px bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-2" />
               <UserButton />
             </Authenticated>
 
