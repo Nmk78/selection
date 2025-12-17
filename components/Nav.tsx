@@ -43,13 +43,13 @@ export default function Nav() {
     },
   ];
 
-  const adminMenuItem = {
-    href: "/admin",
-    icon: <Crown className="w-5 h-5" />,
-    label: "Admin",
-  };
+  // const adminMenuItem = {
+  //   href: "/admin",
+  //   icon: <Crown className="w-5 h-5" />,
+  //   label: "Admin",
+  // };
 
-  const menuItems = user ? [...baseMenuItems, adminMenuItem] : baseMenuItems;
+  // const menuItems = baseMenuItems;
 
   const transformedArchives =
     archives?.map((item) => ({
@@ -74,7 +74,7 @@ export default function Nav() {
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-4">
-            {menuItems.map((item) => (
+            {baseMenuItems.map((item) => (
               <NavLink key={item.href} href={item.href} icon={item.icon}>
                 {item.label}
               </NavLink>
@@ -169,14 +169,14 @@ export default function Nav() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden absolute max-w-fit px-5 top-24 right-6 w-full bg-background shadow-lg z-50 rounded-lg"
+            className="md:hidden absolute max-w-fit px-0 top-24 right-6 w-full bg-background shadow-lg z-50 rounded-lg"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
             <motion.div className="px-2 pt-2 pb-3 space-y-1 divide-y-2 flex flex-col items-end">
-              {menuItems.map((item) => (
+              {baseMenuItems.map((item) => (
                 <MobileNavLink
                   toggleMenu={toggleMenu}
                   key={item.href}

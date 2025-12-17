@@ -1,3 +1,8 @@
-// When using @convex-dev/auth, the auth.config.ts should be empty.
-// All provider configuration is done in auth.ts via convexAuth().
-export default {};
+export default {
+    providers: [
+      {
+        domain: "https://robust-llama-135.convex.site",
+        applicationID: "convex",
+      },
+    ],
+  };

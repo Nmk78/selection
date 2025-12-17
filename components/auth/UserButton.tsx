@@ -50,9 +50,9 @@ export default function UserButton() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-full bg-Cprimary/10 hover:bg-Cprimary/20 transition-all duration-200 border border-Cprimary/20"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-full bg-Cprimary/10 hover:bg-Cprimary/20 transition-all duration-200 "
       >
-        <div className="w-8 h-8 rounded-full bg-Cprimary text-white flex items-center justify-center text-sm font-semibold">
+        <div className="w-7 h-7 rounded-full bg-Cprimary text-white flex items-center justify-center text-xs font-light">
           {initials}
         </div>
         <ChevronDown

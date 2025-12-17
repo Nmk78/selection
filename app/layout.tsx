@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     title: "PU Selection - Engage and Vote!",
     description:
       "The PU Selection App empowers students to choose their King, Queen, Prince, and Princess. Dive into two rounds of voting with unique criteria and be part of the decision!",
-    url: process.env.BASE_URL || "https://example.com",
+    url: process.env.BASE_URL || "http://localhost:3000",
     images: [
       {
-        url: `${process.env.BASE_URL || "https://example.com"}/logo.webp`,
+        url: `${process.env.BASE_URL || "http://localhost:3000"}/logo.webp`,
         alt: "PU Selection App Logo",
       },
     ],
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     title: "PU Selection - Be the Judge!",
     description:
       "Cast your votes for the King, Queen, Prince, and Princess in the PU Selection App. Join the excitement now!",
-    images: [`${process.env.BASE_URL || "https://example.com"}/logo.webp`],
+    images: [`${process.env.BASE_URL || "http://localhost:3000"}/logo.webp`],
   },
 
   icons: {

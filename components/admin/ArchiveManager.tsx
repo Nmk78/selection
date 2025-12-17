@@ -72,12 +72,13 @@ export default function ArchiveManager({
         <CardTitle className="flex justify-between items-center">
           <span>Archives</span>
           <Button
+
             onClick={() => {
               setMetaDataModal(true);
             }}
             className="bg-transparent p-0 shadow-none hover:bg-transparent"
           >
-            <Plus className="w-20 h-20 text-blue-800" />
+            <Plus className="w-10 h-10 text-blue-800" />
           </Button>
         </CardTitle>
       </CardHeader>
@@ -102,13 +103,13 @@ export default function ArchiveManager({
             <Plus className="w-20 h-20 text-blue-800" />
           </Button>
         ) : (
-          <ScrollArea className="h-full w-full" ref={scrollAreaRef}>
+          <ScrollArea className="h-full w-full px-2" ref={scrollAreaRef}>
             {archives.map((archive) => (
               <div
                 key={archive._id}
                 className="flex items-center space-x-3 p-1 rounded-lg transition-colors hover:bg-gray-100"
               >
-                <div className="flex items-center w-full">
+                <div className="flex items-center justify-between w-full">
                   <AlertDialog>
                     <AlertDialogTrigger
                       disabled={archive.active}
@@ -174,7 +175,7 @@ export default function ArchiveManager({
                     onClick={() => handleEditClick(archive)}
                     className="p-1 h-auto"
                   >
-                    <Edit className="w-4 h-4 text-gray-500" />
+                    <Edit className="w-4 h-4 ml-auto text-gray-500" />
                   </Button>
                 </div>
               </div>

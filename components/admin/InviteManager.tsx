@@ -60,14 +60,8 @@ export default function InviteManager() {
   };
 
   return (
-    <Card className="md:col-span-2 row-span-3 md:row-span-4">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserPlus className="w-5 h-5" />
-          Invite Users
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="h-full">
+      <div className="space-y-4">
         <form onSubmit={handleCreateInvite} className="space-y-3">
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -176,7 +170,7 @@ export default function InviteManager() {
             )}
           </ScrollArea>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

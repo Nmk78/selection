@@ -1,15 +1,28 @@
 import { convexAuth } from "@convex-dev/auth/server";
-import Resend from "@auth/core/providers/resend";
+import Google from "@auth/core/providers/google";
 
-export const { auth, signIn, signOut, store } = convexAuth({
-  providers: [
-    Resend({
-      from: process.env.AUTH_RESEND_FROM ?? "onboarding@resend.dev",
-    }),
-  ],
+// Validate environment variables
+if (!process.env.AUTH_GOOGLE_ID) {
+  throw new Error("AUTH_GOOGLE_ID environment variable is not set");
+}
+if (!process.env.AUTH_GOOGLE_SECRET) {
+  throw new Error("AUTH_GOOGLE_SECRET environment variable is not set");
+}
+
+// Configure Google provider
+const googleProvider = Google({
+  clientId: process.env.AUTH_GOOGLE_ID,
+  clientSecret: process.env.AUTH_GOOGLE_SECRET,
+});
+
+console.log("🔐 Auth configuration - Provider count:", 1);
+console.log("🔐 Auth configuration - Provider ID:", googleProvider.id || "google");
+
+export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
+  providers: [googleProvider, ],
   callbacks: {
     async createOrUpdateUser(ctx, args) {
-      // Check if user already exists
+      // Check if user already exists by ID
       if (args.existingUserId) {
         // Existing user - allow sign in
         return args.existingUserId;
@@ -23,7 +36,19 @@ export const { auth, signIn, signOut, store } = convexAuth({
 
       const normalizedEmail = email.toLowerCase();
 
-      // Check if email is in the invited list
+      // Check if user already exists by email (existing users can always sign in)
+      // Query all users and filter by email
+      const allUsers = await ctx.db.query("users").collect();
+      const existingUser = allUsers.find(
+        (u) => u.email?.toLowerCase() === normalizedEmail
+      );
+
+      if (existingUser) {
+        // Existing user - allow sign in
+        return existingUser._id;
+      }
+
+      // New user - check if they're invited
       const invites = await ctx.db.query("invites").collect();
       const invite = invites.find(
         (i) => i.email === normalizedEmail && !i.used
