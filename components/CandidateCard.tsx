@@ -1,174 +1,222 @@
-// import { Crown } from "lucide-react";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { Candidate as BaseCandidate } from "@/types/types";
-
-// export interface Candidate extends BaseCandidate {
-//   id: string; // Add the ID property
-// }
-
-// const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
-//   return (
-//     <div className="bg-white rounded-lg shadow-md select-none overflow-hidden">
-//       <div className="relative h-64 sm:h-80">
-//         <Image
-//           src={candidate.profileImage}
-//           alt={candidate.name}
-//           layout="fill"
-//           objectFit="cover"
-//           className="transition-transform duration-300 hover:scale-105"
-//         />
-//       </div>
-//       <Link href={`candidate/${candidate.id}`}>
-//         <div className="p-4 sm:p-6">
-//           <div className="flex items-center space-x-3">
-//             {" "}
-//             <h2 className="text-2xl font-bold text-Cprimary mb-2">
-//               {candidate.name}
-//               {}
-//             </h2>
-//             <div>{true && <Crown className="text-Caccent w-6 h-6" />}</div>
-//           </div>
-//           <p className="text-Caccent font-semibold mb-2">{candidate.major}</p>
-//           <p className="text-gray-600 text-sm mb-2">{candidate.age}</p>
-//           <div className="flex justify-between text-sm text-gray-600 mb-3">
-//             <span>Height: {candidate.height}</span>
-//             <span>Weight: {candidate.weight}</span>
-//           </div>
-//           <p className="text-gray-700 mb-4">{candidate.intro}</p>
-//           <div className="mb-4">
-//             <h3 className="font-semibold text-Cprimary mb-2">Hobbies:</h3>
-//             <div className="flex flex-wrap gap-2">
-//               {candidate.hobbies.map((hobby, index) => (
-//                 <span
-//                   key={index}
-//                   className="bg-Csecondary text-Cprimary px-2 py-1 rounded-full text-sm"
-//                 >
-//                   {hobby}
-//                 </span>
-//               ))}
-//             </div>
-//           </div>
-//           {/* <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-//             {candidate.carouselImages.map((url, index) => (
-//               <Image
-//                 key={index}
-//                 src={url}
-//                 alt={`${candidate.name} - Image ${index + 1}`}
-//                 width={80}
-//                 height={80}
-//                 objectFit="cover"
-//                 className="rounded-md"
-//               />
-//             ))}
-//           </div> */}
-//         </div>
-//       </Link>
-//     </div>
-//   );
-// };
-
-// export default CandidateCard;
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { Candidate as BaseCandidate } from "@/types/types";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { motion, AnimatePresence } from "framer-motion";
+import { GraduationCap, Crown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 export interface Candidate extends BaseCandidate {
   id: string;
 }
 
 const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
-  return (
-    // <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-    //   <Link href={`candidate/${candidate.id}`}>
-    //     <CardHeader className="p-0">
-    //       <AspectRatio ratio={4/3}>
-    //         <Image
-    //           src={candidate.profileImage}
-    //           alt={candidate.name}
-    //           fill
-    //           className="object-cover transition-transform duration-300 hover:scale-105"
-    //         />
-    //       </AspectRatio>
-    //     </CardHeader>
-    //     <CardContent className="p-4 sm:p-6">
-    //       <div className="flex items-center justify-between mb-2">
-    //         <h2 className={`${candidate.gender === "male" ? "text-Cprimary " : "text-Caccent "} text-xl font-bold  truncate`}>
-    //           {candidate.name}
-    //         </h2>
-    //         {true && <Crown className="text-Caccent w-6 h-6 flex-shrink-0" />}
-    //       </div>
-    //       <p className="text-Caccent font-semibold text-sm mb-1">{candidate.major}</p>
-    //       <p className="text-gray-600 text-sm mb-2">Age: {candidate.age}</p>
-    //       <div className="flex justify-between text-sm text-gray-600 mb-3">
-    //         <span>Height: {candidate.height}</span>
-    //         <span>Weight: {candidate.weight}</span>
-    //       </div>
-    //       <p className="text-gray-700 text-sm mb-4 line-clamp-3">{candidate.intro}</p>
-    //       <div className="mb-4">
-    //         <h3 className="font-semibold text-Cprimary text-sm mb-2">Hobbies:</h3>
-    //         <div className="flex flex-wrap gap-2">
-    //           {candidate.hobbies.map((hobby, index) => (
-    //             <Badge 
-    //               key={index} 
-    //               variant="secondary" 
-    //               className="bg-Csecondary text-Cprimary px-2 py-1 text-sm"
-    //             >
-    //               {hobby}
-    //             </Badge>
-    //           ))}
-    //         </div>
-    //       </div>
-    //     </CardContent>
-    //   </Link>
-    // </Card>
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
-    <Link prefetch href={`candidate/${candidate.id}`}>
-      <CardHeader className="p-0">
-        <AspectRatio ratio={4/3}>
-          <Image
-            src={candidate.profileImage}
-            alt={candidate.name}
-            fill
-            className="object-cover transition-transform duration-300 hover:scale-105"
-          />
-        </AspectRatio>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6 flex-grow flex flex-col">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className={`${candidate.gender === "male" ? "text-Cprimary" : "text-Caccent"} text-xl font-bold truncate`}>
-            {candidate.name}
-      </h2>
-        </div>
-        <p className="text-green-500 font-semibold text-sm mb-1">{candidate.major}</p>
-        <p className="text-gray-600 text-sm mb-2">Age: {candidate.age}</p>
-        <div className="flex justify-between text-sm text-gray-600 mb-3">
-          <span>Height: {candidate.height} cm</span>
-          <span>Weight: {candidate.weight} lb</span>
-        </div>
-        <p className="text-gray-700 text-sm mb-4 line-clamp-3 flex-grow">{candidate.intro}</p>
-        <div>
-          <div className="flex flex-wrap gap-2">
-          <h3 className="font-semibold text-Cprimary text-sm">Hobbies:</h3>
+  const isMale = candidate.gender === "male";
+  const [isMobile, setIsMobile] = useState(false);
+  const [showGlass, setShowGlass] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-            {candidate.hobbies.map((hobby, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className="bg-Csecondary text-Cprimary px-2 py-1 text-xs"
-              >
-                {hobby}
-              </Badge>
-            ))}
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Intersection Observer for viewport detection
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    let timer: NodeJS.Timeout | null = null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInViewport(true);
+            // On mobile, slide up when in viewport with delay
+            if (isMobile) {
+              // Clear any existing timer
+              if (timer) clearTimeout(timer);
+              timer = setTimeout(() => setShowGlass(true), 300);
+            }
+          } else {
+            // Reset on mobile when out of viewport
+            if (isMobile) {
+              if (timer) clearTimeout(timer);
+              setIsInViewport(false);
+              setShowGlass(false);
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the card is visible
+        rootMargin: "0px",
+      }
+    );
+
+    observer.observe(cardRef.current);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, [isMobile]);
+
+  return (
+    <Link prefetch href={`candidate/${candidate.id}`}>
+      <motion.div
+        ref={cardRef}
+        className="group relative h-full rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-purple-100/50"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+        onMouseEnter={() => !isMobile && setShowGlass(true)}
+        onMouseLeave={() => !isMobile && setShowGlass(false)}
+      >
+        {/* Image Section - Portrait Ratio */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden">
+          <div className="relative w-full h-full">
+            <Image
+              src={candidate.profileImage}
+              alt={candidate.name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
           </div>
+
+          {/* Gender badge */}
+          {/* <div className="absolute top-2 right-2 z-20">
+            <div
+              className={`rounded-full p-1.5 shadow-md ${
+                isMale
+                  ? "bg-gradient-to-br from-purple-600 to-purple-700"
+                  : "bg-gradient-to-br from-amber-500 to-amber-600"
+              }`}
+            >
+              <Crown className="w-3.5 h-3.5 text-white" />
+            </div>
+          </div> */}
+
+          {/* Liquid Glass Effect Overlay */}
+          <AnimatePresence>
+            {showGlass && (
+              <motion.div
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: "100%", opacity: 0 }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.4, 0, 0.2, 1],
+                  delay: isMobile ? 0.4 : 0,
+                }}
+                className="absolute bottom-0 left-0 right-0 z-10"
+              >
+                {/* Glassmorphism background */}
+                <div className="relative backdrop-blur-xl bg-white/80 md:bg-white/70 border-t border-white/20 shadow-[0_-8px_32px_0_rgba(0,0,0,0.1)]">
+                  {/* Liquid glass effect with gradient */}
+                  <div
+                    className={`absolute inset-0 opacity-30 ${
+                      isMale
+                        ? "bg-gradient-to-b from-purple-500/20 via-purple-400/10 to-transparent"
+                        : "bg-gradient-to-b from-amber-500/20 via-amber-400/10 to-transparent"
+                    }`}
+                  />
+                  
+                  {/* Content */}
+                  <div className="relative p-4 space-y-2.5">
+                    {/* Name */}
+                    <h2
+                      className={`text-lg font-bold truncate ${
+                        isMale
+                          ? "bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent"
+                          : "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
+                      }`}
+                    >
+                      {candidate.name}
+                    </h2>
+
+                    {/* Major */}
+                    <div className="flex items-center gap-1.5">
+                      <GraduationCap
+                        className={`w-3.5 h-3.5 ${
+                          isMale ? "text-purple-500" : "text-amber-500"
+                        }`}
+                      />
+                      <p
+                        className={`text-sm font-medium ${
+                          isMale ? "text-purple-700" : "text-amber-700"
+                        }`}
+                      >
+                        {candidate.major}
+                      </p>
+                    </div>
+
+                    {/* Stats - Compact */}
+                    <div className="flex items-center gap-3 text-xs text-gray-700">
+                      <span>{candidate.age} yrs</span>
+                      <span>•</span>
+                      <span>{candidate.height} cm</span>
+                      <span>•</span>
+                      <span>{candidate.weight} lb</span>
+                    </div>
+
+                    {/* Intro */}
+                    <p className="text-gray-700 text-xs line-clamp-2 leading-relaxed">
+                      {candidate.intro}
+                    </p>
+
+                    {/* Hobbies - Compact */}
+                    {candidate.hobbies.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {candidate.hobbies.slice(0, 2).map((hobby, index) => (
+                          <span
+                            key={index}
+                            className={`px-2 py-0.5 rounded-md text-xs font-medium backdrop-blur-sm ${
+                              isMale
+                                ? "bg-purple-100/80 text-purple-700 border border-purple-200/50"
+                                : "bg-amber-100/80 text-amber-700 border border-amber-200/50"
+                            }`}
+                          >
+                            {hobby}
+                          </span>
+                        ))}
+                        {candidate.hobbies.length > 2 && (
+                          <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100/80 text-gray-700 border border-gray-200/50 backdrop-blur-sm">
+                            +{candidate.hobbies.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 -top-1/2 bg-gradient-to-b from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </CardContent>
+
+        {/* Hover accent */}
+        <div
+          className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+            isMale
+              ? "bg-gradient-to-r from-purple-500 to-amber-400"
+              : "bg-gradient-to-r from-amber-500 to-purple-400"
+          } opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30`}
+        />
+      </motion.div>
     </Link>
-  </Card>
   );
 };
 
