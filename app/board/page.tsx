@@ -7,7 +7,7 @@ import { Loader2, Crown, Trophy, Sparkles, GraduationCap } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHeader } from "@/components/ui/table";
 
 interface LeaderboardCandidate {
   _id: string;

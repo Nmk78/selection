@@ -28,15 +28,13 @@ import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
 import {
-  GraduationCap,
-  Crown,
-  Ruler,
+  GraduationCap, Ruler,
   Scale,
   Calendar,
   Heart,
   Sparkles,
   Vote,
-  Loader2,
+  Loader2
 } from "lucide-react";
 
 interface CandidateProps {

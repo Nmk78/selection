@@ -6,6 +6,7 @@ import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
+import { motion } from "framer-motion";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -15,33 +16,43 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <Unauthenticated>
-        <SignInContent onSuccess={handleSuccess} />
-      </Unauthenticated>
-      <Authenticated>
-        <AuthenticatedRedirect />
-      </Authenticated>
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-purple-50 via-white to-amber-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
+        <Unauthenticated>
+          <SignInContent onSuccess={handleSuccess} />
+        </Unauthenticated>
+        <Authenticated>
+          <AuthenticatedRedirect />
+        </Authenticated>
+      </div>
     </div>
   );
 }
 
 function SignInContent({ onSuccess }: { onSuccess: () => void }) {
   const hasUsers = useQuery(api.users.hasUsers);
-  console.log("🚀 ~ SignInContent ~ hasUsers:", hasUsers)
 
   if (hasUsers === undefined) {
     return (
-      <div className="flex flex-col items-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-Cprimary" />
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center gap-4"
+      >
+        <div className="relative">
+          <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
+          <div className="absolute inset-0 w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+        </div>
+        <p className="text-sm text-gray-600">Loading...</p>
+      </motion.div>
     );
   }
-
-  // No users exist - show first admin setup
-  // if (!hasUsers) {
-  //   return <FirstAdminSetup />;
-  // }
 
   return <SignInForm onSuccess={onSuccess} />;
 }
@@ -163,9 +174,16 @@ function AuthenticatedRedirect() {
   }, [router]);
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <Loader2 className="w-8 h-8 animate-spin text-Cprimary" />
-      <p className="text-muted-foreground">Redirecting to dashboard...</p>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="flex flex-col items-center gap-4"
+    >
+      <div className="relative">
+        <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
+        <div className="absolute inset-0 w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+      </div>
+      <p className="text-sm text-gray-600 font-medium">Redirecting to dashboard...</p>
+    </motion.div>
   );
 }

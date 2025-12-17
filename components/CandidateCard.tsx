@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Candidate as BaseCandidate } from "@/types/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Crown } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export interface Candidate extends BaseCandidate {

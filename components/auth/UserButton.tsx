@@ -5,13 +5,9 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState, useRef, useEffect } from "react";
 import {
-  LogOut,
-  User,
-  ChevronDown,
-  Shield,
-  Crown,
+  LogOut, ChevronDown, Crown,
   Settings,
-  Sparkles,
+  Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";

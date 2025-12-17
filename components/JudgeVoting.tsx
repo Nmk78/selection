@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star, StarHalf, GraduationCap, Ruler, Scale, Calendar, Heart, Crown, Sparkles, Loader2, Gavel } from "lucide-react";
+import { Star, StarHalf, GraduationCap, Ruler, Scale, Calendar, Heart, Sparkles, Loader2, Gavel } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useMutation } from "convex/react";
