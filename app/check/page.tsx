@@ -1,23 +1,34 @@
+"use client";
+
 import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
-import { validateKey } from "@/actions/secretKey";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { KeyStatus } from "@/components/key/KeyStatus";
 import { KeyInputForm } from "@/components/key/Secretkeyform";
 
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+function CheckContent() {
+  const searchParams = useSearchParams();
+  const key = searchParams.get("key") || "";
 
-export default async function KeyStatusPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const resolvedSearchParams = await searchParams;
-  const key =
-    typeof resolvedSearchParams.key === "string"
-      ? resolvedSearchParams.key
-      : undefined;
+  const status = useQuery(
+    api.secretKeys.validate,
+    key ? { key } : "skip"
+  );
 
-  const status = key ? await validateKey(key) : null;
+  if (key && status === undefined) {
+    return (
+      <div className="min-h-[75vh] w-full bg-Cbackground flex flex-col items-center justify-center p-4 px-10">
+        <div className="mt-20 w-full max-w-md space-y-8">
+          <h1 className="text-3xl font-bold text-center text-Cprimary">
+            Key Status Check
+          </h1>
+          <LoaderCircle className="w-8 h-8 animate-spin mx-auto" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[75vh] w-full bg-Cbackground flex flex-col items-center justify-center p-4 px-10">
@@ -25,15 +36,28 @@ export default async function KeyStatusPage({
         <h1 className="text-3xl font-bold text-center text-Cprimary">
           Key Status Check
         </h1>
-        {!status && <KeyInputForm />}
-        {status && (
-          <Suspense
-            fallback={<LoaderCircle className="w-8 h-8 animate-spin mx-auto" />}
-          >
-            <KeyStatus status={status} />
-          </Suspense>
-        )}
+        {(!key || !status) && <KeyInputForm />}
+        {key && status && <KeyStatus status={status} />}
       </div>
     </div>
+  );
+}
+
+export default function KeyStatusPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[75vh] w-full bg-Cbackground flex flex-col items-center justify-center p-4 px-10">
+          <div className="mt-20 w-full max-w-md space-y-8">
+            <h1 className="text-3xl font-bold text-center text-Cprimary">
+              Key Status Check
+            </h1>
+            <LoaderCircle className="w-8 h-8 animate-spin mx-auto" />
+          </div>
+        </div>
+      }
+    >
+      <CheckContent />
+    </Suspense>
   );
 }

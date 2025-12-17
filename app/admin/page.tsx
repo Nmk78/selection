@@ -1,58 +1,132 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import CurrentResults from "@/components/admin/CurrentResult";
 import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
-import { Eye, EyeOff, Loader2, X } from "lucide-react";
+import InviteManager from "@/components/admin/InviteManager";
+import { Eye, EyeOff, Loader2, X, AlertTriangle, Plus } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
 import MetadataForm from "@/components/admin/MetaDataForm";
 import CandidateForm from "@/components/admin/CandidateForm";
-import { useAuth } from "@clerk/nextjs";
+import { Id } from "@/convex/_generated/dataModel";
+import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import SecretKeyPrintBtn from "@/components/admin/SecretKeyPrintBtn";
+import { motion } from "framer-motion";
 
-export default function AdminPage() {
+interface Metadata {
+  _id: Id<"metadata">;
+  title: string;
+  active: boolean;
+  description: string;
+  maleForSecondRound: number;
+  femaleForSecondRound: number;
+  leaderBoardCandidates?: number;
+  round:
+    | "preview"
+    | "first"
+    | "firstVotingClosed"
+    | "secondPreview"
+    | "second"
+    | "secondVotingClosed"
+    | "result";
+  createdAt: number;
+  updatedAt: number;
+}
+
+function AdminContent() {
   const [editModal, setEditModal] = useState<boolean | null>(null);
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
   const [metaDataModal, setmetaDataModal] = useState<boolean | null>(null);
+  const [editingMetadata, setEditingMetadata] = useState<Metadata | null>(null);
   const [candidateId, setCandidateId] = useState<string | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
-  const { userId } = useAuth();
+
+  const user = useQuery(api.users.current);
+  console.log("🚀 ~ AdminContent ~ user:", user);
+
+  // return (<div>Admin</div>)
+
+  const isAdmin = useQuery(api.users.isAdmin);
+
+  const userId = user?._id;
 
   const closeModal = () => setActiveModal(null);
   const closeEditModal = () => setEditModal(null);
-  const closeMetaDataModal = () => setmetaDataModal(null);
+  const closeMetaDataModal = () => {
+    setmetaDataModal(null);
+    setEditingMetadata(null);
+  };
+
+  // Loading state
+  if (user === undefined || isAdmin === undefined) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <Loader2 className="w-12 h-12 animate-spin text-Cprimary" />
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Not admin - access denied
+  if (!isAdmin) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full"
+        >
+          <Card className="border-amber-200 bg-amber-50/50">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                <AlertTriangle className="w-8 h-8 text-amber-600" />
+              </div>
+              <CardTitle className="text-xl text-amber-800">
+                Access Denied
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-amber-700">
+                You don&apos;t have admin privileges. Please contact an
+                administrator if you need access.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container max-w-7xl h-[82vh] mx-auto p-4 select-none">
-      {!userId ||
-        userId === undefined ||
-        (userId === null && <Loader2 className="w-12 h-12" />)}
-      {/* <h1 className="text-3xl font-bold text-primary mb-6">Admin Dashboard</h1> */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-7 grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)]"> */}
+    <div className="container max-w-7xl min-h-[82vh] mx-auto p-4 select-none">
       <div className="h-full flex flex-col md:flex-none md:grid grid-cols-1 md:grid-cols-7 md:grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)] w-full">
-        <Card className=" col-span-1 row-span-3 md:col-span-4 md:row-span-4">
+        <Card className="col-span-1 row-span-3 md:col-span-4 md:row-span-4">
           <CardHeader className="flex justify-between">
             <CardTitle className="flex justify-between">
               <span>Current Results</span>
               {visable ? (
                 <EyeOff
-                  onClick={() => {
-                    setVisable(false);
-                  }}
-                  className="w-6
-                  h-6"
+                  onClick={() => setVisable(false)}
+                  className="w-6 h-6 cursor-pointer hover:text-Cprimary transition-colors"
                 />
               ) : (
                 <Eye
-                  onClick={() => {
-                    setVisable(true);
-                  }}
-                  className="w-6 h-6"
+                  onClick={() => setVisable(true)}
+                  className="w-6 h-6 cursor-pointer hover:text-Cprimary transition-colors"
                 />
               )}
             </CardTitle>
@@ -61,94 +135,182 @@ export default function AdminPage() {
             <CurrentResults visible={visable} />
           </CardContent>
         </Card>
+
         <RoundManager />
-        {/* <div className="flex md:col-span-3 row-span-4 md:row-span-5 gap-5"> */}
-        <CandidateManager
-          classes="h-full md:col-span-2 row-span-3 md:row-span-5"
-          setActiveModal={setActiveModal}
-          setEditModal={setEditModal}
-          setCandidateId={setCandidateId}
-        />
+
+        <Card className="h-full md:col-span-2 row-span-3 md:row-span-5 flex flex-col overflow-hidden">
+          <Tabs
+            defaultValue="candidates"
+            className="flex-1 flex flex-col h-full"
+          >
+            <CardHeader className="pb-3 border-b">
+              <div className="flex justify-between items-center">
+                <TabsList className="grid w-auto grid-cols-2">
+                  <TabsTrigger value="candidates" className="px-4">
+                    Candidates
+                  </TabsTrigger>
+                  <TabsTrigger value="invites" className="px-4">
+                    Invites
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="candidates" className="mt-0">
+                  <Button
+                    onClick={() => setActiveModal(true)}
+                    size="sm"
+                    className="bg-transparent p-0 shadow-none hover:bg-transparent"
+                    aria-label="Add new candidate"
+                  >
+                    <Plus className="w-10 h-10 text-blue-800" />
+                    {/* Add Candidate */}
+                  </Button>
+                </TabsContent>
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col overflow-hidden p-6">
+              <TabsContent
+                value="candidates"
+                className="flex-1 mt-0 data-[state=active]:flex flex-col"
+              >
+                <CandidateManager
+                  classes="h-full w-full"
+                  setActiveModal={setActiveModal}
+                  setEditModal={setEditModal}
+                  setCandidateId={setCandidateId}
+                />
+              </TabsContent>
+              <TabsContent
+                value="invites"
+                className="flex-1 mt-0 data-[state=active]:flex flex-col"
+              >
+                <InviteManager />
+              </TabsContent>
+            </CardContent>
+          </Tabs>
+        </Card>
+
         <ArchiveManager
-          setMetaDataModal={setmetaDataModal}
+          setMetaDataModal={(param, archiveData) => {
+            if (param === true) {
+              setEditingMetadata(archiveData || null);
+              setmetaDataModal(true);
+            } else {
+              setmetaDataModal(null);
+            }
+          }}
           classes="h-full md:col-span-1 row-span-1 md:row-span-5"
-        />{" "}
-        {/* </div> */}
+        />
+
         <Card className="md:col-span-2 row-span-3 md:row-span-4">
           <CardHeader>
             <CardTitle className="flex justify-between">
-              <span>Secret Keys</span>{" "}
+              <span>Secret Keys</span>
               {userId && <SecretKeyPrintBtn userId={userId} />}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {userId ? (
-              <SecretKeyManager userId={userId} />
-            ) : (
-              <div className="relative">
-                {/* Skeleton Loader for the entire Upload Area */}
-                <div
-                  className={`border-2 border-dashed rounded-md p-3 text-center cursor-pointer`}
-                >
-                  {/* Skeleton for the icon */}
-                  <div className="mx-auto h-8 w-12 animate-pulse bg-gray-300"></div>
-
-                  {/* Skeleton for instruction text */}
-                  <p className="mt-2 text-gray-300 bg-gray-200 w-1/2 mx-auto h-4 animate-pulse"></p>
-
-                  {/* Skeleton for error message */}
-                  <p className="text-sm text-red-500 mt-1 bg-gray-200 w-2/3 mx-auto h-4 animate-pulse"></p>
-                </div>
-                {/* Skeleton for Progress Bar */}
-                {/* Skeleton for Button */}
-                <div className="mt-4 w-full h-10 bg-gray-300 rounded-md animate-pulse"></div>{" "}
-                {/* Skeleton for button */}
-              </div>
-            )}
+            {userId ? <SecretKeyManager userId={userId} /> : <SkeletonLoader />}
           </CardContent>
         </Card>
+
         {userId ? (
           <SpecialKeyManager userId={userId} />
         ) : (
-          <Card className="md:col-span-2 row-span-3 md:row-span-4 ">
+          <Card className="md:col-span-2 row-span-3 md:row-span-4">
             <CardHeader>
               <CardTitle className="w-full flex justify-between items-center">
                 <span>Judge Keys</span>
-                <span className="w-10 h-5 animate-pulse bg-gray-200"></span>
+                <span className="w-10 h-5 animate-pulse bg-gray-200 rounded"></span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="relative">
-                {/* Skeleton Loader for the entire Upload Area */}
-                {/* Skeleton for the icon */}
-                <div className="mt-4 w-full h-14 bg-gray-300 rounded-md animate-pulse"></div>{" "}
-                {/* Skeleton for instruction text */}
-                {/* Skeleton for error message */}
-                <div className="mt-4 w-full h-8 bg-gray-200 rounded-md border-gray-500 animate-pulse"></div>{" "}
-                {/* Skeleton for Progress Bar */}
-                {/* Skeleton for Button */}
-                <div className="mt-4 w-full h-10 bg-gray-300 rounded-md animate-pulse"></div>{" "}
-                {/* Skeleton for button */}
-              </div>
+              <SkeletonLoader />
             </CardContent>
           </Card>
         )}
       </div>
+
       {activeModal && (
         <Modal title="Add New Candidate" onClose={closeModal}>
           <CandidateForm closeModal={closeModal} />
         </Modal>
-      )}{" "}
+      )}
+
       {editModal && candidateId && (
         <Modal title="Edit Candidate" onClose={closeEditModal}>
           <CandidateForm candidateId={candidateId} closeModal={closeModal} />
         </Modal>
-      )}{" "}
+      )}
+
       {metaDataModal && (
-        <Modal title="Add New Room" onClose={closeMetaDataModal}>
-          <MetadataForm closeModal={closeMetaDataModal} />
+        <Modal
+          title={editingMetadata ? "Edit Room" : "Add New Room"}
+          onClose={closeMetaDataModal}
+        >
+          <MetadataForm
+            closeModal={closeMetaDataModal}
+            initialData={
+              editingMetadata
+                ? {
+                    _id: editingMetadata._id,
+                    title: editingMetadata.title,
+                    description: editingMetadata.description,
+                    maleForSecondRound: editingMetadata.maleForSecondRound,
+                    femaleForSecondRound: editingMetadata.femaleForSecondRound,
+                    leaderBoardCandidates:
+                      editingMetadata.leaderBoardCandidates ?? 5,
+                  }
+                : null
+            }
+          />
         </Modal>
       )}
+    </div>
+  );
+}
+
+function SkeletonLoader() {
+  return (
+    <div className="relative">
+      <div className="border-2 border-dashed rounded-md p-3 text-center">
+        <div className="mx-auto h-8 w-12 animate-pulse bg-gray-300 rounded"></div>
+        <div className="mt-2 h-4 w-1/2 mx-auto animate-pulse bg-gray-200 rounded"></div>
+        <div className="mt-1 h-4 w-2/3 mx-auto animate-pulse bg-gray-200 rounded"></div>
+      </div>
+      <div className="mt-4 w-full h-10 bg-gray-300 rounded-md animate-pulse"></div>
+    </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <>
+      <Authenticated>
+        <AdminContent />
+      </Authenticated>
+      <Unauthenticated>
+        <UnauthenticatedRedirect />
+      </Unauthenticated>
+    </>
+  );
+}
+
+function UnauthenticatedRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/signin");
+  }, [router]);
+
+  return (
+    <div className="min-h-[80vh] flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex flex-col items-center gap-4"
+      >
+        <Loader2 className="w-12 h-12 animate-spin text-Cprimary" />
+        <p className="text-muted-foreground">Redirecting to sign in...</p>
+      </motion.div>
     </div>
   );
 }
@@ -161,16 +323,33 @@ interface ModalProps {
 
 function Modal({ title, onClose, children }: ModalProps) {
   return (
-    <div className="w-full fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-3xl w-full">
-        <div className="flex justify-between items-center px-4 py-2 border-b">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <Button variant="ghost" onClick={onClose}>
-            <X className="w-4 h-4" />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.2 }}
+        className="bg-white rounded-xl max-w-3xl w-full shadow-2xl"
+      >
+        <div className="flex justify-between items-center px-6 py-4 border-b">
+          <h2 className="text-xl font-semibold text-Cprimary">{title}</h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="hover:bg-gray-100 rounded-full"
+          >
+            <X className="w-5 h-5" />
           </Button>
         </div>
-        <div className="p-4">{children}</div>
-      </div>
-    </div>
+        <div className="p-6">{children}</div>
+      </motion.div>
+    </motion.div>
   );
 }

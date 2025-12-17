@@ -1,35 +1,28 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Lock, ShieldBan, Users, Trophy, Crown } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMetadata, updateRound } from "@/actions/metadata";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Round } from "@prisma/client";
 import { Skeleton } from "../ui/skeleton";
+
+type Round = "preview" | "first" | "firstVotingClosed" | "secondPreview" | "second" | "secondVotingClosed" | "result";
 
 export default function RoundManager() {
   const [round, setRoundState] = useState<Round>("preview");
   const [updating, setUpdating] = useState(false);
-  const queryClient = useQueryClient();
 
-  const {
-    data: metadata,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["metadata"],
-    queryFn: async () => {
-      const response = await getMetadata();
-      return Array.isArray(response) && response.length > 0
-        ? response[0]
-        : null;
-    },
-  });
+  const metadata = useQuery(api.metadata.getActive);
+  const updateRoundMutation = useMutation(api.metadata.updateRound);
 
-  const isValidRound = (round: Round): round is Round => {
+  const isLoading = metadata === undefined;
+
+  const isValidRound = (round: string): round is Round => {
     const validRounds: Round[] = [
       "preview",
       "first",
@@ -39,7 +32,7 @@ export default function RoundManager() {
       "secondVotingClosed",
       "result",
     ];
-    return validRounds.includes(round);
+    return validRounds.includes(round as Round);
   };
 
   useEffect(() => {
@@ -48,30 +41,7 @@ export default function RoundManager() {
     }
   }, [metadata]);
 
-  const { mutate: updateRoundState } = useMutation({
-    mutationFn: async ({ id, round }: { id: string; round: Round }) => {
-      setUpdating(true);
-      await updateRound({ id, round });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Round state updated successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["metadata"] });
-      setUpdating(false);
-    },
-    onError: (error) => {
-      console.error("Failed to update round state:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update the round state. Try again.",
-      });
-      setUpdating(false);
-    },
-  });
-
-  const advanceRound = () => {
+  const advanceRound = async () => {
     const nextState: Record<Round, Round> = {
       preview: "first",
       first: "firstVotingClosed",
@@ -82,8 +52,23 @@ export default function RoundManager() {
       result: "preview",
     };
     if (metadata) {
-      const newState = nextState[round];
-      updateRoundState({ id: metadata.id, round: newState });
+      setUpdating(true);
+      try {
+        const newState = nextState[round];
+        await updateRoundMutation({ id: metadata._id, round: newState });
+        toast({
+          title: "Success",
+          description: "Round state updated successfully.",
+        });
+      } catch (error) {
+        console.error("Failed to update round state:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update the round state. Try again.",
+        });
+      } finally {
+        setUpdating(false);
+      }
     }
   };
 
@@ -118,10 +103,7 @@ export default function RoundManager() {
               <div className="space-y-4 md:w-[50%] flex flex-col justify-start mt-5 md:mt-0">
                 <div className="space-y-2">
                   {[...Array(3)].map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
-                    >
+                    <div key={index} className="flex items-center justify-between">
                       <Skeleton className="h-4 w-24" />
                       <Skeleton className="h-5 w-10" />
                     </div>
@@ -136,14 +118,6 @@ export default function RoundManager() {
           </div>
         </CardContent>
       </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-60 w-full text-red-500">
-        Failed to load metadata. Please try again.
-      </div>
     );
   }
 
@@ -167,24 +141,6 @@ export default function RoundManager() {
                     checked={round === "first" || round === "firstVotingClosed"}
                   />
                 </div>
-                {/* <div className="flex items-center justify-between">
-                  <Label htmlFor="first-voting-closed">
-                    First Round Voting Closed
-                  </Label>
-                  <Switch
-                    className="cursor-not-allowed text-gray-600"
-                    id="first-voting-closed"
-                    checked={round === "firstVotingClosed"}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="sec-preview">Second Round Preview</Label>
-                  <Switch
-                    className="cursor-not-allowed text-gray-600"
-                    id="sec-preview"
-                    checked={round === "secondPreview"}
-                  />
-                </div> */}
                 <div className="flex items-center justify-between">
                   <Label htmlFor="second-round">Second Round</Label>
                   <Switch
@@ -197,16 +153,6 @@ export default function RoundManager() {
                     }
                   />
                 </div>
-                {/* <div className="flex items-center justify-between">
-                  <Label htmlFor="sec-voting-closed">
-                    Second Round Voting Closed
-                  </Label>
-                  <Switch
-                    className="cursor-not-allowed text-gray-600"
-                    id="sec-voting-closed"
-                    checked={round === "secondVotingClosed"}
-                  />
-                </div> */}
                 <div className="flex items-center justify-between">
                   <Label htmlFor="show-results">Show Results</Label>
                   <Switch
@@ -219,6 +165,7 @@ export default function RoundManager() {
               <Button
                 className="mt-10 md:mt-0 text-xs md:w-auto"
                 onClick={advanceRound}
+                disabled={updating}
               >
                 {updating
                   ? "Updating"

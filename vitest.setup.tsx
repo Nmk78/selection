@@ -22,22 +22,21 @@ vi.mock('next/image', () => ({
   },
 }));
 
-// Mock Clerk
-vi.mock('@clerk/nextjs', () => ({
-  useAuth: () => ({
-    isLoaded: true,
-    isSignedIn: false,
-    sessionId: null,
-    userId: null,
+// Mock Convex React
+vi.mock('convex/react', () => ({
+  useQuery: () => null,
+  useMutation: () => vi.fn(),
+  Authenticated: ({ children }: { children: React.ReactNode }) => children,
+  Unauthenticated: ({ children }: { children: React.ReactNode }) => null,
+}));
+
+// Mock Convex Auth
+vi.mock('@convex-dev/auth/react', () => ({
+  useAuthActions: () => ({
+    signIn: vi.fn(),
+    signOut: vi.fn(),
   }),
-  useUser: () => ({
-    isLoaded: true,
-    isSignedIn: false,
-    user: null,
-  }),
-  SignedIn: ({ children }: { children: React.ReactNode }) => null,
-  SignedOut: ({ children }: { children: React.ReactNode }) => children,
-  UserButton: () => null,
+  ConvexAuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock framer-motion

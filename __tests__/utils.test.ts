@@ -43,7 +43,7 @@ describe('extractKeyFromUrl', () => {
   });
 
   it('should return empty string for URL without key pattern', () => {
-    const url = 'https://example.com/image.jpg';
+    const url = 'http://localhost:3000/image.jpg';
     expect(extractKeyFromUrl(url)).toBe('');
   });
 
