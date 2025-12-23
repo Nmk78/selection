@@ -52,7 +52,25 @@ export default function PolicyPage() {
       return regularVotes + (totalJudgeScore * (numJudges / 3))
     }
   
-    return (
+  const baseUrl = typeof window !== 'undefined' 
+    ? window.location.origin 
+    : process.env.NEXT_PUBLIC_BASE_URL || "https://puselection.vercel.app";
+
+  // Structured data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Voting Policy - PU Selection",
+    description: "Understand how the PU Selection voting process works - from first round to final results",
+    url: `${baseUrl}/policy`,
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-5xl mx-auto p-4 md:p-6 py-8">
         {/* Header */}
         <motion.div
@@ -261,6 +279,7 @@ export default function PolicyPage() {
           </Card>
         </div>
       </div>
+    </>
     )
   }
   
