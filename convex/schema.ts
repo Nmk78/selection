@@ -40,7 +40,7 @@ export default defineSchema({
   candidates: defineTable({
     roomId: v.id("metadata"),
     name: v.string(),
-    slug: v.optional(v.string()),
+    slug: v.string(),
     intro: v.string(),
     gender: v.union(v.literal("male"), v.literal("female")),
     major: v.string(),
