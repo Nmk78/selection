@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getAllCandidates } from "@/lib/convex-server";
 
 // Make sitemap dynamic to avoid build-time data fetching
 export const dynamic = "force-dynamic";
@@ -6,8 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 
-  // Return static entries only during build
-  // Dynamic candidate entries can be added at runtime
+  // Static entries
   const staticEntries: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/`,
@@ -47,5 +47,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  return staticEntries;
+  // Dynamic candidate entries
+  try {
+    const candidates = await getAllCandidates();
+    const candidateEntries: MetadataRoute.Sitemap = candidates.map((candidate) => ({
+      url: `${baseUrl}/candidate/${candidate.slug}`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+
+    return [...staticEntries, ...candidateEntries];
+  } catch (error) {
+    console.error("Error fetching candidates for sitemap:", error);
+    // Return static entries if candidate fetch fails
+    return staticEntries;
+  }
 }

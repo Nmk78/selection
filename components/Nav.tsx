@@ -11,7 +11,8 @@ import {
   X,
   Archive,
   TicketCheck,
-  ScrollText, Sparkles
+  ScrollText, Sparkles,
+  ChartSpline
 } from "lucide-react";
 import { Authenticated, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -38,6 +39,10 @@ export default function Nav() {
       href: "/policy",
       icon: <ScrollText className="w-4 h-4" />,
       label: "Policy",
+    },    {
+      href: "/board",
+      icon: <ChartSpline className="w-4 h-4" />,
+      label: "Board",
     },
   ];
 
@@ -50,10 +55,10 @@ export default function Nav() {
   return (
     <nav className="relative w-full sticky top-0 z-50">
       {/* Elegant gradient background with subtle glassmorphism */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-purple-50/30 to-white backdrop-blur-xl border-b border-purple-100/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-candidate-male-50/30 to-white backdrop-blur-xl border-b border-candidate-male-100/50" />
       
       {/* Decorative top accent */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-400 via-amber-400 to-transparent opacity-60" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-candidate-male-400 via-candidate-female-400 to-transparent opacity-60" />
       
       <div className="relative md:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -63,7 +68,7 @@ export default function Nav() {
             prefetch
             className="flex-shrink-0 group relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-candidate-male-400/20 to-candidate-female-400/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative flex items-center gap-3">
               <div className="relative">
                 <Image
@@ -75,14 +80,14 @@ export default function Nav() {
                   priority
                 />
                 <div className="absolute -top-1 -right-1">
-                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <Sparkles className="w-4 h-4 text-candidate-female-400 animate-pulse" />
                 </div>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                <h1 className="text-lg font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
                   PU Selection
                 </h1>
-                <p className="text-xs text-purple-600/70 font-medium">
+                <p className="text-xs text-candidate-male-600/70 font-medium">
                   Be the Judge!
                 </p>
               </div>
@@ -101,11 +106,11 @@ export default function Nav() {
             <div className="relative">
               <button
                 onClick={toggleArchive}
-                className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-purple-700 hover:text-purple-900 transition-all duration-300 group"
+                className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-candidate-male-700 hover:text-candidate-male-900 transition-all duration-300 group"
               >
                 <Archive className="w-4 h-4 transition-transform group-hover:rotate-12" />
                 <span>Archive</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-amber-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-100 to-candidate-female-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
               </button>
               <AnimatePresence>
                 {archiveOpen && (
@@ -115,7 +120,7 @@ export default function Nav() {
                       onClick={toggleArchive}
                     />
                     <motion.div
-                      className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-100/50 overflow-hidden z-50"
+                      className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-candidate-male-100/50 overflow-hidden z-50"
                       initial={{ opacity: 0, y: -10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -124,8 +129,8 @@ export default function Nav() {
                       <div className="p-2">
                         {transformedArchives.length === 0 ? (
                           <div className="px-4 py-6 text-center">
-                            <Archive className="w-8 h-8 mx-auto text-purple-300 mb-2" />
-                            <p className="text-sm text-purple-600/60">
+                            <Archive className="w-8 h-8 mx-auto text-candidate-male-300 mb-2" />
+                            <p className="text-sm text-candidate-male-600/60">
                               No archives yet
                             </p>
                           </div>
@@ -142,10 +147,10 @@ export default function Nav() {
                                   prefetch
                                   onClick={toggleArchive}
                                   href={`/archive${item.href}`}
-                                  className="block px-4 py-3 rounded-lg text-sm font-medium text-purple-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-amber-50 transition-all duration-200 group"
+                                  className="block px-4 py-3 rounded-lg text-sm font-medium text-candidate-male-700 hover:bg-gradient-to-r hover:from-candidate-male-50 hover:to-candidate-female-50 transition-all duration-200 group"
                                 >
                                   <span className="flex items-center gap-2">
-                                    <Crown className="w-3.5 h-3.5 text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <Crown className="w-3.5 h-3.5 text-candidate-female-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <span className="truncate">{item.label}</span>
                                   </span>
                                 </Link>
@@ -162,7 +167,7 @@ export default function Nav() {
 
 
             <Authenticated>
-            <div className="h-6 w-px bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-2" />
+            <div className="h-6 w-px bg-gradient-to-b from-transparent via-candidate-male-200 to-transparent mx-2" />
               <UserButton />
             </Authenticated>
 
@@ -171,7 +176,7 @@ export default function Nav() {
                 href="/signin"
                 className="relative flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-purple-500 to-amber-500 group-hover:from-purple-700 group-hover:via-purple-600 group-hover:to-amber-600 transition-all duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-600 via-candidate-male-500 to-candidate-female-500 group-hover:from-candidate-male-700 group-hover:via-candidate-male-600 group-hover:to-candidate-female-600 transition-all duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 <LogIn className="w-4 h-4 relative z-10" />
                 <span className="relative z-10">Sign In</span>
@@ -186,7 +191,7 @@ export default function Nav() {
             </Authenticated>
             <button
               onClick={toggleMenu}
-              className="relative p-2.5 rounded-xl text-purple-700 hover:bg-purple-50 transition-all duration-200"
+              className="relative p-2.5 rounded-xl text-candidate-male-700 hover:bg-candidate-male-50 transition-all duration-200"
               aria-expanded={isOpen}
               aria-label="Toggle menu"
             >
@@ -230,7 +235,7 @@ export default function Nav() {
               onClick={toggleMenu}
             />
             <motion.div
-              className="fixed top-20 right-4 left-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-100/50 z-50 lg:hidden overflow-hidden"
+              className="fixed top-20 right-4 left-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-candidate-male-100/50 z-50 lg:hidden overflow-hidden"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -249,7 +254,7 @@ export default function Nav() {
                   </MobileNavLink>
                 ))}
 
-                <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent my-2" />
+                <div className="h-px bg-gradient-to-r from-transparent via-candidate-male-200 to-transparent my-2" />
 
                 {/* <Unauthenticated>
                   <MobileNavLink
@@ -266,7 +271,7 @@ export default function Nav() {
                 <div className="pt-2">
                   <button
                     onClick={toggleArchive}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm text-purple-700 hover:bg-purple-50 transition-all duration-200"
+                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-sm text-candidate-male-700 hover:bg-candidate-male-50 transition-all duration-200"
                   >
                     <span className="flex items-center gap-2">
                       <Archive className="w-4 h-4" />
@@ -276,7 +281,7 @@ export default function Nav() {
                       animate={{ rotate: archiveOpen ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Crown className="w-4 h-4 text-amber-500" />
+                      <Crown className="w-4 h-4 text-candidate-female-500" />
                     </motion.div>
                   </button>
                   <AnimatePresence>
@@ -290,7 +295,7 @@ export default function Nav() {
                       >
                         {transformedArchives.length === 0 ? (
                           <div className="px-4 py-4 text-center">
-                            <p className="text-sm text-purple-600/60">
+                            <p className="text-sm text-candidate-male-600/60">
                               No archives yet
                             </p>
                           </div>
@@ -300,7 +305,7 @@ export default function Nav() {
                               toggleMenu={toggleMenu}
                               key={item.href}
                               href={`/archive${item.href}`}
-                              icon={<Crown className="w-3.5 h-3.5 text-amber-500" />}
+                              icon={<Crown className="w-3.5 h-3.5 text-candidate-female-500" />}
                               delay={index * 0.05}
                             >
                               {item.label}
@@ -334,21 +339,21 @@ function NavLink({
   return (
     <Link prefetch href={href}>
       <motion.div
-        className="relative px-4 py-2.5 rounded-xl font-semibold text-sm text-purple-700 hover:text-purple-900 transition-all duration-300 group"
+        className="relative px-4 py-2.5 rounded-xl font-semibold text-sm text-candidate-male-700 hover:text-candidate-male-900 transition-all duration-300 group"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-100/50 to-amber-50/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-100/50 to-candidate-female-50/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
         <div className="flex items-center gap-2">
           <span className="transition-transform group-hover:scale-110">
             {icon}
           </span>
           <span>{children}</span>
         </div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-amber-500 group-hover:w-3/4 transition-all duration-300 rounded-full" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-candidate-male-500 to-candidate-female-500 group-hover:w-3/4 transition-all duration-300 rounded-full" />
       </motion.div>
     </Link>
   );
@@ -370,19 +375,19 @@ function MobileNavLink({
   return (
     <Link prefetch href={href} onClick={toggleMenu}>
       <motion.div
-        className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-purple-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-amber-50 transition-all duration-200 group"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-candidate-male-700 hover:bg-gradient-to-r hover:from-candidate-male-50 hover:to-candidate-female-50 transition-all duration-200 group"
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay }}
         whileTap={{ scale: 0.98 }}
       >
         {icon && (
-          <span className="text-purple-500 group-hover:scale-110 transition-transform">
+          <span className="text-candidate-male-500 group-hover:scale-110 transition-transform">
             {icon}
           </span>
         )}
         <span className="flex-1">{children}</span>
-        <Crown className="w-3.5 h-3.5 text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Crown className="w-3.5 h-3.5 text-candidate-female-400 opacity-0 group-hover:opacity-100 transition-opacity" />
       </motion.div>
     </Link>
   );

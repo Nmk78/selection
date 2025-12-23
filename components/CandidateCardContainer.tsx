@@ -137,6 +137,7 @@ export default function CandidateSelection({ filter = "mix" }: Props) {
               candidate={{
                 id: candidate._id,
                 name: candidate.name,
+                slug: candidate.slug,
                 intro: candidate.intro,
                 gender: candidate.gender,
                 major: candidate.major,

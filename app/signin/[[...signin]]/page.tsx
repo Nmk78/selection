@@ -16,11 +16,11 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-purple-50 via-white to-amber-50 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-candidate-male-50 via-white to-candidate-female-50 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-candidate-male-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-candidate-female-200/20 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md">
@@ -46,8 +46,8 @@ function SignInContent({ onSuccess }: { onSuccess: () => void }) {
         className="flex flex-col items-center gap-4"
       >
         <div className="relative">
-          <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-          <div className="absolute inset-0 w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+          <Loader2 className="w-10 h-10 animate-spin text-candidate-male-600" />
+          <div className="absolute inset-0 w-10 h-10 border-4 border-candidate-male-200 border-t-candidate-male-600 rounded-full animate-spin"></div>
         </div>
         <p className="text-sm text-gray-600">Loading...</p>
       </motion.div>

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { generateSlug } from "./help";
 
 // Get all candidates for active room
 export const getAll = query({
@@ -33,6 +34,15 @@ export const getByRoomId = query({
 });
 
 // Get candidate by ID
+export const getBySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("candidates")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .first();
+  },
+});
 export const getById = query({
   args: { id: v.id("candidates") },
   handler: async (ctx, args) => {
@@ -391,9 +401,27 @@ export const create = mutation({
       throw new Error("No active room!");
     }
 
+    // Generate a unique slug
+    const baseSlug = generateSlug(args.name);
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Check for existing candidates with the same slug in the same room
+    const existingCandidates = await ctx.db
+      .query("candidates")
+      .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
+      .collect();
+
+    // Find a unique slug by appending a number if needed
+    while (existingCandidates.some((c) => c.slug === slug)) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
     const id = await ctx.db.insert("candidates", {
       roomId: activeMetadata._id,
       name: args.name,
+      slug: slug,
       intro: args.intro,
       gender: args.gender,
       major: args.major,

@@ -40,6 +40,7 @@ export default defineSchema({
   candidates: defineTable({
     roomId: v.id("metadata"),
     name: v.string(),
+    slug: v.string(),
     intro: v.string(),
     gender: v.union(v.literal("male"), v.literal("female")),
     major: v.string(),
@@ -51,7 +52,9 @@ export default defineSchema({
     hobbies: v.array(v.string()),
   })
     .index("by_roomId", ["roomId"])
-    .index("by_roomId_gender", ["roomId", "gender"]),
+    .index("by_slug", ["slug"])
+    .index("by_roomId_gender", ["roomId", "gender"])
+    .index("by_slug_roomId", ["slug", "roomId"]),
 
   secretKeys: defineTable({
     adminId: v.string(),

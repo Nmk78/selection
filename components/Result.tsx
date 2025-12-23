@@ -16,35 +16,35 @@ export default function Results({ results }: ResultsProps) {
     switch (title) {
       case "King":
         return {
-          gradient: "from-purple-300 to-purple-400",
-          bg: "from-purple-50/50 to-white",
-          border: "border-purple-200/50",
-          text: "text-purple-700",
-          accent: "text-purple-600",
+          gradient: "from-candidate-male-300 to-candidate-male-400",
+          bg: "from-candidate-male-50/50 to-white",
+          border: "border-candidate-male-200/50",
+          text: "text-candidate-male-700",
+          accent: "text-candidate-male-600",
         };
       case "Queen":
         return {
-          gradient: "from-amber-300 to-amber-400",
-          bg: "from-amber-50/50 to-white",
-          border: "border-amber-200/50",
-          text: "text-amber-700",
-          accent: "text-amber-600",
+          gradient: "from-candidate-female-300 to-candidate-female-400",
+          bg: "from-candidate-female-50/50 to-white",
+          border: "border-candidate-female-200/50",
+          text: "text-candidate-female-700",
+          accent: "text-candidate-female-600",
         };
       case "Prince":
         return {
-          gradient: "from-purple-200 to-purple-300",
-          bg: "from-purple-50/30 to-white",
-          border: "border-purple-200/50",
-          text: "text-purple-700",
-          accent: "text-purple-600",
+          gradient: "from-candidate-male-200 to-candidate-male-300",
+          bg: "from-candidate-male-50/30 to-white",
+          border: "border-candidate-male-200/50",
+          text: "text-candidate-male-700",
+          accent: "text-candidate-male-600",
         };
       case "Princess":
         return {
-          gradient: "from-amber-200 to-amber-300",
-          bg: "from-amber-50/30 to-white",
-          border: "border-amber-200/50",
-          text: "text-amber-700",
-          accent: "text-amber-600",
+          gradient: "from-candidate-female-200 to-candidate-female-300",
+          bg: "from-candidate-female-50/30 to-white",
+          border: "border-candidate-female-200/50",
+          text: "text-candidate-female-700",
+          accent: "text-candidate-female-600",
         };
       default:
         return {
@@ -90,9 +90,9 @@ export default function Results({ results }: ResultsProps) {
                   {/* Profile Image */}
                   <div className="relative w-36 h-36 md:w-44 md:h-44 mb-5">
                     <div className={`relative w-full h-full rounded-full overflow-hidden border-[3px] border-white shadow-xl ring-2 ring-offset-2 ring-offset-white group-hover:ring-4 transition-all duration-300 ${
-                      config.border.includes('purple') 
-                        ? 'ring-purple-200/50 group-hover:ring-purple-300/50' 
-                        : 'ring-amber-200/50 group-hover:ring-amber-300/50'
+                      config.border.includes('candidate-male') 
+                        ? 'ring-candidate-male-200/50 group-hover:ring-candidate-male-300/50' 
+                        : 'ring-candidate-female-200/50 group-hover:ring-candidate-female-300/50'
                     }`}>
                       <Image
                         src={candidate.profileImage}

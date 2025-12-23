@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from "react";
 
 export interface Candidate extends BaseCandidate {
   id: string;
+  slug: string;
 }
 
 const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
@@ -72,7 +73,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
   }, [isMobile]);
 
   return (
-    <Link prefetch href={`candidate/${candidate.id}`}>
+    <Link prefetch href={`candidate/${candidate.slug}`}>
       <motion.div
         ref={cardRef}
         className="group relative h-full rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-purple-100/50"

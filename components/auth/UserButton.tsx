@@ -61,23 +61,23 @@ export default function UserButton() {
         whileTap={{ scale: 0.98 }}
       >
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-100 via-amber-50 to-purple-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-100 via-candidate-female-50 to-candidate-male-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         {/* Avatar with gradient border */}
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-sm opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
-          <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-500 to-candidate-female-500 rounded-full blur-sm opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
+          <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-candidate-male-600 to-candidate-female-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
             {initials}
           </div>
           {isAdmin && (
             <div className="absolute -top-1 -right-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <Sparkles className="w-3.5 h-3.5 text-candidate-female-500 fill-candidate-female-500" />
             </div>
           )}
         </div>
 
         <ChevronDown
-          className={`w-4 h-4 text-purple-700 transition-transform duration-300 relative z-10 ${
+          className={`w-4 h-4 text-candidate-male-700 transition-transform duration-300 relative z-10 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -95,41 +95,41 @@ export default function UserButton() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-2 w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-100/50 overflow-hidden z-50"
+              className="absolute right-0 mt-2 w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-candidate-male-100/50 overflow-hidden z-50"
             >
               {/* Header with gradient */}
-              <div className="relative p-5 bg-gradient-to-br from-purple-50 via-amber-50/50 to-purple-50 border-b border-purple-100/50">
+              <div className="relative p-5 bg-gradient-to-br from-candidate-male-50 via-candidate-female-50/50 to-candidate-male-50 border-b border-candidate-male-100/50">
                 {/* Decorative sparkles */}
                 <div className="absolute top-3 right-3">
-                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <Sparkles className="w-4 h-4 text-candidate-female-400 animate-pulse" />
                 </div>
 
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-md opacity-50" />
-                    <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-500 to-candidate-female-500 rounded-full blur-md opacity-50" />
+                    <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-candidate-male-600 to-candidate-female-500 flex items-center justify-center text-white text-lg font-bold shadow-lg">
                       {initials}
                     </div>
                     {isAdmin && (
-                      <div className="absolute -top-1 -right-1 bg-amber-500 rounded-full p-1 shadow-md">
+                      <div className="absolute -top-1 -right-1 bg-candidate-female-500 rounded-full p-1 shadow-md">
                         <Crown className="w-4 h-4 text-white" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-purple-900 truncate text-base">
+                    <p className="font-bold text-candidate-male-900 truncate text-base">
                       {user.name || "User"}
                     </p>
-                    <p className="text-sm text-purple-600/70 truncate mt-0.5">
+                    <p className="text-sm text-candidate-male-600/70 truncate mt-0.5">
                       {user.email}
                     </p>
                     {isAdmin && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-purple-100 rounded-full px-3 py-1 w-fit"
+                        className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-candidate-female-700 bg-gradient-to-r from-candidate-female-100 to-candidate-male-100 rounded-full px-3 py-1 w-fit"
                       >
-                        <Crown className="w-3 h-3 fill-amber-500 text-amber-500" />
+                        <Crown className="w-3 h-3 fill-candidate-female-500 text-candidate-female-500" />
                         <span>Administrator</span>
                       </motion.div>
                     )}
@@ -145,20 +145,20 @@ export default function UserButton() {
                       setIsOpen(false);
                       router.push("/admin");
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm font-medium text-purple-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-amber-50 rounded-xl transition-all duration-200 group"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm font-medium text-candidate-male-700 hover:bg-gradient-to-r hover:from-candidate-male-50 hover:to-candidate-female-50 rounded-xl transition-all duration-200 group"
                     whileHover={{ x: 4 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-100 to-amber-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Settings className="w-4 h-4 text-purple-600" />
+                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-candidate-male-100 to-candidate-female-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Settings className="w-4 h-4 text-candidate-male-600" />
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold">Dashboard</p>
-                      <p className="text-xs text-purple-600/60">
+                      <p className="text-xs text-candidate-male-600/60">
                         Manage system
                       </p>
                     </div>
-                    <ChevronDown className="w-4 h-4 text-purple-400 rotate-[-90deg]" />
+                    <ChevronDown className="w-4 h-4 text-candidate-male-400 rotate-[-90deg]" />
                   </motion.button>
                 )}
 
@@ -179,7 +179,7 @@ export default function UserButton() {
               </div>
 
               {/* Footer decoration */}
-              <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-candidate-male-200 to-transparent" />
             </motion.div>
           </>
         )}

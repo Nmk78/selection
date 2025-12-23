@@ -75,7 +75,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     return (
       <div className="w-full flex items-center justify-between">
         <span className={`font-semibold text-sm ${
-          isMale ? "text-purple-700" : "text-amber-700"
+          isMale ? "text-candidate-male-700" : "text-candidate-female-700"
         }`}>
           {category}:
         </span>
@@ -88,8 +88,8 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                     key={index}
                     className={`w-4 h-4 ${
                       isMale 
-                        ? "text-purple-500 fill-purple-500" 
-                        : "text-amber-500 fill-amber-500"
+                        ? "text-candidate-male-500 fill-candidate-male-500" 
+                        : "text-candidate-female-500 fill-candidate-female-500"
                     }`}
                   />
                 );
@@ -99,8 +99,8 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                     key={index}
                     className={`w-4 h-4 ${
                       isMale 
-                        ? "text-purple-500 fill-purple-500" 
-                        : "text-amber-500 fill-amber-500"
+                        ? "text-candidate-male-500 fill-candidate-male-500" 
+                        : "text-candidate-female-500 fill-candidate-female-500"
                     }`}
                   />
                 );
@@ -110,7 +110,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
             })}
           </div>
           <span className={`text-sm font-bold min-w-[3rem] text-right ${
-            isMale ? "text-purple-600" : "text-amber-600"
+            isMale ? "text-candidate-male-600" : "text-candidate-female-600"
           }`}>
             {displayRating}/10
           </span>
@@ -218,13 +218,13 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
           >
             <Card className={`w-full rounded-2xl shadow-xl border-2 overflow-hidden ${
               isMale 
-                ? "bg-gradient-to-br from-purple-50/50 to-white border-purple-200/50" 
-                : "bg-gradient-to-br from-amber-50/50 to-white border-amber-200/50"
+                ? "bg-gradient-to-br from-candidate-male-50/50 to-white border-candidate-male-200/50" 
+                : "bg-gradient-to-br from-candidate-female-50/50 to-white border-candidate-female-200/50"
             }`}>
               {/* <CardHeader className={`pb-4 ${
                 isMale
-                  ? "bg-gradient-to-r from-purple-600 to-purple-700"
-                  : "bg-gradient-to-r from-amber-500 to-amber-600"
+                  ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-700"
+                  : "bg-gradient-to-r from-candidate-female-500 to-candidate-female-600"
               }`}>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-3 text-xl md:text-2xl font-bold text-white">
@@ -271,13 +271,13 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                 <div className="w-full md:w-1/2 space-y-5 flex flex-col">
                 {/* Total Rating */}
                 <div className={`flex items-center justify-between gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full ${
-                    isMale ? "bg-purple-50/50" : "bg-amber-50/50"
+                    isMale ? "bg-candidate-male-50/50" : "bg-candidate-female-50/50"
                   }`}>
                   <span className={`text-xl md:text-2xl font-bold ${
-                    isMale ? "text-purple-700" : "text-amber-700"
+                    isMale ? "text-candidate-male-700" : "text-candidate-female-700"
                   }`}>{candidate.name}</span>
                     <span className={`font-bold text-sm md:text-base ${
-                      isMale ? "text-purple-700" : "text-amber-700"
+                      isMale ? "text-candidate-male-700" : "text-candidate-female-700"
                     }`}>
                       Total: {totalRating}/30
                     </span>
@@ -292,45 +292,45 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                   {/* Stats Grid */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-purple-50" : "bg-amber-50"
+                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
                     }`}>
-                      <Calendar className={`w-4 h-4 ${isMale ? "text-purple-600" : "text-amber-600"}`} />
+                      <Calendar className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
                       <div>
                         <p className="text-xs text-gray-600">Age</p>
-                        <p className={`font-bold ${isMale ? "text-purple-700" : "text-amber-700"}`}>
+                        <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
                           {candidate.age}
                         </p>
                       </div>
                     </div>
                     <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-purple-50" : "bg-amber-50"
+                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
                     }`}>
-                      <GraduationCap className={`w-4 h-4 ${isMale ? "text-purple-600" : "text-amber-600"}`} />
+                      <GraduationCap className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
                       <div className="min-w-0">
                         <p className="text-xs text-gray-600">Major</p>
-                        <p className={`font-bold truncate ${isMale ? "text-purple-700" : "text-amber-700"}`}>
+                        <p className={`font-bold truncate ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
                           {candidate.major}
                         </p>
                       </div>
                     </div>
                     <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-purple-50" : "bg-amber-50"
+                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
                     }`}>
-                      <Ruler className={`w-4 h-4 ${isMale ? "text-purple-600" : "text-amber-600"}`} />
+                      <Ruler className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
                       <div>
                         <p className="text-xs text-gray-600">Height</p>
-                        <p className={`font-bold ${isMale ? "text-purple-700" : "text-amber-700"}`}>
+                        <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
                           {candidate.height} cm
                         </p>
                       </div>
                     </div>
                     <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-purple-50" : "bg-amber-50"
+                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
                     }`}>
-                      <Scale className={`w-4 h-4 ${isMale ? "text-purple-600" : "text-amber-600"}`} />
+                      <Scale className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
                       <div>
                         <p className="text-xs text-gray-600">Weight</p>
-                        <p className={`font-bold ${isMale ? "text-purple-700" : "text-amber-700"}`}>
+                        <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
                           {candidate.weight} kg
                         </p>
                       </div>
@@ -340,8 +340,8 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                   {/* Hobbies */}
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Heart className={`w-4 h-4 ${isMale ? "text-purple-600" : "text-amber-600"}`} />
-                      <strong className={`text-sm ${isMale ? "text-purple-700" : "text-amber-700"}`}>
+                      <Heart className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
+                      <strong className={`text-sm ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
                         Hobbies:
                       </strong>
                     </div>
@@ -351,8 +351,8 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                           key={idx}
                           className={`text-xs ${
                             isMale
-                              ? "bg-purple-100 text-purple-700 border-purple-200"
-                              : "bg-amber-100 text-amber-700 border-amber-200"
+                              ? "bg-candidate-male-100 text-candidate-male-700 border-candidate-male-200"
+                              : "bg-candidate-female-100 text-candidate-female-700 border-candidate-female-200"
                           }`}
                         >
                           {hobby}
@@ -364,7 +364,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                   {/* Rating and Sliders */}
                   <div className="space-y-4 pt-2 border-t border-gray-200">
                     <h4 className={`font-bold text-sm mb-3 ${
-                      isMale ? "text-purple-700" : "text-amber-700"
+                      isMale ? "text-candidate-male-700" : "text-candidate-female-700"
                     }`}>
                       Ratings (1-10 scale)
                     </h4>
@@ -388,7 +388,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                           min={0}
                           max={10}
                           step={0.1}
-                          color={isMale ? "purple" : "amber"}
+                          color={isMale ? "male" : "female"}
                           // trackColor={isMale ? "purple" : "amber"}
                           // thumbColor={isMale ? "purple" : "amber"}
                           // trackClassName={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
@@ -410,7 +410,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
                             )
                           }
                           className={`w-full ${
-                            isMale ? "[&_.slider-thumb]:bg-purple-600" : "[&_.slider-thumb]:bg-amber-600"
+                            isMale ? "[&_.slider-thumb]:bg-candidate-male-600" : "[&_.slider-thumb]:bg-candidate-female-600"
                           }`}
                         />
                       </div>
@@ -425,7 +425,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
 
       {/* Judge Code Input */}
       <Card className="bg-gradient-to-br from-white to-gray-50/50 shadow-xl border-2 border-gray-200/50 rounded-2xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 pb-4">
+        <CardHeader className="bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 pb-4">
           <CardTitle className="flex items-center justify-center gap-3 text-xl md:text-2xl font-bold text-white">
             <Gavel className="w-5 h-5 md:w-6 md:h-6" />
             <span>Judge Code</span>
@@ -445,7 +445,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
             value={judgeCode ?? ""}
             onChange={(e) => setJudgeCode(e.target.value)}
             required
-            className="w-full text-base md:text-lg h-12 border-2 focus:border-purple-400 focus:ring-purple-400 rounded-lg"
+            className="w-full text-base md:text-lg h-12 border-2 focus:border-candidate-male-400 focus:ring-candidate-male-400 rounded-lg"
             placeholder="Enter your special judge code"
           />
         </CardContent>
@@ -459,7 +459,7 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 hover:from-purple-700 hover:via-amber-600 hover:to-purple-700 text-white text-lg font-bold py-6 rounded-xl transition-all duration-300 shadow-xl"
+          className="w-full bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 hover:from-candidate-male-700 hover:via-candidate-female-600 hover:to-candidate-male-700 text-white text-lg font-bold py-6 rounded-xl transition-all duration-300 shadow-xl"
         >
           {loading ? (
             <>

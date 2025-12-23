@@ -47,15 +47,15 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
     >
       <Card className="w-full max-w-md mx-auto rounded-2xl shadow-2xl border border-gray-200/50 bg-white/80 backdrop-blur-sm overflow-hidden">
         {/* Decorative header */}
-        <div className="h-1 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600"></div>
+        <div className="h-1 bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600"></div>
         
         <CardHeader className="space-y-3 text-center pt-8 pb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Crown className="w-6 h-6 text-amber-600" />
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+            <Crown className="w-6 h-6 text-candidate-female-600" />
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-candidate-male-600 to-candidate-female-600 bg-clip-text text-transparent">
               Welcome
             </CardTitle>
-            <Crown className="w-6 h-6 text-purple-600" />
+            <Crown className="w-6 h-6 text-candidate-male-600" />
           </div>
           <CardDescription className="text-base text-gray-600">
             Sign in with your Google account to continue
@@ -71,7 +71,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
           >
             {isLoading ? (
               <div className="flex items-center gap-3">
-                <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+                <Loader2 className="w-5 h-5 animate-spin text-candidate-male-600" />
                 <span>Signing in...</span>
               </div>
             ) : (
