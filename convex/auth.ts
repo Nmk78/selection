@@ -30,6 +30,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
 
       // New user - check if they're invited
       const email = args.profile?.email;
+      console.log("🚀 ~ email:", email)
       if (!email) {
         throw new Error("Email is required");
       }
@@ -39,10 +40,11 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       // Check if user already exists by email (existing users can always sign in)
       // Query all users and filter by email
       const allUsers = await ctx.db.query("users").collect();
+      console.log("🚀 ~ allUsers:", allUsers)
       const existingUser = allUsers.find(
         (u) => u.email?.toLowerCase() === normalizedEmail
       );
-
+      console.log("🚀 ~ existingUser:", existingUser)
       if (existingUser) {
         // Existing user - allow sign in
         return existingUser._id;
@@ -53,7 +55,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       const invite = invites.find(
         (i) => i.email === normalizedEmail && !i.used
       );
-
+      console.log("🚀 ~ invite:", invite)
       if (!invite) {
         throw new Error("You are not invited. Please contact an admin.");
       }

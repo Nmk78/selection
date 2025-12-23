@@ -1,12 +1,31 @@
-'use client'
+import { Metadata } from "next";
+import VotingPolicy from "./PolicyContent";
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ChevronRight, ChevronLeft, Users, UserCheck, Award, Calculator, EqualApproximately, Crown, Sparkles, ScrollText } from 'lucide-react'
+export const metadata: Metadata = {
+  title: "Voting Policy - PU Selection",
+  description:
+    "Understand how the PU Selection voting process works. Learn about the two-round voting system, judge scoring, and how winners are determined.",
+  openGraph: {
+    title: "Voting Policy - PU Selection",
+    description:
+      "Understand how the PU Selection voting process works - from first round to final results.",
+    url: `${process.env.BASE_URL || "http://localhost:3000"}/policy`,
+    type: "website",
+    siteName: "PU Selection",
+  },
+  twitter: {
+    card: "summary",
+    title: "Voting Policy - PU Selection",
+    description: "Understand how the selection process works",
+  },
+  alternates: {
+    canonical: `${process.env.BASE_URL || "http://localhost:3000"}/policy`,
+  },
+};
+
+export default function PolicyPage() {
+  return <VotingPolicy />;
+}
 
 const policySteps = [
   {

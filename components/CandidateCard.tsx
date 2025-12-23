@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Candidate as BaseCandidate } from "@/types/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Crown } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export interface Candidate extends BaseCandidate {
   id: string;
+  slug: string;
 }
 
 const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
@@ -16,6 +17,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [showGlass, setShowGlass] = useState(false);
   const [isInViewport, setIsInViewport] = useState(false);
+  console.log("🚀 ~ CandidateCard ~ isInViewport:", isInViewport)
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
   }, [isMobile]);
 
   return (
-    <Link prefetch href={`candidate/${candidate.id}`}>
+    <Link prefetch href={`candidate/${candidate.slug}`}>
       <motion.div
         ref={cardRef}
         className="group relative h-full rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-purple-100/50"

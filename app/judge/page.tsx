@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import JudgeVoting from "@/components/JudgeVoting";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { Gavel, Crown, Sparkles, Loader2 } from "lucide-react";
+import { Gavel, Crown, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function JudgeVotingPage() {

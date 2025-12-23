@@ -2,7 +2,6 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -11,9 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
 interface CandidateManagerProps {
@@ -29,6 +26,7 @@ export default function CandidateManager({
   setCandidateId,
   classes = "",
 }: CandidateManagerProps) {
+  console.log("🚀 ~ CandidateManager ~ setActiveModal:", setActiveModal)
   const candidates = useQuery(api.candidates.getAll);
 
   const isLoading = candidates === undefined;

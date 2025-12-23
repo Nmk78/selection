@@ -1,7 +1,7 @@
 export default {
     providers: [
       {
-        domain: "https://robust-llama-135.convex.site",
+        domain: process.env.CONVEX_SITE_URL,
         applicationID: "convex",
       },
     ],

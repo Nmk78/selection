@@ -29,7 +29,6 @@ import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
 import {
   GraduationCap,
-  Crown,
   Ruler,
   Scale,
   Calendar,
@@ -103,7 +102,9 @@ export default function CandidateDetails({
 
   const isMale = gender === "male";
   const displayName = name.split("(")[0].trim();
-  const nameSuffix = name.includes("(") ? name.substring(name.indexOf("(")) : "";
+  const nameSuffix = name.includes("(")
+    ? name.substring(name.indexOf("("))
+    : "";
 
   return (
     <motion.div
@@ -112,18 +113,21 @@ export default function CandidateDetails({
       transition={{ duration: 0.5 }}
       className="w-full max-w-6xl mx-auto"
     >
-      <Card className="w-full bg-gradient-to-br from-white via-purple-50/30 to-amber-50/30 rounded-2xl shadow-2xl border-2 border-purple-100/50 overflow-hidden">
+      <Card className="w-full bg-gradient-to-br from-white via-candidate-male-50/30 to-candidate-female-50/30 rounded-2xl shadow-2xl border-2 border-candidate-male-100/50 overflow-hidden">
         {/* Header Section with Gradient Background */}
         <div
           className={`relative overflow-hidden ${
             isMale
-              ? "bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600"
-              : "bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500"
+              ? "bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900"
+              : "bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-600"
+            // : "bg-gradient-to-r from-candidate-female-500 via-candidate-female-400 to-candidate-female-500"
           }`}
         >
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+          <div
+            className={`absolute inset-0 opacity-10 ${isMale ? "bg-[url('/grid_light.svg')]" : "bg-[url('/grid.svg')]"}`}
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent" />
-          
+
           <CardContent className="relative p-6 md:p-8">
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
               {/* Profile Image - Portrait */}
@@ -145,14 +149,14 @@ export default function CandidateDetails({
                   {/* Gradient overlay on hover */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
                 </div>
-                
+
                 {/* Crown badge */}
                 {/* <div className="absolute -top-3 -right-3 z-10">
                   <div
                     className={`rounded-full p-3 shadow-xl ${
                       isMale
-                        ? "bg-gradient-to-br from-purple-700 to-purple-900"
-                        : "bg-gradient-to-br from-amber-600 to-amber-800"
+                        ? "bg-gradient-to-br from-candidate-male-700 to-candidate-male-900"
+                        : "bg-gradient-to-br from-candidate-female-600 to-candidate-female-800"
                     }`}
                   >
                     <Crown className="w-6 h-6 text-white" />
@@ -206,12 +210,48 @@ export default function CandidateDetails({
                   <div className="flex flex-col items-center p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
                     <Ruler className="w-5 h-5 mb-1 text-white/90" />
                     <span className="text-xs text-white/80">Height</span>
-                    <span className="text-lg font-bold text-white">{height} cm</span>
+                    <span className="text-lg font-bold text-white">
+                      {height} cm
+                    </span>
                   </div>
                   <div className="flex flex-col items-center p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
                     <Scale className="w-5 h-5 mb-1 text-white/90" />
                     <span className="text-xs text-white/80">Weight</span>
-                    <span className="text-lg font-bold text-white">{weight} lb</span>
+                    <span className="text-lg font-bold text-white">
+                      {weight} lb
+                    </span>
+                  </div>
+                </motion.div>
+                {/* Hobbies Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.4 }}
+                  className="space-y-3 hidden md:flex md:flex-col"
+                >
+                  <div className="flex items-center gap-2">
+                    <Heart
+                      className={`w-5 h-5 text-white`}
+                    />
+                    <h3
+                      className={`text-xl font-bold text-white`}
+                    >
+                      Hobbies & Interests
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {hobbies.map((hobby, index) => (
+                      <Badge
+                        key={index}
+                        className={`px-3 py-1.5 text-sm font-medium backdrop-blur-sm border ${
+                          isMale
+                            ? "bg-candidate-male-100/80 text-candidate-male-700 border-candidate-male-200/50 hover:bg-candidate-male-200/80"
+                            : "bg-candidate-female-100/80 text-candidate-female-700 border-candidate-female-200/50 hover:bg-candidate-female-200/80"
+                        } transition-colors`}
+                      >
+                        {hobby}
+                      </Badge>
+                    ))}
                   </div>
                 </motion.div>
               </div>
@@ -231,14 +271,14 @@ export default function CandidateDetails({
             <div className="flex items-center gap-2 mb-3">
               <Sparkles
                 className={`w-5 h-5 ${
-                  isMale ? "text-purple-600" : "text-amber-600"
+                  isMale ? "text-candidate-male-600" : "text-candidate-female-600"
                 }`}
               />
               <h2
                 className={`text-2xl font-bold ${
                   isMale
-                    ? "bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent"
-                    : "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
+                    ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-800 bg-clip-text text-transparent"
+                    : "bg-gradient-to-r from-candidate-female-600 to-candidate-female-800 bg-clip-text text-transparent"
                 }`}
               >
                 About {displayName.split(" ")[0]}
@@ -256,19 +296,19 @@ export default function CandidateDetails({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.4 }}
-            className="space-y-3"
+            className="space-y-3 block md:hidden"
           >
             <div className="flex items-center gap-2">
               <Heart
                 className={`w-5 h-5 ${
-                  isMale ? "text-purple-600" : "text-amber-600"
+                  isMale ? "text-candidate-male-600" : "text-candidate-female-600"
                 }`}
               />
               <h3
                 className={`text-xl font-bold ${
                   isMale
-                    ? "bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent"
-                    : "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
+                    ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-800 bg-clip-text text-transparent"
+                    : "bg-gradient-to-r from-candidate-female-600 to-candidate-female-800 bg-clip-text text-transparent"
                 }`}
               >
                 Hobbies & Interests
@@ -280,8 +320,8 @@ export default function CandidateDetails({
                   key={index}
                   className={`px-3 py-1.5 text-sm font-medium backdrop-blur-sm border ${
                     isMale
-                      ? "bg-purple-100/80 text-purple-700 border-purple-200/50 hover:bg-purple-200/80"
-                      : "bg-amber-100/80 text-amber-700 border-amber-200/50 hover:bg-amber-200/80"
+                      ? "bg-candidate-male-100/80 text-candidate-male-700 border-candidate-male-200/50 hover:bg-candidate-male-200/80"
+                      : "bg-candidate-female-100/80 text-candidate-female-700 border-candidate-female-200/50 hover:bg-candidate-female-200/80"
                   } transition-colors`}
                 >
                   {hobby}
@@ -302,8 +342,8 @@ export default function CandidateDetails({
             <h3
               className={`text-xl font-bold ${
                 isMale
-                  ? "bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent"
-                  : "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
+                  ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-800 bg-clip-text text-transparent"
+                  : "bg-gradient-to-r from-candidate-female-600 to-candidate-female-800 bg-clip-text text-transparent"
               }`}
             >
               Gallery
@@ -321,7 +361,7 @@ export default function CandidateDetails({
                   key={index}
                   className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
                 >
-                  <div className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg border-2 border-gray-200/50 hover:border-purple-300/50 transition-all duration-300 hover:shadow-2xl">
+                  <div className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg border-2 border-gray-200/50 hover:border-candidate-male-300/50 transition-all duration-300 hover:shadow-2xl">
                     <Image
                       src={url}
                       alt={`Full-body Image ${index + 1} of ${displayName}`}
@@ -352,8 +392,8 @@ export default function CandidateDetails({
                 <Button
                   className={`relative w-full md:w-auto px-8 py-6 text-lg font-semibold shadow-xl ${
                     isMale
-                      ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
-                      : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                      ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-700 hover:from-candidate-male-700 hover:to-candidate-male-800 text-white"
+                      : "bg-gradient-to-r from-candidate-female-500 to-candidate-female-600 hover:from-candidate-female-600 hover:to-candidate-female-700 text-white"
                   } transition-all duration-300`}
                   aria-label={`Vote for ${displayName}`}
                 >
@@ -365,7 +405,7 @@ export default function CandidateDetails({
             </DialogTrigger>
             <DialogContent
               className={`sm:max-w-[450px] rounded-2xl border-2 ${
-                isMale ? "border-purple-200" : "border-amber-200"
+                isMale ? "border-candidate-male-200" : "border-candidate-female-200"
               } bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-xl shadow-2xl`}
             >
               <DialogHeader className="space-y-3">
@@ -373,8 +413,8 @@ export default function CandidateDetails({
                   <div
                     className={`p-2 rounded-lg ${
                       isMale
-                        ? "bg-purple-100 text-purple-600"
-                        : "bg-amber-100 text-amber-600"
+                        ? "bg-candidate-male-100 text-candidate-male-600"
+                        : "bg-candidate-female-100 text-candidate-female-600"
                     }`}
                   >
                     <Vote className="w-5 h-5" />
@@ -405,7 +445,7 @@ export default function CandidateDetails({
                       id="code"
                       name="secretKey"
                       placeholder="Enter your secret code"
-                      className="w-full h-12 text-base border-2 focus:border-purple-400 focus:ring-purple-400 rounded-lg"
+                      className="w-full h-12 text-base border-2 focus:border-candidate-male-400 focus:ring-candidate-male-400 rounded-lg"
                       required
                     />
                   </div>
@@ -413,8 +453,8 @@ export default function CandidateDetails({
                 <Button
                   className={`w-full py-6 text-base font-semibold ${
                     isMale
-                      ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
-                      : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                      ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-700 hover:from-candidate-male-700 hover:to-candidate-male-800 text-white"
+                      : "bg-gradient-to-r from-candidate-female-500 to-candidate-female-600 hover:from-candidate-female-600 hover:to-candidate-female-700 text-white"
                   } transition-all duration-300 shadow-lg`}
                   type="submit"
                   disabled={voting}
