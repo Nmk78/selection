@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Crown, Trophy, Sparkles, Star } from "lucide-react";
+import { Crown, Star } from "lucide-react";
 import { winnerCandidate } from "@/types/types";
 import { motion } from "framer-motion";
 

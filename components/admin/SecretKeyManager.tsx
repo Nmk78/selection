@@ -18,10 +18,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "@/hooks/use-toast";
-import { Id } from "@/convex/_generated/dataModel";
 import { motion } from "framer-motion";
 
-export default function SecretKeyManager({ userId }: { userId: Id<"users"> }) {
+export default function SecretKeyManager() {
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
   const [keyAmount, setKeyAmount] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);

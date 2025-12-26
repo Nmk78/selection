@@ -9,7 +9,7 @@ import LivelyBackground from "@/components/LivelyBackground";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { Crown, Sparkles, Trophy } from "lucide-react";
+import { Crown, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 function HomeContentInner() {

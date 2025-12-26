@@ -26,7 +26,6 @@ import {
   Hash,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 
 export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
   const [specialKey, setSpecialKey] = useState("");
@@ -86,6 +85,7 @@ export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
         description: "Key copied to clipboard",
       });
     } catch (error) {
+      console.log("🚀 ~ copyToClipboard ~ error:", error)
       toast({
         title: "Failed to copy",
         description: "Could not copy to clipboard",

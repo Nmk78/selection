@@ -5,8 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState, useRef, useEffect } from "react";
 import {
-  LogOut, ChevronDown, Crown,
-  Settings,
+  LogOut, ChevronDown, Settings,
   Sparkles,
   ShieldCheck
 } from "lucide-react";

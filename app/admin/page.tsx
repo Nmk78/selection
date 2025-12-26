@@ -208,7 +208,7 @@ function AdminContent() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            {userId ? <SecretKeyManager userId={userId} /> : <SkeletonLoader />}
+            {userId ? <SecretKeyManager /> : <SkeletonLoader />}
           </CardContent>
         </Card>
 
