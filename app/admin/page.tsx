@@ -112,9 +112,9 @@ function AdminContent() {
   }
 
   return (
-    <div className="container max-w-7xl min-h-[82vh] mx-auto p-4 select-none">
+    <div className="container max-w-7xl min-h-[82vh] h-full max-h-[85vh] mx-auto p-4 select-none">
       <div className="h-full flex flex-col md:flex-none md:grid grid-cols-1 md:grid-cols-7 md:grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)] w-full">
-        <Card className="col-span-1 row-span-3 md:col-span-4 md:row-span-4">
+        <Card className="col-span-1 row-span-3 md:col-span-4 md:row-span-4 pb-0">
           <CardHeader className="flex justify-between">
             <CardTitle className="flex justify-between">
               <span>Current Results</span>
@@ -131,14 +131,14 @@ function AdminContent() {
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-0">
             <CurrentResults visible={visable} />
           </CardContent>
         </Card>
 
         <RoundManager />
 
-        <Card className="h-full md:col-span-2 row-span-3 md:row-span-5 flex flex-col overflow-hidden">
+        <Card className="flex-1 min-h-[300px] md:flex-none md:h-full md:col-span-2 row-span-3 md:row-span-5 flex flex-col overflow-hidden">
           <Tabs
             defaultValue="candidates"
             className="flex-1 flex flex-col h-full"
@@ -201,13 +201,13 @@ function AdminContent() {
         />
 
         <Card className="md:col-span-2 row-span-3 md:row-span-4">
-          <CardHeader>
-            <CardTitle className="flex justify-between">
+          <CardHeader className="py-3">
+            <CardTitle className="flex items-center justify-between">
               <span>Secret Keys</span>
               {userId && <SecretKeyPrintBtn userId={userId} />}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {userId ? <SecretKeyManager userId={userId} /> : <SkeletonLoader />}
           </CardContent>
         </Card>

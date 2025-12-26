@@ -6,7 +6,7 @@ import CandidateCard from "./CandidateCard";
 import FilterDropdown from "./FilterDropDown";
 import { CandidateGridSkeleton } from "./ui/skeleton";
 import { motion } from "framer-motion";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 export interface Candidate {
   id: string;
@@ -50,15 +50,28 @@ const itemVariants = {
 
 export default function CandidateSelection({ filter = "mix" }: Props) {
   const allCandidates = useQuery(api.candidates.getAll);
+  const [cachedCandidates, setCachedCandidates] = useState<typeof allCandidates>(undefined);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // Update cache when we have new data
+  useEffect(() => {
+    if (allCandidates !== undefined) {
+      setCachedCandidates(allCandidates);
+      setIsInitialLoad(false);
+    }
+  }, [allCandidates]);
+
+  // Use cached data if available, otherwise use current data
+  const displayCandidates = allCandidates ?? cachedCandidates;
 
   // Memoize filtered and sorted candidates
   const candidates = useMemo(() => {
-    if (!allCandidates) return [];
+    if (!displayCandidates) return [];
 
-    const males = allCandidates.filter(
+    const males = displayCandidates.filter(
       (candidate) => candidate.gender === "male"
     );
-    const females = allCandidates.filter(
+    const females = displayCandidates.filter(
       (candidate) => candidate.gender === "female"
     );
 
@@ -68,20 +81,18 @@ export default function CandidateSelection({ filter = "mix" }: Props) {
       return [...females, ...males];
     } else {
       // Mix - create a deterministic shuffle based on candidate IDs
-      return [...allCandidates].sort((a, b) => {
+      return [...displayCandidates].sort((a, b) => {
         const aHash = a._id.charCodeAt(0) + a._id.charCodeAt(1);
         const bHash = b._id.charCodeAt(0) + b._id.charCodeAt(1);
         return aHash - bHash;
       });
     }
-  }, [allCandidates, filter]);
+  }, [displayCandidates, filter]);
 
-  if (allCandidates === undefined) {
+  // Only show loading skeleton on initial load
+  if (isInitialLoad && allCandidates === undefined) {
     return (
       <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-Cprimary mb-6 text-center font-quindelia">
-          PU Selection
-        </h1>
         <div className="flex justify-end mb-6">
           <div className="w-32 h-10 bg-gray-200 rounded-md animate-pulse" />
         </div>
@@ -90,12 +101,9 @@ export default function CandidateSelection({ filter = "mix" }: Props) {
     );
   }
 
-  if (!allCandidates || allCandidates.length === 0) {
+  if (!displayCandidates || displayCandidates.length === 0) {
     return (
       <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-Cprimary mb-6 text-center font-quindelia">
-          PU Selection
-        </h1>
         <div className="flex flex-col items-center justify-center h-[50vh] text-muted-foreground">
           <p className="text-lg">No candidates found.</p>
           <p className="text-sm mt-2">Please check back later.</p>
@@ -106,22 +114,17 @@ export default function CandidateSelection({ filter = "mix" }: Props) {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-3xl sm:text-4xl font-bold text-Cprimary mb-6 text-center font-quindelia"
-      >
-        PU Selection
-      </motion.h1>
 
       {/* Filter Dropdown */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="flex justify-end mb-6"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="flex justify-end mb-8"
       >
-        <FilterDropdown defaultValue={filter} />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-candidate-male-50/50 to-candidate-female-50/50 border border-candidate-male-200/50 shadow-sm">
+          <FilterDropdown defaultValue={filter} />
+        </div>
       </motion.div>
 
       {/* Render candidates with staggered animation */}

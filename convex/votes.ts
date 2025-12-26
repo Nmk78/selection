@@ -31,7 +31,7 @@ export const voteForCandidate = mutation({
 
     const { round } = currentRoom;
 
-    if (round !== "first") {
+    if (round !== "first" && round !== "second") {
       return { success: false, message: "Voting is closed." };
     }
 
@@ -62,7 +62,9 @@ export const voteForCandidate = mutation({
     // Check if already voted for this gender in this round
     if (
       (round === "first" && gender === "male" && secretKeyRecord.firstRoundMale) ||
-      (round === "first" && gender === "female" && secretKeyRecord.firstRoundFemale)
+      (round === "first" && gender === "female" && secretKeyRecord.firstRoundFemale) ||
+      (round === "second" && gender === "male" && secretKeyRecord.secondRoundMale) ||
+      (round === "second" && gender === "female" && secretKeyRecord.secondRoundFemale)
     ) {
       return {
         success: false,
@@ -95,12 +97,29 @@ export const voteForCandidate = mutation({
       });
     }
 
-    // Update secret key voting status
-    await ctx.db.patch(secretKeyRecord._id, {
-      firstRoundMale: gender === "male" ? true : secretKeyRecord.firstRoundMale,
-      firstRoundFemale:
-        gender === "female" ? true : secretKeyRecord.firstRoundFemale,
-    });
+    // Update secret key voting status based on round
+    const updateData: {
+      firstRoundMale?: boolean;
+      firstRoundFemale?: boolean;
+      secondRoundMale?: boolean;
+      secondRoundFemale?: boolean;
+    } = {};
+
+    if (round === "first") {
+      if (gender === "male") {
+        updateData.firstRoundMale = true;
+      } else {
+        updateData.firstRoundFemale = true;
+      }
+    } else if (round === "second") {
+      if (gender === "male") {
+        updateData.secondRoundMale = true;
+      } else {
+        updateData.secondRoundFemale = true;
+      }
+    }
+
+    await ctx.db.patch(secretKeyRecord._id, updateData);
 
     return { success: true, message: "Vote successfully recorded." };
   },
@@ -146,6 +165,17 @@ export const addRatings = mutation({
 
     if (secretKeyRecord.used) {
       return { success: false, message: "This key was already used." };
+    }
+
+    // Validate: Only allow up to 5 candidates with 0 ratings
+    const zeroRatings = args.ratings.filter((r) => r.rating <= 0);
+    const zeroRatingCount = zeroRatings.length;
+
+    if (zeroRatingCount > 5) {
+      return {
+        success: false,
+        message: "Please rate all categories.",
+      };
     }
 
     // Count total special keys for scaling

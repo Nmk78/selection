@@ -107,22 +107,22 @@ export default function ArchiveManager({
             {archives.map((archive) => (
               <div
                 key={archive._id}
-                className="flex items-center space-x-3 p-1 rounded-lg transition-colors hover:bg-gray-100"
+                className="flex items-center space-x-2 p-1 rounded-lg transition-colors hover:bg-gray-100"
               >
                 <div className="flex items-center justify-between w-full">
                   <AlertDialog>
                     <AlertDialogTrigger
                       disabled={archive.active}
-                      className="w-auto h-auto p-0 m-0 flex space-x-2 items-center mx-4 py-1 flex-grow"
+                      className="w-auto h-auto p-0 m-0 flex space-x-2 items-center justify-start mx-1.5 py-1 flex-grow"
                     >
                       {archive.active ? (
-                        <Crown className="w-5 h-5 text-Caccent flex-shrink-0" />
+                        <Crown className="w-4 h-4 text-Caccent flex-shrink-0" />
                       ) : (
-                        <Archive className="w-5 h-5 text-Cprimary flex-shrink-0" />
+                        <Archive className="w-4 h-4 text-Cprimary flex-shrink-0" />
                       )}
                       <Label
                         htmlFor={`archive-${archive.title}`}
-                        className={`text-base flex-grow truncate overflow-hidden cursor-pointer ${
+                        className={`text-base text-left flex-grow truncate overflow-hidden cursor-pointer ${
                           archive.active
                             ? "text-Caccent font-semibold"
                             : "text-Cprimary"
@@ -175,7 +175,7 @@ export default function ArchiveManager({
                     onClick={() => handleEditClick(archive)}
                     className="p-1 h-auto"
                   >
-                    <Edit className="w-4 h-4 ml-auto text-gray-500" />
+                    <Edit className="w-4 h-4 ml-auto mr-2 text-gray-500" />
                   </Button>
                 </div>
               </div>

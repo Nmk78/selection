@@ -7,7 +7,8 @@ import { useState, useRef, useEffect } from "react";
 import {
   LogOut, ChevronDown, Crown,
   Settings,
-  Sparkles
+  Sparkles,
+  ShieldCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -112,7 +113,7 @@ export default function UserButton() {
                     </div>
                     {isAdmin && (
                       <div className="absolute -top-1 -right-1 bg-candidate-female-500 rounded-full p-1 shadow-md">
-                        <Crown className="w-4 h-4 text-white" />
+                        <ShieldCheck className="w-4 h-4 text-white" />
                       </div>
                     )}
                   </div>
@@ -129,7 +130,7 @@ export default function UserButton() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-candidate-female-700 bg-gradient-to-r from-candidate-female-100 to-candidate-male-100 rounded-full px-3 py-1 w-fit"
                       >
-                        <Crown className="w-3 h-3 fill-candidate-female-500 text-candidate-female-500" />
+                        <ShieldCheck className="w-3 h-3 text-candidate-female-500" />
                         <span>Administrator</span>
                       </motion.div>
                     )}

@@ -51,12 +51,12 @@ export default function JudgeVotingPage() {
 
   if (round !== "second" && round !== "secondPreview") {
     return (
-      <div className="container mx-auto py-8 px-4 mt-60 md:mt-52">
-        {process.env.NODE_ENV !== "production" && (
+      <div className="container mx-auto py-8 px-4 mt-36 md:mt-40">
+        {/* {process.env.NODE_ENV !== "production" && (
           <span className="text-xs text-gray-400" title="This indicator will only seen in development env">
             Development Log: Round {round}
           </span>
-        )}
+        )} */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -77,7 +77,7 @@ export default function JudgeVotingPage() {
                 </div>
               </div>
               <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
-                Round Not Available
+                Unavailable!
               </h2>
               <p className="text-gray-600">
                 The judge voting will be available in the second round. Please wait

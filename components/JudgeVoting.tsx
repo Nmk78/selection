@@ -1,15 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star, StarHalf, GraduationCap, Ruler, Scale, Calendar, Heart, Sparkles, Loader2, Gavel } from "lucide-react";
+import { Star, StarHalf, GraduationCap, Ruler, Scale, Calendar, Heart, Sparkles, Loader2, Gavel, Home } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useMutation } from "convex/react";
@@ -36,28 +44,24 @@ interface JudgeVotingFormProps {
   candidates: Candidate[];
 }
 
-export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
-  const plugin = useRef(Autoplay({ delay: 2500, stopOnInteraction: true }));
-  const searchParams = useSearchParams();
-
-  const [judgeCode, setJudgeCode] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [ratings, setRatings] = useState<{
-    [key: string]: { dressing: number; performance: number; QA: number };
-  }>(
-    Object.fromEntries(
-      candidates.map((c) => [c.id, { dressing: 0, performance: 0, QA: 0 }])
-    )
-  );
-
-  const addRatings = useMutation(api.votes.addRatings);
-
-  useEffect(() => {
-    const secretFromQuery = searchParams.get("secret");
-    if (secretFromQuery) {
-      setJudgeCode(secretFromQuery);
-    }
-  }, [searchParams]);
+function CandidateCardWithCarousel({ 
+  candidate, 
+  index, 
+  ratings, 
+  handleRatingChange 
+}: { 
+  candidate: Candidate; 
+  index: number;
+  ratings: { [key: string]: { dressing: number; performance: number; QA: number } };
+  handleRatingChange: (id: string, category: "dressing" | "performance" | "QA", value: number) => void;
+}) {
+  const plugin = useRef(Autoplay({ delay: 2500, stopOnInteraction: false }));
+  const isMale = candidate.gender === "male";
+  const totalRating = (
+    (ratings[candidate.id]?.dressing ?? 0) +
+    (ratings[candidate.id]?.performance ?? 0) +
+    (ratings[candidate.id]?.QA ?? 0)
+  ).toFixed(1);
 
   function StarRating({
     rating,
@@ -119,6 +123,216 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
     );
   }
 
+  return (
+    <motion.div
+      key={candidate.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="w-full"
+    >
+      <Card className={`w-full rounded-2xl shadow-xl border-2 pb-3 md:pb-6 overflow-hidden ${
+        isMale 
+          ? "bg-gradient-to-br from-candidate-male-50/50 to-white border-candidate-male-200/50" 
+          : "bg-gradient-to-br from-candidate-female-50/50 to-white border-candidate-female-200/50"
+      }`}>
+        <CardContent className="flex flex-col md:flex-row gap-6 p-4 md:p-6">
+          {/* Carousel Section */}
+          <div className="w-full md:w-1/2 flex-shrink-0">
+            <Carousel
+              plugins={[plugin.current]}
+              className="w-full rounded-xl overflow-hidden"
+            >
+              <CarouselContent>
+                {candidate.carouselImages.map((image, idx) => (
+                  <CarouselItem key={idx} className="basis-full">
+                    <div className="aspect-[3/4] w-full relative rounded-xl overflow-hidden shadow-lg">
+                      <Image
+                        src={image}
+                        alt={`${candidate.name}'s image ${idx + 1}`}
+                        fill
+                        className="object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:flex" />
+              <CarouselNext className="hidden md:flex" />
+            </Carousel>
+          </div>
+
+          {/* Candidate Details Section */}
+          <div className="w-full md:w-1/2 space-y-5 flex flex-col">
+            {/* Total Rating */}
+            <div className={`flex items-center justify-between gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full ${
+              isMale ? "bg-candidate-male-50/50" : "bg-candidate-female-50/50"
+            }`}>
+              <span className={`text-xl md:text-2xl font-bold ${
+                isMale ? "text-candidate-male-700" : "text-candidate-female-700"
+              }`}>{candidate.name}</span>
+              <span className={`font-bold text-sm md:text-base ${
+                isMale ? "text-candidate-male-700" : "text-candidate-female-700"
+              }`}>
+                Total: {totalRating}/30
+              </span>
+            </div>
+            {/* Intro */}
+            <div className="space-y-2">
+              <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                {candidate.intro}
+              </p>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className={`flex items-center gap-2 p-3 rounded-xl ${
+                isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
+              }`}>
+                <Calendar className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
+                <div>
+                  <p className="text-xs text-gray-600">Age</p>
+                  <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
+                    {candidate.age}
+                  </p>
+                </div>
+              </div>
+              <div className={`flex items-center gap-2 p-3 rounded-xl ${
+                isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
+              }`}>
+                <GraduationCap className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-600">Major</p>
+                  <p className={`font-bold truncate ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
+                    {candidate.major}
+                  </p>
+                </div>
+              </div>
+              <div className={`flex items-center gap-2 p-3 rounded-xl ${
+                isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
+              }`}>
+                <Ruler className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
+                <div>
+                  <p className="text-xs text-gray-600">Height</p>
+                  <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
+                    {candidate.height} cm
+                  </p>
+                </div>
+              </div>
+              <div className={`flex items-center gap-2 p-3 rounded-xl ${
+                isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
+              }`}>
+                <Scale className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
+                <div>
+                  <p className="text-xs text-gray-600">Weight</p>
+                  <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
+                    {candidate.weight} kg
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Hobbies */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Heart className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
+                <strong className={`text-sm ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
+                  Hobbies:
+                </strong>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {candidate.hobbies.map((hobby, idx) => (
+                  <Badge
+                    key={idx}
+                    className={`text-xs ${
+                      isMale
+                        ? "bg-candidate-male-100 text-candidate-male-700 border-candidate-male-200"
+                        : "bg-candidate-female-100 text-candidate-female-700 border-candidate-female-200"
+                    }`}
+                  >
+                    {hobby}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            {/* Rating and Sliders */}
+            <div className="space-y-4 pt-2 border-t border-gray-200">
+              <h4 className={`font-bold text-sm mb-3 ${
+                isMale ? "text-candidate-male-700" : "text-candidate-female-700"
+              }`}>
+                Ratings (1-10 scale)
+              </h4>
+              {["dressing", "performance", "QA"].map((category) => (
+                <div key={category} className="space-y-2">
+                  <StarRating
+                    rating={
+                      ratings[candidate.id]?.[
+                        category as keyof (typeof ratings)[typeof candidate.id]
+                      ] ?? 0
+                    }
+                    category={
+                      category === "QA"
+                        ? "Q&A"
+                        : category.charAt(0).toUpperCase() +
+                          category.slice(1)
+                    }
+                    isMale={isMale}
+                  />
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.1}
+                    color={isMale ? "male" : "female"}
+                    value={[
+                      ratings[candidate.id]?.[
+                        category as keyof (typeof ratings)[typeof candidate.id]
+                      ] ?? 0,
+                    ]}
+                    onValueChange={(value) =>
+                      handleRatingChange(
+                        candidate.id,
+                        category as "dressing" | "performance" | "QA",
+                        value[0]
+                      )
+                    }
+                    className={`w-full ${
+                      isMale ? "[&_.slider-thumb]:bg-candidate-male-600" : "[&_.slider-thumb]:bg-candidate-female-600"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [judgeCode, setJudgeCode] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState<boolean>(false);
+  const [ratings, setRatings] = useState<{
+    [key: string]: { dressing: number; performance: number; QA: number };
+  }>(
+    Object.fromEntries(
+      candidates.map((c) => [c.id, { dressing: 0, performance: 0, QA: 0 }])
+    )
+  );
+
+  const addRatings = useMutation(api.votes.addRatings);
+
+  useEffect(() => {
+    const secretFromQuery = searchParams.get("secret");
+    if (secretFromQuery) {
+      setJudgeCode(secretFromQuery);
+    }
+  }, [searchParams]);
+
   const handleRatingChange = (
     id: string,
     category: "dressing" | "performance" | "QA",
@@ -145,17 +359,21 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
       });
       return;
     }
-    if (
-      Object.values(ratings).some((candidateRatings) =>
-        Object.values(candidateRatings).some((rating) => rating === 0)
-      )
-    ) {
+
+    // Count all categories across all candidates that have a rating of 0
+    const unRatedCategoriesCount = Object.values(ratings).reduce((acc, candidateRatings) => {
+      return acc + Object.values(candidateRatings).filter((rating) => rating === 0).length;
+    }, 0);
+    console.log("🚀 ~ handleSubmit ~ unRatedCategoriesCount:", unRatedCategoriesCount)
+
+    if (unRatedCategoriesCount > 5) {
       setLoading(false);
       toast({
         title: "Error",
         description: "Please rate all categories for all candidates!",
         variant: "destructive",
       });
+      
       return;
     }
 
@@ -170,17 +388,23 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
         secretKey: judgeCode,
       });
 
-      toast({
-        title: res.success ? "Success" : "Failed",
-        description: res.message,
-      });
+      if (res.success) {
+        setShowSuccessDialog(true);
+      } else {
+        toast({
+          title: "Failed",
+          description: res.message,
+          variant: "destructive",
+        });
+        setLoading(false);
+      }
     } catch (error) {
       console.error("handleSubmit error:", error);
       toast({
         title: "Error",
         description: "Something went wrong! Please try again.",
+        variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -200,228 +424,15 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 max-w-6xl mx-auto p-4 md:p-6">
-      {shuffledCandidates.map((candidate, index) => {
-        const isMale = candidate.gender === "male";
-        const totalRating = (
-          (ratings[candidate.id]?.dressing ?? 0) +
-          (ratings[candidate.id]?.performance ?? 0) +
-          (ratings[candidate.id]?.QA ?? 0)
-        ).toFixed(1);
-
-        return (
-          <motion.div
-            key={candidate.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="w-full"
-          >
-            <Card className={`w-full rounded-2xl shadow-xl border-2 overflow-hidden ${
-              isMale 
-                ? "bg-gradient-to-br from-candidate-male-50/50 to-white border-candidate-male-200/50" 
-                : "bg-gradient-to-br from-candidate-female-50/50 to-white border-candidate-female-200/50"
-            }`}>
-              {/* <CardHeader className={`pb-4 ${
-                isMale
-                  ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-700"
-                  : "bg-gradient-to-r from-candidate-female-500 to-candidate-female-600"
-              }`}>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-3 text-xl md:text-2xl font-bold text-white">
-                    <span>{candidate.name}</span>
-                  </CardTitle>
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                    <span className="text-white font-bold text-sm md:text-base">
-                      Total: {totalRating}/30
-                    </span>
-                  </div>
-                </div>
-              </CardHeader> */}
-
-              <CardContent className="flex flex-col md:flex-row gap-6 p-4 md:p-6">
-                {/* Carousel Section */}
-                <div className="w-full md:w-1/2 flex-shrink-0">
-                  <Carousel
-                    plugins={[plugin.current]}
-                    onMouseEnter={plugin.current.stop}
-                    onMouseLeave={plugin.current.reset}
-                    className="w-full rounded-xl overflow-hidden"
-                  >
-                    <CarouselContent>
-                      {candidate.carouselImages.map((image, idx) => (
-                        <CarouselItem key={idx} className="basis-full">
-                          <div className="aspect-[3/4] w-full relative rounded-xl overflow-hidden shadow-lg">
-                            <Image
-                              src={image}
-                              alt={`${candidate.name}'s image ${idx + 1}`}
-                              fill
-                              className="object-cover transition-transform duration-300 hover:scale-105"
-                            />
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden md:flex" />
-                    <CarouselNext className="hidden md:flex" />
-                  </Carousel>
-                </div>
-
-                  
-                {/* Candidate Details Section */}
-                <div className="w-full md:w-1/2 space-y-5 flex flex-col">
-                {/* Total Rating */}
-                <div className={`flex items-center justify-between gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full ${
-                    isMale ? "bg-candidate-male-50/50" : "bg-candidate-female-50/50"
-                  }`}>
-                  <span className={`text-xl md:text-2xl font-bold ${
-                    isMale ? "text-candidate-male-700" : "text-candidate-female-700"
-                  }`}>{candidate.name}</span>
-                    <span className={`font-bold text-sm md:text-base ${
-                      isMale ? "text-candidate-male-700" : "text-candidate-female-700"
-                    }`}>
-                      Total: {totalRating}/30
-                    </span>
-                  </div>
-                  {/* Intro */}
-                  <div className="space-y-2">
-                    <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                      {candidate.intro}
-                    </p>
-                  </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
-                    }`}>
-                      <Calendar className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
-                      <div>
-                        <p className="text-xs text-gray-600">Age</p>
-                        <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
-                          {candidate.age}
-                        </p>
-                      </div>
-                    </div>
-                    <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
-                    }`}>
-                      <GraduationCap className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
-                      <div className="min-w-0">
-                        <p className="text-xs text-gray-600">Major</p>
-                        <p className={`font-bold truncate ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
-                          {candidate.major}
-                        </p>
-                      </div>
-                    </div>
-                    <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
-                    }`}>
-                      <Ruler className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
-                      <div>
-                        <p className="text-xs text-gray-600">Height</p>
-                        <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
-                          {candidate.height} cm
-                        </p>
-                      </div>
-                    </div>
-                    <div className={`flex items-center gap-2 p-3 rounded-xl ${
-                      isMale ? "bg-candidate-male-50" : "bg-candidate-female-50"
-                    }`}>
-                      <Scale className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
-                      <div>
-                        <p className="text-xs text-gray-600">Weight</p>
-                        <p className={`font-bold ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
-                          {candidate.weight} kg
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hobbies */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Heart className={`w-4 h-4 ${isMale ? "text-candidate-male-600" : "text-candidate-female-600"}`} />
-                      <strong className={`text-sm ${isMale ? "text-candidate-male-700" : "text-candidate-female-700"}`}>
-                        Hobbies:
-                      </strong>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {candidate.hobbies.map((hobby, idx) => (
-                        <Badge
-                          key={idx}
-                          className={`text-xs ${
-                            isMale
-                              ? "bg-candidate-male-100 text-candidate-male-700 border-candidate-male-200"
-                              : "bg-candidate-female-100 text-candidate-female-700 border-candidate-female-200"
-                          }`}
-                        >
-                          {hobby}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Rating and Sliders */}
-                  <div className="space-y-4 pt-2 border-t border-gray-200">
-                    <h4 className={`font-bold text-sm mb-3 ${
-                      isMale ? "text-candidate-male-700" : "text-candidate-female-700"
-                    }`}>
-                      Ratings (1-10 scale)
-                    </h4>
-                    {["dressing", "performance", "QA"].map((category) => (
-                      <div key={category} className="space-y-2">
-                        <StarRating
-                          rating={
-                            ratings[candidate.id]?.[
-                              category as keyof (typeof ratings)[typeof candidate.id]
-                            ] ?? 0
-                          }
-                          category={
-                            category === "QA"
-                              ? "Q&A"
-                              : category.charAt(0).toUpperCase() +
-                                category.slice(1)
-                          }
-                          isMale={isMale}
-                        />
-                        <Slider
-                          min={0}
-                          max={10}
-                          step={0.1}
-                          color={isMale ? "male" : "female"}
-                          // trackColor={isMale ? "purple" : "amber"}
-                          // thumbColor={isMale ? "purple" : "amber"}
-                          // trackClassName={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
-                          //  thumbClassName={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
-                          // trackStyle={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
-                          // thumbStyle={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
-                          // trackClassName={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
-                          // thumbClassName={`${isMale ? "bg-purple-600" : "bg-amber-600"}`}
-                          value={[
-                            ratings[candidate.id]?.[
-                              category as keyof (typeof ratings)[typeof candidate.id]
-                            ] ?? 0,
-                          ]}
-                          onValueChange={(value) =>
-                            handleRatingChange(
-                              candidate.id,
-                              category as "dressing" | "performance" | "QA",
-                              value[0]
-                            )
-                          }
-                          className={`w-full ${
-                            isMale ? "[&_.slider-thumb]:bg-candidate-male-600" : "[&_.slider-thumb]:bg-candidate-female-600"
-                          }`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        );
-      })}
+      {shuffledCandidates.map((candidate, index) => (
+        <CandidateCardWithCarousel
+          key={candidate.id}
+          candidate={candidate}
+          index={index}
+          ratings={ratings}
+          handleRatingChange={handleRatingChange}
+        />
+      ))}
 
       {/* Judge Code Input */}
       <Card className="bg-gradient-to-br from-white to-gray-50/50 shadow-xl border-2 border-gray-200/50 rounded-2xl overflow-hidden">
@@ -474,6 +485,44 @@ export default function JudgeVoting({ candidates }: JudgeVotingFormProps) {
           )}
         </Button>
       </motion.div>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <Sparkles className="w-6 h-6 text-green-600" />
+              Ratings Submitted Successfully!
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              Your ratings have been recorded. Would you like to go to the home page?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-3 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowSuccessDialog(false);
+                setLoading(false);
+              }}
+              className="flex-1 sm:flex-initial"
+            >
+              Stay Here
+            </Button>
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false);
+                setLoading(false);
+                router.push("/");
+              }}
+              className="flex-1 sm:flex-initial bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 hover:from-candidate-male-700 hover:via-candidate-female-600 hover:to-candidate-male-700 text-white"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Go to Home
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

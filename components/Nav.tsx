@@ -12,11 +12,19 @@ import {
   Archive,
   TicketCheck,
   ScrollText, Sparkles,
-  ChartSpline
+  ChartSpline,
+  Trophy,
+  Gavel
 } from "lucide-react";
 import { Authenticated, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import UserButton from "@/components/auth/UserButton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,9 +32,15 @@ export default function Nav() {
 
   const archiveQueryResult = useQuery(api.archive.getArchiveMetadatas);
   const archives = archiveQueryResult?.data || [];
+  const metadata = useQuery(api.metadata.getActive);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleArchive = () => setArchiveOpen(!archiveOpen);
+
+  const round = metadata?.round;
+  const showResults = round === "result";
+  const showJudge = round === "first" || round === "second";
+  const showLeaderBoard = round !== "preview";
 
   const baseMenuItems = [
     { href: "/", icon: <Home className="w-4 h-4" />, label: "Home" },
@@ -39,10 +53,27 @@ export default function Nav() {
       href: "/policy",
       icon: <ScrollText className="w-4 h-4" />,
       label: "Policy",
-    },    {
+    },
+    {
       href: "/board",
       icon: <ChartSpline className="w-4 h-4" />,
       label: "Board",
+      disabled: !showLeaderBoard,
+      disabledMessage: "Available after first voting round",
+    },
+    {
+      href: "/results",
+      icon: <Trophy className="w-4 h-4" />,
+      label: "Results",
+      disabled: !showResults,
+      disabledMessage: "Available when results are published",
+    },
+    {
+      href: "/judge",
+      icon: <Gavel className="w-4 h-4" />,
+      label: "Judge",
+      disabled: !showJudge,
+      disabledMessage: "Available only second round",
     },
   ];
 
@@ -97,7 +128,14 @@ export default function Nav() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
             {baseMenuItems.map((item, index) => (
-              <NavLink key={item.href} href={item.href} icon={item.icon} delay={index * 0.1}>
+              <NavLink 
+                key={item.href} 
+                href={item.href} 
+                icon={item.icon} 
+                delay={index * 0.1}
+                disabled={item.disabled}
+                disabledMessage={item.disabledMessage}
+              >
                 {item.label}
               </NavLink>
             ))}
@@ -249,6 +287,8 @@ export default function Nav() {
                     href={item.href}
                     icon={item.icon}
                     delay={index * 0.1}
+                    disabled={item.disabled}
+                    disabledMessage={item.disabledMessage}
                   >
                     {item.label}
                   </MobileNavLink>
@@ -330,31 +370,62 @@ function NavLink({
   children,
   icon,
   delay = 0,
+  disabled = false,
+  disabledMessage,
 }: {
   href: string;
   children: React.ReactNode;
   icon: React.ReactNode;
   delay?: number;
+  disabled?: boolean;
+  disabledMessage?: string;
 }) {
+  const content = (
+    <motion.div
+      className={`relative px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 group ${
+        disabled
+          ? "text-candidate-male-400 cursor-not-allowed opacity-60"
+          : "text-candidate-male-700 hover:text-candidate-male-900"
+      }`}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      whileHover={disabled ? {} : { scale: 1.05 }}
+      whileTap={disabled ? {} : { scale: 0.95 }}
+    >
+      {!disabled && (
+        <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-100/50 to-candidate-female-50/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+      )}
+      <div className="flex items-center gap-2">
+        <span className={`transition-transform ${disabled ? "" : "group-hover:scale-110"}`}>
+          {icon}
+        </span>
+        <span>{children}</span>
+      </div>
+      {!disabled && (
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-candidate-male-500 to-candidate-female-500 group-hover:w-3/4 transition-all duration-300 rounded-full" />
+      )}
+    </motion.div>
+  );
+
+  if (disabled) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="cursor-not-allowed">{content}</div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{disabledMessage || "Not available"}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
   return (
     <Link prefetch href={href}>
-      <motion.div
-        className="relative px-4 py-2.5 rounded-xl font-semibold text-sm text-candidate-male-700 hover:text-candidate-male-900 transition-all duration-300 group"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-candidate-male-100/50 to-candidate-female-50/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
-        <div className="flex items-center gap-2">
-          <span className="transition-transform group-hover:scale-110">
-            {icon}
-          </span>
-          <span>{children}</span>
-        </div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-candidate-male-500 to-candidate-female-500 group-hover:w-3/4 transition-all duration-300 rounded-full" />
-      </motion.div>
+      {content}
     </Link>
   );
 }
@@ -365,30 +436,50 @@ function MobileNavLink({
   icon,
   toggleMenu,
   delay = 0,
+  disabled = false,
+  disabledMessage,
 }: {
   href: string;
   children: React.ReactNode;
   icon: React.ReactNode | null;
   toggleMenu: () => void;
   delay?: number;
+  disabled?: boolean;
+  disabledMessage?: string;
 }) {
+  const content = (
+    <motion.div
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 group ${
+        disabled
+          ? "text-candidate-male-400 cursor-not-allowed opacity-60"
+          : "text-candidate-male-700 hover:bg-gradient-to-r hover:from-candidate-male-50 hover:to-candidate-female-50"
+      }`}
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay }}
+      whileTap={disabled ? {} : { scale: 0.98 }}
+    >
+      {icon && (
+        <span className={`text-candidate-male-500 transition-transform ${disabled ? "" : "group-hover:scale-110"}`}>
+          {icon}
+        </span>
+      )}
+      <span className="flex-1">{children}</span>
+      {disabled ? (
+        <span className="text-xs text-candidate-male-400 italic">{disabledMessage}</span>
+      ) : (
+        <Crown className="w-3.5 h-3.5 text-candidate-female-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+      )}
+    </motion.div>
+  );
+
+  if (disabled) {
+    return <div onClick={(e) => e.preventDefault()}>{content}</div>;
+  }
+
   return (
     <Link prefetch href={href} onClick={toggleMenu}>
-      <motion.div
-        className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-candidate-male-700 hover:bg-gradient-to-r hover:from-candidate-male-50 hover:to-candidate-female-50 transition-all duration-200 group"
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {icon && (
-          <span className="text-candidate-male-500 group-hover:scale-110 transition-transform">
-            {icon}
-          </span>
-        )}
-        <span className="flex-1">{children}</span>
-        <Crown className="w-3.5 h-3.5 text-candidate-female-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </motion.div>
+      {content}
     </Link>
   );
 }

@@ -29,28 +29,26 @@ export const metadata: Metadata = {
     template: "%s | PU Selection",
   },
   description:
-    "Join the PU Selection App to vote and help select the university's King, Queen, Prince, and Princess. Participate in two exciting voting rounds to make your voice heard!",
+    "Join the Polytechnic University Myeik Selection App to vote and help select the university's King, Queen, Prince, and Princess. Participate in two exciting voting rounds to make your voice heard!",
   keywords: [
-    "PU Selection",
+    "Polytechnic University Myeik Selection",
+    "Myeik Polytechnic University",
     "university selection",
     "voting",
-    "King Queen Prince Princess",
-    "campus competition",
-    "student voting",
   ],
-  authors: [{ name: "PU Selection" }],
-  creator: "PU Selection",
-  publisher: "PU Selection",
+  authors: [{ name: "Nay Myo Khant" }],
+  creator: "Nay Myo Khant",
+  publisher: "Nay Myo Khant",
   openGraph: {
-    title: "PU Selection - Engage and Vote!",
+    title: "Polytechnic University Myeik Selection - Engage and Vote!",
     description:
-      "The PU Selection App empowers students to choose their King, Queen, Prince, and Princess. Dive into two rounds of voting with unique criteria and be part of the decision!",
+      "The Polytechnic University Myeik Selection App empowers students to choose their King, Queen, Prince, and Princess. Dive into two rounds of voting with unique criteria and be part of the decision!",
     url: process.env.BASE_URL || "http://localhost:3000",
-    siteName: "PU Selection",
+    siteName: "Polytechnic University Myeik Selection",
     images: [
       {
         url: `${process.env.BASE_URL || "http://localhost:3000"}/logo.webp`,
-        alt: "PU Selection App Logo",
+        alt: "Polytechnic University Myeik Logo",
         width: 1200,
         height: 630,
       },
@@ -60,9 +58,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PU Selection - Be the Judge!",
+    title: "Polytechnic University Myeik Selection - Be the Judge!",
     description:
-      "Cast your votes for the King, Queen, Prince, and Princess in the PU Selection App. Join the excitement now!",
+      "Cast your votes for the King, Queen, Prince, and Princess in the Polytechnic University Myeik Selection App. Join the excitement now!",
     images: [`${process.env.BASE_URL || "http://localhost:3000"}/logo.webp`],
   },
   robots: {

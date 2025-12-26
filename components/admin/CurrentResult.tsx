@@ -25,7 +25,7 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
     return (
       <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
         <div className="overflow-x-auto">
-          <div className="max-h-[200px] w-full overflow-y-auto scroll-area">
+          <div className="max-h-[200px] h-full w-full overflow-y-auto scroll-area">
             <Table className="w-full">
               <TableHeader className="sticky top-0 bg-white">
                 <TableRow>
@@ -66,9 +66,9 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
 
   return (
     <div className={`relative ${visible ? "blur-0" : "blur-sm"} w-full`}>
-      <div className="overflow-x-auto">
-        <div className="max-h-[200px] w-full overflow-y-auto scroll-area">
-          <Table className="w-full">
+      <div className="overflow-x-auto h-full">
+        <div className="max-h-[200px] h-full w-full overflow-y-auto scroll-area">
+          <Table className="w-full pb-0">
             <TableHeader className="sticky top-0 bg-white">
               <TableRow>
                 <TableHead colSpan={5}>Name</TableHead>

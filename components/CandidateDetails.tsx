@@ -65,7 +65,7 @@ export default function CandidateDetails({
   carouselImages,
   profileImage,
 }: CandidateProps) {
-  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  const plugin = useRef(Autoplay({ delay: 3000, stopOnInteraction: false }));
 
   const [voting, setVoting] = useState(false);
   const voteForCandidate = useMutation(api.votes.voteForCandidate);
@@ -352,8 +352,8 @@ export default function CandidateDetails({
           <Carousel
             plugins={[plugin.current]}
             className="w-full mx-auto rounded-xl overflow-hidden"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
+            // onMouseEnter={plugin.current.stop}
+            // onMouseLeave={plugin.current.reset}
           >
             <CarouselContent className="-ml-2 md:-ml-4">
               {carouselImages.map((url, index) => (

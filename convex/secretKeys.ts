@@ -76,6 +76,38 @@ export const getAll = query({
   },
 });
 
+// Get all secret keys with usage statistics
+export const getAllWithUsage = query({
+  args: {},
+  handler: async (ctx) => {
+    const activeMetadata = await ctx.db
+      .query("metadata")
+      .withIndex("by_active", (q) => q.eq("active", true))
+      .first();
+
+    if (!activeMetadata) {
+      return { success: false, data: [], message: "No active room!" };
+    }
+
+    const secretKeys = await ctx.db
+      .query("secretKeys")
+      .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
+      .collect();
+
+    return {
+      success: true,
+      data: secretKeys.map((k) => ({
+        _id: k._id,
+        secretKey: k.secretKey,
+        firstRoundMale: k.firstRoundMale,
+        firstRoundFemale: k.firstRoundFemale,
+        secondRoundMale: k.secondRoundMale,
+        secondRoundFemale: k.secondRoundFemale,
+      })),
+    };
+  },
+});
+
 // Validate a secret key
 export const validate = query({
   args: { key: v.string() },

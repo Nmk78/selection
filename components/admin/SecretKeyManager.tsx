@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
-import { Upload, Key, Loader2, Sparkles } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Key, Loader2, Sparkles, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,86 +14,52 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useMutation } from "convex/react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "@/hooks/use-toast";
-import { parse } from "papaparse";
 import { Id } from "@/convex/_generated/dataModel";
 import { motion } from "framer-motion";
 
 export default function SecretKeyManager({ userId }: { userId: Id<"users"> }) {
-  const [uploadStatus, setUploadStatus] = useState<
-    "idle" | "processing" | "success" | "error"
-  >("idle");
-  const [progress, setProgress] = useState(0);
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
   const [keyAmount, setKeyAmount] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const insertKeys = useMutation(api.secretKeys.insertMany);
   const generateKeys = useMutation(api.secretKeys.generateAndInsert);
+  const keysData = useQuery(api.secretKeys.getAll);
+  const keysWithUsage = useQuery(api.secretKeys.getAllWithUsage);
+  
+  const totalKeys = keysData?.success ? keysData.data.length : 0;
+  
+  // Calculate usage statistics
+  const stats = useMemo(() => {
+    if (!keysWithUsage?.success) {
+      return {
+        firstRoundUsed: 0,
+        firstRoundMale: 0,
+        firstRoundFemale: 0,
+        secondRoundUsed: 0,
+        secondRoundMale: 0,
+        secondRoundFemale: 0,
+      };
+    }
 
-  // Handle file drop
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
-      setUploadStatus("processing");
-      setProgress(0);
+    const keys = keysWithUsage.data;
+    const firstRoundMale = keys.filter(k => k.firstRoundMale).length;
+    const firstRoundFemale = keys.filter(k => k.firstRoundFemale).length;
+    const secondRoundMale = keys.filter(k => k.secondRoundMale).length;
+    const secondRoundFemale = keys.filter(k => k.secondRoundFemale).length;
 
-      const file = acceptedFiles[0];
-
-      parse(file, {
-        header: false,
-        skipEmptyLines: true,
-        delimiter: ",",
-        complete: async (results: { data: string[][] }) => {
-          const rows = results.data as string[][];
-          if (!rows.length || !rows[0].length) {
-            toast({
-              title: "Invalid CSV Format",
-              description: "The CSV file should not be empty.",
-              variant: "destructive",
-            });
-            setUploadStatus("error");
-            return;
-          }
-
-          const keys = rows.flat();
-          setProgress(50);
-
-          try {
-            const response = await insertKeys({ userId, keys });
-            toast({
-              title: "Upload Successful",
-              description: response.message,
-            });
-            setUploadStatus("success");
-            setProgress(100);
-          } catch (error) {
-            console.error("Mutation Error:", error);
-            toast({
-              title: "Upload Failed",
-              description: error instanceof Error ? error.message : "Unknown error.",
-              variant: "destructive",
-            });
-            setUploadStatus("error");
-            setProgress(100);
-          }
-        },
-        error: (error: Error) => {
-          console.error("CSV Parsing Error:", error);
-          toast({
-            title: "CSV Parsing Error",
-            description: `Failed to parse CSV: ${error.message}`,
-            variant: "destructive",
-          });
-          setUploadStatus("error");
-        },
-      });
-    },
-    [insertKeys, userId]
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+    return {
+      firstRoundUsed: firstRoundMale + firstRoundFemale,
+      firstRoundMale,
+      firstRoundFemale,
+      secondRoundUsed: secondRoundMale + secondRoundFemale,
+      secondRoundMale,
+      secondRoundFemale,
+    };
+  }, [keysWithUsage]);
 
   const handleGenerateKeys = async () => {
     const amount = parseInt(keyAmount);
@@ -131,6 +95,78 @@ export default function SecretKeyManager({ userId }: { userId: Id<"users"> }) {
 
   return (
     <div className="space-y-4">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-2">
+        {/* Total Keys */}
+        <Card className="bg-gradient-to-br from-purple-50/50 to-amber-50/50 border-purple-200/50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+                <span className="font-semibold text-gray-700">Total Keys</span>
+              </div>
+              <span className="text-2xl font-bold text-purple-600">
+                {keysData === undefined ? (
+                  <Loader2 className="w-5 h-5 animate-spin inline" />
+                ) : (
+                  totalKeys.toLocaleString()
+                )}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                  {/* First Round Usage */}
+        <Card className="bg-gradient-to-br from-blue-50/50 to-cyan-50/50 border-blue-200/50">
+          <CardContent className="p-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700 text-sm">First</span>
+                </div>
+                <span className="text-xl font-bold text-blue-600">
+                  {keysWithUsage === undefined ? (
+                    <Loader2 className="w-4 h-4 animate-spin inline" />
+                  ) : (
+                    stats.firstRoundUsed
+                  )}
+                </span>
+              </div>
+              <div className="flex gap-3 text-xs text-gray-600">
+                <span>M: {keysWithUsage === undefined ? "-" : stats.firstRoundMale}</span>
+                <span>F: {keysWithUsage === undefined ? "-" : stats.firstRoundFemale}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Second Round Usage */}
+        <Card className="bg-gradient-to-br from-green-50/50 to-emerald-50/50 border-green-200/50">
+          <CardContent className="p-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700 text-sm">Second</span>
+                </div>
+                <span className="text-xl font-bold text-green-600">
+                  {keysWithUsage === undefined ? (
+                    <Loader2 className="w-4 h-4 animate-spin inline" />
+                  ) : (
+                    stats.secondRoundUsed
+                  )}
+                </span>
+              </div>
+              <div className="flex gap-3 text-xs text-gray-600">
+                <span>M: {keysWithUsage === undefined ? "-" : stats.secondRoundMale}</span>
+                <span>F: {keysWithUsage === undefined ? "-" : stats.secondRoundFemale}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        </div>
+      </div>
+
       {/* Generate Keys Section */}
       <Dialog open={isGenerateDialogOpen} onOpenChange={setIsGenerateDialogOpen}>
         <DialogTrigger asChild>
@@ -206,60 +242,6 @@ export default function SecretKeyManager({ userId }: { userId: Id<"users"> }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-gray-300" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-500">Or</span>
-        </div>
-      </div>
-
-      {/* CSV Upload Section */}
-      <div>
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-md p-3 text-center cursor-pointer transition-colors ${
-            isDragActive
-              ? "border-purple-400 bg-purple-50"
-              : "border-gray-300 hover:border-gray-400"
-          }`}
-        >
-          <input {...getInputProps()} />
-          <Upload className="mx-auto h-8 w-8 text-gray-400" />
-          <p className="mt-2 text-sm font-medium">Drag and drop a CSV file here</p>
-          <p className="text-xs text-red-500 mt-1">
-            CSV should not end with comma!
-          </p>
-        </div>
-
-        {uploadStatus !== "idle" && uploadStatus !== "success" && (
-          <div className="mt-2">
-            <Progress value={progress} className="w-full" />
-          </div>
-        )}
-
-        <Button
-          className="mt-4 w-full"
-          disabled={uploadStatus === "processing"}
-          onClick={() => document.querySelector("input")?.click()}
-          variant="outline"
-        >
-          {uploadStatus === "processing" ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            <>
-              <Upload className="w-4 h-4 mr-2" />
-              Select CSV File
-            </>
-          )}
-        </Button>
-      </div>
     </div>
   );
 }

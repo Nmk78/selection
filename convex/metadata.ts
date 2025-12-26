@@ -174,3 +174,13 @@ export const updateRound = mutation({
     return await ctx.db.get(args.id);
   },
 });
+
+
+export const getCurrentRound = query({
+  args: {},
+  handler: async (ctx) => {
+    const currentRound = await ctx.db.query("metadata").withIndex("by_active", (q) => q.eq("active", true)).first();
+    if (!currentRound) throw new Error("No active metadata found");
+    return currentRound.round;
+  },
+});

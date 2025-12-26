@@ -15,10 +15,48 @@ export const getAll = query({
       return [];
     }
 
-    return await ctx.db
+    const candidates = await ctx.db
       .query("candidates")
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
       .collect();
+
+    // If it's second round, only return top N males and females
+    if (activeMetadata.round === "second") {
+      const { maleForSecondRound, femaleForSecondRound } = activeMetadata;
+
+      const votes = await ctx.db
+        .query("votes")
+        .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
+        .collect();
+
+      const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
+
+      const candidatesWithStats = candidates.map((candidate) => {
+        const vote = voteMap.get(candidate._id);
+        const totalVotes = vote?.totalVotes ?? 0;
+        const totalRating = vote?.totalRating ?? 0;
+        return {
+          ...candidate,
+          totalVotes,
+          totalRating,
+          combinedScore: totalVotes + totalRating,
+        };
+      });
+
+      const sorted = candidatesWithStats.sort(
+        (a, b) => b.combinedScore - a.combinedScore
+      );
+
+      const males = sorted.filter((c) => c.gender === "male");
+      const females = sorted.filter((c) => c.gender === "female");
+
+      const topMales = males.slice(0, maleForSecondRound);
+      const topFemales = females.slice(0, femaleForSecondRound);
+
+      return [...topMales, ...topFemales];
+    }
+
+    return candidates;
   },
 });
 
@@ -51,6 +89,7 @@ export const getById = query({
 });
 
 // Get candidates with stats (votes + ratings) for active room
+// For leaderboard
 export const getWithStats = query({
   args: {},
   handler: async (ctx) => {
@@ -89,11 +128,66 @@ export const getWithStats = query({
     });
 
     // Sort by combinedScore descending
-    return candidatesWithStats.sort((a, b) => b.combinedScore - a.combinedScore);
+    return candidatesWithStats.sort(
+      (a, b) => b.combinedScore - a.combinedScore
+    );
+  },
+});
+
+export const getWithStatsForLeaderboard = query({
+  args: {},
+  handler: async (ctx) => {
+    const activeMetadata = await ctx.db
+      .query("metadata")
+      .withIndex("by_active", (q) => q.eq("active", true))
+      .first();
+
+    if (!activeMetadata) {
+      return [];
+    }
+
+    const maleCandidates = await ctx.db
+      .query("candidates")
+      .withIndex("by_roomId_gender", (q) =>
+        q.eq("roomId", activeMetadata._id).eq("gender", "male")
+      )
+      .take(activeMetadata.leaderBoardCandidates);
+
+    const femaleCandidates = await ctx.db
+      .query("candidates")
+      .withIndex("by_roomId_gender", (q) =>
+        q.eq("roomId", activeMetadata._id).eq("gender", "female")
+      )
+      .take(activeMetadata.leaderBoardCandidates);
+    const votes = await ctx.db
+      .query("votes")
+      .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
+      .collect();
+
+    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
+
+    const candidatesWithStats = [...maleCandidates, ...femaleCandidates].map((candidate) => {
+      const vote = voteMap.get(candidate._id);
+      const totalVotes = vote?.totalVotes ?? 0;
+      const totalRating = vote?.totalRating ?? 0;
+      return {
+        ...candidate,
+        id: candidate._id,
+        totalVotes,
+        totalRating,
+        combinedScore: totalVotes + totalRating,
+      };
+    });
+
+    // Sort by combinedScore descending
+    return candidatesWithStats.sort(
+      (a, b) => b.combinedScore - a.combinedScore
+    );
   },
 });
 
 // Get candidates with stats for a specific room (for archives)
+// For leaderboard
 export const getWithStatsByRoomId = query({
   args: { roomId: v.id("metadata") },
   handler: async (ctx, args) => {
@@ -123,7 +217,9 @@ export const getWithStatsByRoomId = query({
     });
 
     // Sort by combinedScore descending
-    return candidatesWithStats.sort((a, b) => b.combinedScore - a.combinedScore);
+    return candidatesWithStats.sort(
+      (a, b) => b.combinedScore - a.combinedScore
+    );
   },
 });
 
@@ -518,7 +614,9 @@ export const removeImage = mutation({
       const newCarouselImages = candidate.carouselImages.filter(
         (img) => img !== args.imageUrl
       );
-      await ctx.db.patch(args.candidateId, { carouselImages: newCarouselImages });
+      await ctx.db.patch(args.candidateId, {
+        carouselImages: newCarouselImages,
+      });
     }
 
     return { success: true };

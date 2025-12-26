@@ -14,7 +14,7 @@ export default function ResultsContent() {
 
   if (metadata === undefined || topCandidates === undefined) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center py-12 px-4 bg-gray-50">
+      <main className="min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 bg-gray-50">
         <div className="flex flex-col items-center justify-center">
           <LoaderCircle className="w-12 h-12 animate-spin text-purple-600" />
           <p className="mt-4 text-gray-600 font-medium">
@@ -98,15 +98,17 @@ export default function ResultsContent() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="min-h-screen flex flex-col items-center py-6 md:py-10 px-4 bg-gray-50">
+      <main className="min-h-screen flex flex-col items-center py-6 md:py-10 px-4">
         <Confetti />
         
         <div className="text-center mb-6 md:mb-8 w-full max-w-7xl">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Crown className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
             <h1 className="text-2xl md:text-4xl font-bold text-gray-800">
-              PU Selection Winners
+              Selection Winners
             </h1>
+            <Crown className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
+
           </div>
           <p className="text-sm md:text-base text-gray-600">
             The grand reveal of our champions

@@ -16,7 +16,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-candidate-male-50 via-white to-candidate-female-50 relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center px-4 bg-gradient-to-br from-candidate-male-50 via-white to-candidate-female-50 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-candidate-male-200/20 rounded-full blur-3xl"></div>
@@ -43,7 +43,7 @@ function SignInContent({ onSuccess }: { onSuccess: () => void }) {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center gap-4"
+        className="w-full h-full flex flex-col items-center gap-4"
       >
         <div className="relative">
           <Loader2 className="w-10 h-10 animate-spin text-candidate-male-600" />
