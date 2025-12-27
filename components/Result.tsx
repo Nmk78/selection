@@ -103,17 +103,17 @@ export default function Results({ results }: ResultsProps) {
             ease: [0.16, 1, 0.3, 1]
           }}
           whileHover={{ y: -10, scale: 1.02 }}
-          className="group relative"
+          className="group relative w-full"
         >
           <Link href={`/candidate/${candidate.id}`}>
-            <div className={`relative overflow-hidden rounded-3xl border-2 ${config.border} bg-gradient-to-br ${config.bgGradient} backdrop-blur-sm shadow-2xl ${config.glow} transition-all duration-500`}>
+            <div className={`relative rounded-3xl border-2 ${config.border} bg-gradient-to-br ${config.bgGradient} backdrop-blur-sm shadow-2xl ${config.glow} transition-all duration-500`}>
               {/* Animated background gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-500`} />
               
               {/* Shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               
-              <div className="relative p-6 md:p-8 flex flex-col items-center">
+              <div className="relative p-6 md:p-8 flex flex-col items-center overflow-hidden">
                 {/* Large Profile Image */}
                 <div className="relative w-40 h-40 md:w-52 md:h-52 mb-5 group/image">
                   {/* Glow ring */}
@@ -213,14 +213,14 @@ export default function Results({ results }: ResultsProps) {
             ease: "easeOut"
           }}
           whileHover={{ y: -5, scale: 1.02 }}
-          className="group relative"
+          className="group relative w-full"
         >
           <Link href={`/candidate/${candidate.id}`}>
-            <div className={`relative overflow-hidden rounded-2xl border-2 ${config.border} bg-gradient-to-br ${config.bgGradient} backdrop-blur-sm shadow-lg hover:shadow-xl ${config.glow} transition-all duration-300`}>
+            <div className={`relative rounded-2xl border-2 ${config.border} bg-gradient-to-br ${config.bgGradient} backdrop-blur-sm shadow-lg hover:shadow-xl ${config.glow} transition-all duration-300`}>
               {/* Subtle background gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
               
-              <div className="relative p-6 flex flex-col items-center">
+              <div className="relative p-6 flex flex-col items-center overflow-hidden">
                 {/* Profile Image */}
                 <div className="relative w-32 h-32 md:w-40 md:h-40 mb-4 group/image">
                   {/* Glow effect */}
@@ -273,15 +273,15 @@ export default function Results({ results }: ResultsProps) {
   };
 
   return (
-    <div className="w-full mx-auto px-4 md:px-6 py-8 md:py-12">
+    <div className="w-full mx-auto py-8 md:py-12">
       {/* Desktop Layout: Prince, King, Queen, Princess (4 columns) */}
-      <div className="hidden md:grid md:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto justify-center items-center">
+      <div className="hidden md:grid md:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto justify-center items-start px-4">
         {desktopOrder.map((candidate, index) => {
           const isHero = isTopTwo(candidate.title);
           return (
             <div 
               key={`desktop-${candidate.title}`} 
-              className={`${isHero ? 'md:col-span-1' : 'md:col-span-1'} flex items-stretch justify-center items-center`}
+              className="flex items-start justify-center p-2"
             >
               {renderCard(candidate, index, isHero)}
             </div>
@@ -290,9 +290,9 @@ export default function Results({ results }: ResultsProps) {
       </div>
 
       {/* Mobile Layout: King, Queen, Prince, Princess (stacked) */}
-      <div className="grid grid-cols-1 md:hidden gap-6 max-w-md mx-auto">
+      <div className="grid grid-cols-1 md:hidden gap-6 max-w-md mx-auto px-4">
         {mobileOrder.map((candidate, index) => (
-          <div key={`mobile-${candidate.title}`}>
+          <div key={`mobile-${candidate.title}`} className="p-2">
             {renderCard(candidate, index, false)}
           </div>
         ))}

@@ -14,7 +14,7 @@ export default function ResultsContent() {
 
   if (metadata === undefined || topCandidates === undefined) {
     return (
-      <main className="min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 bg-gray-50">
+      <main className="min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 ">
         <div className="flex flex-col items-center justify-center">
           <LoaderCircle className="w-12 h-12 animate-spin text-candidate-male-600" />
           <p className="mt-4 text-gray-600 font-medium">
@@ -27,8 +27,8 @@ export default function ResultsContent() {
 
   if (!metadata || metadata.round !== "result") {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center py-12 px-4 bg-gray-50">
-        <Card className="w-full max-w-lg mx-auto rounded-lg shadow-md border border-gray-200">
+      <main className="min-h-screen w-full flex flex-col items-center justify-center py-12 px-4 ">
+        <Card className="w-full max-w-lg mx-auto rounded-lg shadow-md border border-gray-200 overflow-hidden">
           <CardHeader className="bg-candidate-male-600 pb-4">
             <CardTitle className="flex items-center justify-center gap-2 text-lg md:text-xl font-semibold text-white">
               <Crown className="w-5 h-5" />
@@ -51,8 +51,8 @@ export default function ResultsContent() {
 
   if (!king || !queen || !prince || !princess) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center py-12 px-4 bg-gray-50">
-        <Card className="w-full max-w-lg mx-auto rounded-lg shadow-md border border-gray-200">
+      <main className="min-h-[70vh] w-full flex flex-col items-center justify-center py-12 px-4 ">
+        <Card className="w-full max-w-lg mx-auto rounded-lg shadow-md border border-gray-200 overflow-hidden">
           <CardHeader className="bg-candidate-male-600 pb-4">
             <CardTitle className="flex items-center justify-center gap-2 text-lg md:text-xl font-semibold text-white">
               <Crown className="w-5 h-5" />
@@ -98,17 +98,16 @@ export default function ResultsContent() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="min-h-screen flex flex-col items-center py-6 md:py-10 px-4">
+      <main className="min-h-[80vh] w-full overflow-x-hidden flex flex-col items-center py-4 md:py-6 px-4">
         <Confetti />
         
-        <div className="text-center mb-6 md:mb-8 w-full max-w-7xl">
+        <div className="text-center mb-6 md:mb-0 w-full max-w-7xl px-4">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Crown className="w-5 h-5 md:w-6 md:h-6 text-candidate-female-600" />
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-800">
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
               Selection Winners
             </h1>
             <Crown className="w-5 h-5 md:w-6 md:h-6 text-candidate-female-600" />
-
           </div>
           <p className="text-sm md:text-base text-gray-600">
             The grand reveal of our champions

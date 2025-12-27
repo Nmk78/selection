@@ -27,41 +27,118 @@ function HomeContentInner() {
         <div className="max-w-7xl mx-auto ">
           <div className="w-full md:rounded-xl overflow-hidden max-w-full mx-auto">
             <CarouselComponent />
-            {round === "first" && (
-              <div className="bg-candidate-male-600 text-white py-4 px-4 md:py-5 md:px-6 shadow-md text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                  <h2 className="text-xl md:text-2xl font-semibold">
-                    First Round Now Open!
-                  </h2>
+            {round === "first" ? (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="relative overflow-hidden bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 text-white py-5 px-4 md:py-6 md:px-6 shadow-lg text-center"
+              >
+                {/* Animated shimmer effect */}
+                <motion.div
+                  animate={{
+                    x: ["-100%", "200%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                />
+                
+                <div className="relative z-10">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="flex items-center justify-center gap-3 mb-2"
+                  >
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <span className="w-3 h-3 bg-green-400 rounded-full shadow-lg shadow-green-400/50"></span>
+                    </motion.div>
+                    <h2 className="text-xl md:text-2xl font-bold drop-shadow-md">
+                      First Round Open Now!
+                    </h2>
+                  </motion.div>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-sm md:text-base text-white/95 font-medium"
+                  >
+                    Cast your votes for the selection
+                  </motion.p>
                 </div>
-                <p className="text-sm md:text-base text-white/90">
-                  Cast your votes for the selection
-                </p>
-              </div>
-            )}
-            {round === "result" ? (
+              </motion.div>
+            ) : round === "second" ? (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="relative overflow-hidden bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 text-white py-5 px-4 md:py-6 md:px-6 shadow-lg text-center"
+              >
+                <div className="relative z-10">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="flex items-center justify-center gap-3 mb-2"
+                  >
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <span className="w-3 h-3 bg-green-400 rounded-full shadow-lg shadow-green-400/50"></span>
+                    </motion.div>
+                    <h2 className="text-xl md:text-2xl font-bold drop-shadow-md">
+                      Second Round Open Now!
+                    </h2>
+                  </motion.div>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-sm md:text-base text-white/95 font-medium"
+                  >
+                    Cast your votes for the selection
+                  </motion.p>
+                </div>
+              </motion.div>
+            ) : round === "result" ? (
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="relative overflow-hidden bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 text-white py-6 px-4 md:py-8 md:px-6 shadow-xl text-center"
               >
-                {/* Animated background gradient overlay */}
+                {/* Animated shimmer effect */}
                 <motion.div
                   animate={{
-                    opacity: [0.2, 0.4, 0.2],
-                    x: ["-100%", "100%"],
+                    x: ["-100%", "200%"],
                   }}
                   transition={{
                     duration: 3,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: "linear",
                   }}
-                  className="absolute inset-0 bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 bg-clip-text text-transparent"
-                ></motion.div>
-                
-
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                />
 
                 <div className="relative z-10">
                   <motion.div
@@ -90,21 +167,21 @@ function HomeContentInner() {
                     <h2 className="text-2xl md:text-3xl font-bold drop-shadow-md">
                       Results Available Now!
                     </h2>
-                {/* Decorative sparkles */}
-                <motion.div
-                  animate={{
-                    rotate: [0, 360],
-                    scale: [1, 1.2, 1],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className=""
-                >
-                  <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white/50" />
-                </motion.div>                  </motion.div>
+                    {/* Decorative sparkles */}
+                    <motion.div
+                      animate={{
+                        rotate: [0, 360],
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white/50" />
+                    </motion.div>
+                  </motion.div>
                   
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -143,14 +220,15 @@ function HomeContentInner() {
                   </motion.div>
                 </div>
               </motion.div>
-            ): (
+            ) : (
               <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-3xl text-center pt-6 font-bold font-quindelia bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient"
-            >
-              PU Selection
-            </motion.h1>
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="text-3xl text-center pt-6 font-bold font-quindelia bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient"
+              >
+                PU Selection
+              </motion.h1>
             )}
           </div>
 

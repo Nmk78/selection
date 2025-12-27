@@ -1,10 +1,14 @@
 import localFont from "next/font/local";
-import "./globals.css";
 import Nav from "@/components/Nav";
 import { Toaster } from "@/components/ui/toaster";
 import ConvexClientProvider from "./ConvexClientProvider";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+
+import "./globals.css";
+// import "@/app/themes/theme-purple-pink.css";  // Add this line to switch theme
+// import "@/app/themes/theme-emerald-amber.css";  // Add this line to switch theme
+
 
 const quindelia = localFont({
   src: "./fonts/quindelia.regular.ttf",
