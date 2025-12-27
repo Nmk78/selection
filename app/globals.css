@@ -132,6 +132,172 @@ body {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Brand Colors */
+    --brand-text: 180 40% 2%;
+    --brand-background: 180 33% 98%;
+    --brand-primary: 187 95% 29%;
+    --brand-secondary: 187 55% 70%;
+    --brand-accent: 326 100% 70%;
+
+    /* Male Candidate Color Scale (Blue) */
+    --candidate-male-50: 214 100% 97%;
+    --candidate-male-100: 214 95% 93%;
+    --candidate-male-200: 213 97% 87%;
+    --candidate-male-300: 212 96% 78%;
+    --candidate-male-400: 213 94% 68%;
+    --candidate-male-500: 217 91% 60%;
+    --candidate-male-600: 221 83% 53%;
+    --candidate-male-700: 224 76% 48%;
+    --candidate-male-800: 226 71% 40%;
+    --candidate-male-900: 224 64% 33%;
+
+    /* Female Candidate Color Scale (Cyan) */
+    --candidate-female-50: 183 100% 96%;
+    --candidate-female-100: 185 96% 90%;
+    --candidate-female-200: 186 94% 82%;
+    --candidate-female-300: 187 92% 69%;
+    --candidate-female-400: 188 86% 53%;
+    --candidate-female-500: 189 94% 43%;
+    --candidate-female-600: 192 91% 36%;
+    --candidate-female-700: 193 82% 31%;
+    --candidate-female-800: 194 70% 27%;
+    --candidate-female-900: 196 64% 24%;
+
+    /* Success Colors (Green) */
+    --success-50: 138 76% 97%;
+    --success-100: 141 84% 93%;
+    --success-200: 141 79% 85%;
+    --success-300: 142 77% 73%;
+    --success-400: 142 69% 58%;
+    --success-500: 142 71% 45%;
+    --success-600: 142 76% 36%;
+    --success-700: 142 72% 29%;
+    --success-800: 143 64% 24%;
+    --success-900: 144 61% 20%;
+
+    /* Warning Colors (Amber/Yellow) */
+    --warning-50: 48 100% 96%;
+    --warning-100: 48 96% 89%;
+    --warning-200: 48 97% 77%;
+    --warning-300: 46 97% 65%;
+    --warning-400: 43 96% 56%;
+    --warning-500: 38 92% 50%;
+    --warning-600: 32 95% 44%;
+    --warning-700: 26 90% 37%;
+    --warning-800: 23 83% 31%;
+    --warning-900: 22 78% 26%;
+
+    /* Error/Danger Colors (Red) */
+    --error-50: 0 86% 97%;
+    --error-100: 0 93% 94%;
+    --error-200: 0 96% 89%;
+    --error-300: 0 94% 82%;
+    --error-400: 0 91% 71%;
+    --error-500: 0 84% 60%;
+    --error-600: 0 72% 51%;
+    --error-700: 0 74% 42%;
+    --error-800: 0 70% 35%;
+    --error-900: 0 63% 31%;
+
+    /* Gray Scale */
+    --gray-50: 210 40% 98%;
+    --gray-100: 210 40% 96%;
+    --gray-200: 214 32% 91%;
+    --gray-300: 213 27% 84%;
+    --gray-400: 215 20% 65%;
+    --gray-500: 215 16% 47%;
+    --gray-600: 215 19% 35%;
+    --gray-700: 215 25% 27%;
+    --gray-800: 217 33% 17%;
+    --gray-900: 222 47% 11%;
+
+    /* Purple Scale (for male candidates alternative) */
+    --purple-50: 270 100% 98%;
+    --purple-100: 269 100% 95%;
+    --purple-200: 269 100% 92%;
+    --purple-300: 269 97% 85%;
+    --purple-400: 270 95% 75%;
+    --purple-500: 271 91% 65%;
+    --purple-600: 271 81% 56%;
+    --purple-700: 272 72% 47%;
+    --purple-800: 273 67% 39%;
+    --purple-900: 274 66% 32%;
+
+    /* Amber Scale (for female candidates alternative) */
+    --amber-50: 48 100% 96%;
+    --amber-100: 48 96% 89%;
+    --amber-200: 48 97% 77%;
+    --amber-300: 46 97% 65%;
+    --amber-400: 43 96% 56%;
+    --amber-500: 38 92% 50%;
+    --amber-600: 32 95% 44%;
+    --amber-700: 26 90% 37%;
+    --amber-800: 23 83% 31%;
+    --amber-900: 22 78% 26%;
+
+    /* Gold/Crown Colors */
+    --gold-50: 55 100% 95%;
+    --gold-100: 55 97% 88%;
+    --gold-200: 53 98% 77%;
+    --gold-300: 50 98% 64%;
+    --gold-400: 45 93% 47%;
+    --gold-500: 41 96% 40%;
+    --gold-600: 35 92% 33%;
+    --gold-700: 29 80% 28%;
+    --gold-800: 24 70% 23%;
+    --gold-900: 21 65% 18%;
+
+    /* Yellow Scale */
+    --yellow-50: 55 92% 95%;
+    --yellow-100: 55 97% 88%;
+    --yellow-200: 53 98% 77%;
+    --yellow-300: 50 98% 64%;
+    --yellow-400: 48 96% 53%;
+    --yellow-500: 45 93% 47%;
+    --yellow-600: 41 96% 40%;
+    --yellow-700: 35 92% 33%;
+    --yellow-800: 32 81% 29%;
+    --yellow-900: 28 73% 26%;
+
+    /* Green Scale */
+    --green-50: 138 76% 97%;
+    --green-100: 141 84% 93%;
+    --green-200: 141 79% 85%;
+    --green-300: 142 77% 73%;
+    --green-400: 142 69% 58%;
+    --green-500: 142 71% 45%;
+    --green-600: 142 76% 36%;
+    --green-700: 142 72% 29%;
+    --green-800: 143 64% 24%;
+    --green-900: 144 61% 20%;
+
+    /* Red Scale */
+    --red-50: 0 86% 97%;
+    --red-100: 0 93% 94%;
+    --red-200: 0 96% 89%;
+    --red-300: 0 94% 82%;
+    --red-400: 0 91% 71%;
+    --red-500: 0 84% 60%;
+    --red-600: 0 72% 51%;
+    --red-700: 0 74% 42%;
+    --red-800: 0 70% 35%;
+    --red-900: 0 63% 31%;
+
+    /* Blue Scale */
+    --blue-50: 214 100% 97%;
+    --blue-100: 214 95% 93%;
+    --blue-200: 213 97% 87%;
+    --blue-300: 212 96% 78%;
+    --blue-400: 213 94% 68%;
+    --blue-500: 217 91% 60%;
+    --blue-600: 221 83% 53%;
+    --blue-700: 224 76% 48%;
+    --blue-800: 226 71% 40%;
+    --blue-900: 224 64% 33%;
+
+    /* White (for theme consistency) */
+    --white: 0 0% 100%;
   }
 
   .dark {
@@ -159,6 +325,172 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Brand Colors (Dark Mode) */
+    --brand-text: 180 33% 98%;
+    --brand-background: 180 40% 5%;
+    --brand-primary: 187 80% 50%;
+    --brand-secondary: 187 45% 40%;
+    --brand-accent: 326 100% 65%;
+
+    /* Male Candidate Color Scale - Dark Mode (slightly adjusted) */
+    --candidate-male-50: 226 64% 33%;
+    --candidate-male-100: 226 71% 40%;
+    --candidate-male-200: 224 76% 48%;
+    --candidate-male-300: 221 83% 53%;
+    --candidate-male-400: 217 91% 60%;
+    --candidate-male-500: 213 94% 68%;
+    --candidate-male-600: 212 96% 78%;
+    --candidate-male-700: 213 97% 87%;
+    --candidate-male-800: 214 95% 93%;
+    --candidate-male-900: 214 100% 97%;
+
+    /* Female Candidate Color Scale - Dark Mode */
+    --candidate-female-50: 196 64% 24%;
+    --candidate-female-100: 194 70% 27%;
+    --candidate-female-200: 193 82% 31%;
+    --candidate-female-300: 192 91% 36%;
+    --candidate-female-400: 189 94% 43%;
+    --candidate-female-500: 188 86% 53%;
+    --candidate-female-600: 187 92% 69%;
+    --candidate-female-700: 186 94% 82%;
+    --candidate-female-800: 185 96% 90%;
+    --candidate-female-900: 183 100% 96%;
+
+    /* Success Colors - Dark Mode */
+    --success-50: 144 61% 20%;
+    --success-100: 143 64% 24%;
+    --success-200: 142 72% 29%;
+    --success-300: 142 76% 36%;
+    --success-400: 142 71% 45%;
+    --success-500: 142 69% 58%;
+    --success-600: 142 77% 73%;
+    --success-700: 141 79% 85%;
+    --success-800: 141 84% 93%;
+    --success-900: 138 76% 97%;
+
+    /* Warning Colors - Dark Mode */
+    --warning-50: 22 78% 26%;
+    --warning-100: 23 83% 31%;
+    --warning-200: 26 90% 37%;
+    --warning-300: 32 95% 44%;
+    --warning-400: 38 92% 50%;
+    --warning-500: 43 96% 56%;
+    --warning-600: 46 97% 65%;
+    --warning-700: 48 97% 77%;
+    --warning-800: 48 96% 89%;
+    --warning-900: 48 100% 96%;
+
+    /* Error Colors - Dark Mode */
+    --error-50: 0 63% 31%;
+    --error-100: 0 70% 35%;
+    --error-200: 0 74% 42%;
+    --error-300: 0 72% 51%;
+    --error-400: 0 84% 60%;
+    --error-500: 0 91% 71%;
+    --error-600: 0 94% 82%;
+    --error-700: 0 96% 89%;
+    --error-800: 0 93% 94%;
+    --error-900: 0 86% 97%;
+
+    /* Gray Scale - Dark Mode */
+    --gray-50: 222 47% 11%;
+    --gray-100: 217 33% 17%;
+    --gray-200: 215 25% 27%;
+    --gray-300: 215 19% 35%;
+    --gray-400: 215 16% 47%;
+    --gray-500: 215 20% 65%;
+    --gray-600: 213 27% 84%;
+    --gray-700: 214 32% 91%;
+    --gray-800: 210 40% 96%;
+    --gray-900: 210 40% 98%;
+
+    /* Purple Scale - Dark Mode */
+    --purple-50: 274 66% 32%;
+    --purple-100: 273 67% 39%;
+    --purple-200: 272 72% 47%;
+    --purple-300: 271 81% 56%;
+    --purple-400: 271 91% 65%;
+    --purple-500: 270 95% 75%;
+    --purple-600: 269 97% 85%;
+    --purple-700: 269 100% 92%;
+    --purple-800: 269 100% 95%;
+    --purple-900: 270 100% 98%;
+
+    /* Amber Scale - Dark Mode */
+    --amber-50: 22 78% 26%;
+    --amber-100: 23 83% 31%;
+    --amber-200: 26 90% 37%;
+    --amber-300: 32 95% 44%;
+    --amber-400: 38 92% 50%;
+    --amber-500: 43 96% 56%;
+    --amber-600: 46 97% 65%;
+    --amber-700: 48 97% 77%;
+    --amber-800: 48 96% 89%;
+    --amber-900: 48 100% 96%;
+
+    /* Gold/Crown Colors - Dark Mode */
+    --gold-50: 21 65% 18%;
+    --gold-100: 24 70% 23%;
+    --gold-200: 29 80% 28%;
+    --gold-300: 35 92% 33%;
+    --gold-400: 41 96% 40%;
+    --gold-500: 45 93% 47%;
+    --gold-600: 50 98% 64%;
+    --gold-700: 53 98% 77%;
+    --gold-800: 55 97% 88%;
+    --gold-900: 55 100% 95%;
+
+    /* Yellow Scale - Dark Mode */
+    --yellow-50: 28 73% 26%;
+    --yellow-100: 32 81% 29%;
+    --yellow-200: 35 92% 33%;
+    --yellow-300: 41 96% 40%;
+    --yellow-400: 45 93% 47%;
+    --yellow-500: 48 96% 53%;
+    --yellow-600: 50 98% 64%;
+    --yellow-700: 53 98% 77%;
+    --yellow-800: 55 97% 88%;
+    --yellow-900: 55 92% 95%;
+
+    /* Green Scale - Dark Mode */
+    --green-50: 144 61% 20%;
+    --green-100: 143 64% 24%;
+    --green-200: 142 72% 29%;
+    --green-300: 142 76% 36%;
+    --green-400: 142 71% 45%;
+    --green-500: 142 69% 58%;
+    --green-600: 142 77% 73%;
+    --green-700: 141 79% 85%;
+    --green-800: 141 84% 93%;
+    --green-900: 138 76% 97%;
+
+    /* Red Scale - Dark Mode */
+    --red-50: 0 63% 31%;
+    --red-100: 0 70% 35%;
+    --red-200: 0 74% 42%;
+    --red-300: 0 72% 51%;
+    --red-400: 0 84% 60%;
+    --red-500: 0 91% 71%;
+    --red-600: 0 94% 82%;
+    --red-700: 0 96% 89%;
+    --red-800: 0 93% 94%;
+    --red-900: 0 86% 97%;
+
+    /* Blue Scale - Dark Mode */
+    --blue-50: 224 64% 33%;
+    --blue-100: 226 71% 40%;
+    --blue-200: 224 76% 48%;
+    --blue-300: 221 83% 53%;
+    --blue-400: 217 91% 60%;
+    --blue-500: 213 94% 68%;
+    --blue-600: 212 96% 78%;
+    --blue-700: 213 97% 87%;
+    --blue-800: 214 95% 93%;
+    --blue-900: 214 100% 97%;
+
+    /* White - Dark Mode (inverted to dark) */
+    --white: 222 47% 11%;
   }
 }
 
