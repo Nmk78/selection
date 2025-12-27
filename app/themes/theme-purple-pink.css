@@ -1,0 +1,126 @@
+/*
+ * Alternative Theme: Purple & Pink
+ *
+ * To use this theme, import this file AFTER globals.css in your layout.tsx:
+ * import "@/app/themes/theme-purple-pink.css";
+ *
+ * Or copy these variables into your globals.css :root section to replace the default theme.
+ */
+
+:root {
+  /* Brand Colors - Purple Theme */
+  --brand-text: 270 40% 5%;
+  --brand-background: 270 33% 98%;
+  --brand-primary: 270 70% 50%;
+  --brand-secondary: 300 55% 70%;
+  --brand-accent: 340 100% 65%;
+
+  /* Male Candidate Color Scale (Purple) */
+  --candidate-male-50: 270 100% 98%;
+  --candidate-male-100: 269 100% 95%;
+  --candidate-male-200: 269 100% 92%;
+  --candidate-male-300: 269 97% 85%;
+  --candidate-male-400: 270 95% 75%;
+  --candidate-male-500: 271 91% 65%;
+  --candidate-male-600: 271 81% 56%;
+  --candidate-male-700: 272 72% 47%;
+  --candidate-male-800: 273 67% 39%;
+  --candidate-male-900: 274 66% 32%;
+
+  /* Female Candidate Color Scale (Pink/Rose) */
+  --candidate-female-50: 350 100% 97%;
+  --candidate-female-100: 350 96% 93%;
+  --candidate-female-200: 350 94% 87%;
+  --candidate-female-300: 350 92% 78%;
+  --candidate-female-400: 350 86% 68%;
+  --candidate-female-500: 350 80% 58%;
+  --candidate-female-600: 350 75% 48%;
+  --candidate-female-700: 350 70% 40%;
+  --candidate-female-800: 350 65% 32%;
+  --candidate-female-900: 350 60% 25%;
+
+  /* Primary UI Colors */
+  --primary: 271 91% 65%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 350 80% 95%;
+  --secondary-foreground: 350 80% 30%;
+  --accent: 340 100% 65%;
+  --accent-foreground: 0 0% 100%;
+
+  /* Purple Scale */
+  --purple-50: 270 100% 98%;
+  --purple-100: 269 100% 95%;
+  --purple-200: 269 100% 92%;
+  --purple-300: 269 97% 85%;
+  --purple-400: 270 95% 75%;
+  --purple-500: 271 91% 65%;
+  --purple-600: 271 81% 56%;
+  --purple-700: 272 72% 47%;
+  --purple-800: 273 67% 39%;
+  --purple-900: 274 66% 32%;
+
+  /* Amber Scale (warmer pink tones) */
+  --amber-50: 350 100% 97%;
+  --amber-100: 350 96% 93%;
+  --amber-200: 350 94% 87%;
+  --amber-300: 350 92% 78%;
+  --amber-400: 350 86% 68%;
+  --amber-500: 350 80% 58%;
+  --amber-600: 350 75% 48%;
+  --amber-700: 350 70% 40%;
+  --amber-800: 350 65% 32%;
+  --amber-900: 350 60% 25%;
+
+  /* Gold/Crown Colors (Rose Gold) */
+  --gold-50: 15 100% 95%;
+  --gold-100: 15 97% 88%;
+  --gold-200: 15 95% 77%;
+  --gold-300: 15 93% 64%;
+  --gold-400: 15 90% 52%;
+  --gold-500: 15 95% 45%;
+  --gold-600: 15 92% 38%;
+  --gold-700: 15 85% 32%;
+  --gold-800: 15 78% 26%;
+  --gold-900: 15 70% 20%;
+}
+
+.dark {
+  /* Brand Colors - Purple Theme Dark Mode */
+  --brand-text: 270 33% 98%;
+  --brand-background: 270 40% 5%;
+  --brand-primary: 270 80% 60%;
+  --brand-secondary: 300 45% 40%;
+  --brand-accent: 340 100% 60%;
+
+  /* Male Candidate Color Scale - Dark Mode */
+  --candidate-male-50: 274 66% 32%;
+  --candidate-male-100: 273 67% 39%;
+  --candidate-male-200: 272 72% 47%;
+  --candidate-male-300: 271 81% 56%;
+  --candidate-male-400: 271 91% 65%;
+  --candidate-male-500: 270 95% 75%;
+  --candidate-male-600: 269 97% 85%;
+  --candidate-male-700: 269 100% 92%;
+  --candidate-male-800: 269 100% 95%;
+  --candidate-male-900: 270 100% 98%;
+
+  /* Female Candidate Color Scale - Dark Mode */
+  --candidate-female-50: 350 60% 25%;
+  --candidate-female-100: 350 65% 32%;
+  --candidate-female-200: 350 70% 40%;
+  --candidate-female-300: 350 75% 48%;
+  --candidate-female-400: 350 80% 58%;
+  --candidate-female-500: 350 86% 68%;
+  --candidate-female-600: 350 92% 78%;
+  --candidate-female-700: 350 94% 87%;
+  --candidate-female-800: 350 96% 93%;
+  --candidate-female-900: 350 100% 97%;
+
+  /* Primary UI Colors - Dark Mode */
+  --primary: 270 95% 75%;
+  --primary-foreground: 274 66% 15%;
+  --secondary: 350 40% 20%;
+  --secondary-foreground: 350 96% 93%;
+  --accent: 340 100% 60%;
+  --accent-foreground: 0 0% 100%;
+}

@@ -21,11 +21,11 @@ export default function JudgeVotingPage() {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center gap-3 mb-2">
-            <Gavel className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+            <Gavel className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
               Judge Voting Panel
             </h1>
-            <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+            <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
           </div>
         </motion.div>
         <div className="flex justify-center items-center min-h-[60vh]">
@@ -63,17 +63,17 @@ export default function JudgeVotingPage() {
           className="text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Gavel className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+            <Gavel className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
               Judge Voting Panel
             </h1>
-            <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+            <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
           </div>
           <Card className="max-w-2xl mx-auto mt-8 bg-gradient-to-br from-white to-gray-50/50 border-2 border-gray-200/50">
             <CardContent className="p-8 text-center">
               <div className="flex justify-center mb-4">
-                <div className="p-4 rounded-full bg-gradient-to-br from-purple-100 to-amber-100">
-                  <Crown className="w-12 h-12 text-purple-600" />
+                <div className="p-4 rounded-full bg-gradient-to-br from-candidate-male-100 to-candidate-female-100">
+                  <Crown className="w-12 h-12 text-candidate-male-600" />
                 </div>
               </div>
               <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
@@ -101,18 +101,18 @@ export default function JudgeVotingPage() {
         className="text-center mb-6 md:mb-8"
       >
         <div className="flex items-center justify-center gap-3 mb-2">
-          <Gavel className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-          <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+          <Gavel className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+          <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
             Judge Voting Panel
           </h1>
-          <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+          <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
         </div>
         <div className="flex items-center justify-center gap-2 mt-2">
-          <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+          <Sparkles className="w-4 h-4 text-candidate-male-500 animate-pulse" />
           <p className="text-sm md:text-base text-gray-600">
             Rate candidates on Dressing, Performance, and Q&A (1-10 scale)
           </p>
-          <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+          <Sparkles className="w-4 h-4 text-candidate-female-500 animate-pulse" />
         </div>
       </motion.div>
       <JudgeVoting candidates={candidates} />

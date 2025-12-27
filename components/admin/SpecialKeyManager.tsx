@@ -175,20 +175,20 @@ export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
       <CardContent className="p-6 flex-1 flex flex-col min-h-0 overflow-hidden">
         <div className="space-y-4 flex-1 flex flex-col min-h-0">
           {/* Statistics Card */}
-          <Card className="bg-gradient-to-br from-purple-50/50 to-amber-50/50 border-purple-200/50 overflow-hidden relative">
+          <Card className="bg-gradient-to-br from-candidate-male-50/50 to-candidate-female-50/50 border-candidate-male-200/50 overflow-hidden relative">
             <CardContent className="p-4 relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12 blur-xl pointer-events-none" />
               <div className="relative flex items-center justify-between z-10">
                 <div className="flex items-center gap-2 min-w-0">
-                  <Key className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                  <p className="text-xl font-bold text-purple-600 truncate">
+                  <Key className="w-5 h-5 text-candidate-male-600 flex-shrink-0" />
+                  <p className="text-xl font-bold text-candidate-male-600 truncate">
                     Total Keys
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-3xl text-purple-600 font-bold">
+                  <span className="text-3xl text-candidate-male-600 font-bold">
                     {specialKeys.length}
                   </span>
                 </div>

@@ -28,7 +28,7 @@ function HomeContentInner() {
           <div className="w-full md:rounded-xl overflow-hidden max-w-full mx-auto">
             <CarouselComponent />
             {round === "first" && (
-              <div className="bg-purple-600 text-white py-4 px-4 md:py-5 md:px-6 shadow-md text-center">
+              <div className="bg-candidate-male-600 text-white py-4 px-4 md:py-5 md:px-6 shadow-md text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <span className="w-2 h-2 bg-green-400 rounded-full"></span>
                   <h2 className="text-xl md:text-2xl font-semibold">
@@ -45,7 +45,7 @@ function HomeContentInner() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white py-6 px-4 md:py-8 md:px-6 shadow-xl text-center"
+                className="relative overflow-hidden bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 text-white py-6 px-4 md:py-8 md:px-6 shadow-xl text-center"
               >
                 {/* Animated background gradient overlay */}
                 <motion.div

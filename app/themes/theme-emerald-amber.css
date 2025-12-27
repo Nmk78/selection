@@ -1,0 +1,138 @@
+/*
+ * Alternative Theme: Emerald & Amber (Nature Theme)
+ *
+ * To use this theme, import this file AFTER globals.css in your layout.tsx:
+ * import "@/app/themes/theme-emerald-amber.css";
+ *
+ * Or copy these variables into your globals.css :root section to replace the default theme.
+ */
+
+:root {
+  /* Brand Colors - Emerald Theme */
+  --brand-text: 160 40% 5%;
+  --brand-background: 160 33% 98%;
+  --brand-primary: 160 84% 35%;
+  --brand-secondary: 45 95% 55%;
+  --brand-accent: 30 100% 50%;
+
+  /* Male Candidate Color Scale (Emerald/Green) */
+  --candidate-male-50: 152 81% 96%;
+  --candidate-male-100: 149 80% 90%;
+  --candidate-male-200: 152 76% 80%;
+  --candidate-male-300: 156 72% 67%;
+  --candidate-male-400: 158 64% 52%;
+  --candidate-male-500: 160 84% 39%;
+  --candidate-male-600: 161 94% 30%;
+  --candidate-male-700: 163 94% 24%;
+  --candidate-male-800: 163 88% 20%;
+  --candidate-male-900: 164 86% 16%;
+
+  /* Female Candidate Color Scale (Amber/Gold) */
+  --candidate-female-50: 48 100% 96%;
+  --candidate-female-100: 48 96% 89%;
+  --candidate-female-200: 48 97% 77%;
+  --candidate-female-300: 46 97% 65%;
+  --candidate-female-400: 43 96% 56%;
+  --candidate-female-500: 38 92% 50%;
+  --candidate-female-600: 32 95% 44%;
+  --candidate-female-700: 26 90% 37%;
+  --candidate-female-800: 23 83% 31%;
+  --candidate-female-900: 22 78% 26%;
+
+  /* Primary UI Colors */
+  --primary: 160 84% 39%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 48 96% 89%;
+  --secondary-foreground: 38 92% 30%;
+  --accent: 30 100% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  /* Purple Scale (mapped to emerald for this theme) */
+  --purple-50: 152 81% 96%;
+  --purple-100: 149 80% 90%;
+  --purple-200: 152 76% 80%;
+  --purple-300: 156 72% 67%;
+  --purple-400: 158 64% 52%;
+  --purple-500: 160 84% 39%;
+  --purple-600: 161 94% 30%;
+  --purple-700: 163 94% 24%;
+  --purple-800: 163 88% 20%;
+  --purple-900: 164 86% 16%;
+
+  /* Amber Scale */
+  --amber-50: 48 100% 96%;
+  --amber-100: 48 96% 89%;
+  --amber-200: 48 97% 77%;
+  --amber-300: 46 97% 65%;
+  --amber-400: 43 96% 56%;
+  --amber-500: 38 92% 50%;
+  --amber-600: 32 95% 44%;
+  --amber-700: 26 90% 37%;
+  --amber-800: 23 83% 31%;
+  --amber-900: 22 78% 26%;
+
+  /* Gold/Crown Colors */
+  --gold-50: 45 100% 96%;
+  --gold-100: 45 97% 88%;
+  --gold-200: 45 95% 77%;
+  --gold-300: 42 93% 64%;
+  --gold-400: 38 90% 52%;
+  --gold-500: 35 95% 45%;
+  --gold-600: 32 92% 38%;
+  --gold-700: 28 85% 32%;
+  --gold-800: 25 78% 26%;
+  --gold-900: 22 70% 20%;
+
+  /* Green Scale */
+  --green-50: 152 81% 96%;
+  --green-100: 149 80% 90%;
+  --green-200: 152 76% 80%;
+  --green-300: 156 72% 67%;
+  --green-400: 158 64% 52%;
+  --green-500: 160 84% 39%;
+  --green-600: 161 94% 30%;
+  --green-700: 163 94% 24%;
+  --green-800: 163 88% 20%;
+  --green-900: 164 86% 16%;
+}
+
+.dark {
+  /* Brand Colors - Emerald Theme Dark Mode */
+  --brand-text: 160 33% 98%;
+  --brand-background: 160 40% 5%;
+  --brand-primary: 160 70% 50%;
+  --brand-secondary: 45 75% 45%;
+  --brand-accent: 30 100% 55%;
+
+  /* Male Candidate Color Scale - Dark Mode */
+  --candidate-male-50: 164 86% 16%;
+  --candidate-male-100: 163 88% 20%;
+  --candidate-male-200: 163 94% 24%;
+  --candidate-male-300: 161 94% 30%;
+  --candidate-male-400: 160 84% 39%;
+  --candidate-male-500: 158 64% 52%;
+  --candidate-male-600: 156 72% 67%;
+  --candidate-male-700: 152 76% 80%;
+  --candidate-male-800: 149 80% 90%;
+  --candidate-male-900: 152 81% 96%;
+
+  /* Female Candidate Color Scale - Dark Mode */
+  --candidate-female-50: 22 78% 26%;
+  --candidate-female-100: 23 83% 31%;
+  --candidate-female-200: 26 90% 37%;
+  --candidate-female-300: 32 95% 44%;
+  --candidate-female-400: 38 92% 50%;
+  --candidate-female-500: 43 96% 56%;
+  --candidate-female-600: 46 97% 65%;
+  --candidate-female-700: 48 97% 77%;
+  --candidate-female-800: 48 96% 89%;
+  --candidate-female-900: 48 100% 96%;
+
+  /* Primary UI Colors - Dark Mode */
+  --primary: 158 64% 52%;
+  --primary-foreground: 164 86% 10%;
+  --secondary: 38 40% 20%;
+  --secondary-foreground: 48 96% 89%;
+  --accent: 30 100% 55%;
+  --accent-foreground: 0 0% 100%;
+}

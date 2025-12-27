@@ -29,16 +29,16 @@ function CheckContent() {
         >
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Key className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-              <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+              <Key className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+              <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
                 Key Status Check
               </h1>
-              <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+              <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
             </div>
           </div>
           <Card className="bg-gradient-to-br from-white to-gray-50/50 border-2 border-gray-200/50 rounded-2xl shadow-xl">
             <CardContent className="p-8 flex flex-col items-center justify-center">
-              <LoaderCircle className="w-12 h-12 animate-spin text-purple-600 mb-4" />
+              <LoaderCircle className="w-12 h-12 animate-spin text-candidate-male-600 mb-4" />
               <p className="text-gray-600">Validating your key...</p>
             </CardContent>
           </Card>
@@ -57,18 +57,18 @@ function CheckContent() {
       >
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <Key className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+            <Key className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
               Key Status Check
             </h1>
-            <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+            <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
           </div>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-candidate-male-500 animate-pulse" />
             <p className="text-sm md:text-base text-gray-600">
               Verify your voting key status
             </p>
-            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-candidate-female-500 animate-pulse" />
           </div>
         </div>
         {(!key || !status) && <KeyInputForm />}
@@ -86,16 +86,16 @@ export default function KeyStatusPage() {
           <div className="w-full max-w-lg space-y-8">
             <div className="text-center">
               <div className="flex items-center justify-center gap-3 mb-4">
-                <Key className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-                <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+                <Key className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+                <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
                   Key Status Check
                 </h1>
-                <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+                <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
               </div>
             </div>
             <Card className="bg-gradient-to-br from-white to-gray-50/50 border-2 border-gray-200/50 rounded-2xl shadow-xl">
               <CardContent className="p-8 flex flex-col items-center justify-center">
-                <LoaderCircle className="w-12 h-12 animate-spin text-purple-600 mb-4" />
+                <LoaderCircle className="w-12 h-12 animate-spin text-candidate-male-600 mb-4" />
                 <p className="text-gray-600">Loading...</p>
               </CardContent>
             </Card>

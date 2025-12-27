@@ -92,7 +92,7 @@ export default function InviteManager() {
               onClick={() => setRole("admin")}
               className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                 role === "admin"
-                  ? "bg-purple-100 text-purple-700 border-2 border-purple-300"
+                  ? "bg-candidate-male-100 text-candidate-male-700 border-2 border-candidate-male-300"
                   : "bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-gray-200"
               }`}
             >
@@ -147,7 +147,7 @@ export default function InviteManager() {
                       <span className="truncate text-xs">{invite.email}</span>
                       <span className={`text-xs px-1.5 py-0.5 rounded ${
                         invite.role === "admin"
-                          ? "bg-purple-100 text-purple-700"
+                          ? "bg-candidate-male-100 text-candidate-male-700"
                           : "bg-blue-100 text-blue-700"
                       }`}>
                         {invite.role}

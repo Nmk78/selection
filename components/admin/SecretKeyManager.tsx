@@ -97,14 +97,14 @@ export default function SecretKeyManager() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-1 gap-2">
         {/* Total Keys */}
-        <Card className="bg-gradient-to-br from-purple-50/50 to-amber-50/50 border-purple-200/50">
+        <Card className="bg-gradient-to-br from-candidate-male-50/50 to-candidate-female-50/50 border-candidate-male-200/50">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-purple-600" />
+                <BarChart3 className="w-5 h-5 text-candidate-male-600" />
                 <span className="font-semibold text-gray-700">Total Keys</span>
               </div>
-              <span className="text-2xl font-bold text-purple-600">
+              <span className="text-2xl font-bold text-candidate-male-600">
                 {keysData === undefined ? (
                   <Loader2 className="w-5 h-5 animate-spin inline" />
                 ) : (
@@ -171,7 +171,7 @@ export default function SecretKeyManager() {
         <DialogTrigger asChild>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
-              className="w-full bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 hover:from-purple-700 hover:via-amber-600 hover:to-purple-700 text-white font-semibold shadow-lg"
+              className="w-full bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 hover:from-candidate-male-700 hover:via-candidate-female-600 hover:to-candidate-male-700 text-white font-semibold shadow-lg"
             >
               <Key className="w-4 h-4 mr-2" />
               Generate Secret Keys
@@ -181,7 +181,7 @@ export default function SecretKeyManager() {
         <DialogContent className="sm:max-w-[425px] rounded-2xl border-2 border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-              <Key className="w-5 h-5 text-purple-600" />
+              <Key className="w-5 h-5 text-candidate-male-600" />
               Generate Secret Keys
             </DialogTitle>
             <DialogDescription>
@@ -202,7 +202,7 @@ export default function SecretKeyManager() {
                 value={keyAmount}
                 onChange={(e) => setKeyAmount(e.target.value)}
                 placeholder="Enter number of keys"
-                className="h-12 text-base border-2 focus:border-purple-400"
+                className="h-12 text-base border-2 focus:border-candidate-male-400"
                 disabled={isGenerating}
               />
               <p className="text-xs text-gray-500">
@@ -224,7 +224,7 @@ export default function SecretKeyManager() {
             <Button
               onClick={handleGenerateKeys}
               disabled={isGenerating || !keyAmount || parseInt(keyAmount) <= 0}
-              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
+              className="bg-gradient-to-r from-candidate-male-600 to-candidate-male-700 hover:from-candidate-male-700 hover:to-candidate-male-800 text-white"
             >
               {isGenerating ? (
                 <>

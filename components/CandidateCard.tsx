@@ -76,7 +76,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
     <Link prefetch href={`candidate/${candidate.slug}`}>
       <motion.div
         ref={cardRef}
-        className="group relative h-full rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-purple-100/50"
+        className="group relative h-full rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-candidate-male-100/50"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ scale: 1.02 }}
@@ -129,8 +129,8 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                   <div
                     className={`absolute inset-0 opacity-30 ${
                       isMale
-                        ? "bg-gradient-to-b from-purple-500/20 via-purple-400/10 to-transparent"
-                        : "bg-gradient-to-b from-amber-500/20 via-amber-400/10 to-transparent"
+                        ? "bg-gradient-to-b from-candidate-male-500/20 via-candidate-male-400/10 to-transparent"
+                        : "bg-gradient-to-b from-candidate-female-500/20 via-candidate-female-400/10 to-transparent"
                     }`}
                   />
                   
@@ -140,8 +140,8 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                     <h2
                       className={`text-lg font-bold truncate ${
                         isMale
-                          ? "bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent"
-                          : "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
+                          ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-800 bg-clip-text text-transparent"
+                          : "bg-gradient-to-r from-candidate-female-600 to-candidate-female-800 bg-clip-text text-transparent"
                       }`}
                     >
                       {candidate.name}
@@ -151,12 +151,12 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                     <div className="flex items-center gap-1.5">
                       <GraduationCap
                         className={`w-3.5 h-3.5 ${
-                          isMale ? "text-purple-500" : "text-amber-500"
+                          isMale ? "text-candidate-male-500" : "text-candidate-female-500"
                         }`}
                       />
                       <p
                         className={`text-sm font-medium ${
-                          isMale ? "text-purple-700" : "text-amber-700"
+                          isMale ? "text-candidate-male-700" : "text-candidate-female-700"
                         }`}
                       >
                         {candidate.major}
@@ -185,8 +185,8 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                             key={index}
                             className={`px-2 py-0.5 rounded-md text-xs font-medium backdrop-blur-sm ${
                               isMale
-                                ? "bg-purple-100/80 text-purple-700 border border-purple-200/50"
-                                : "bg-amber-100/80 text-amber-700 border border-amber-200/50"
+                                ? "bg-candidate-male-100/80 text-candidate-male-700 border border-candidate-male-200/50"
+                                : "bg-candidate-female-100/80 text-candidate-female-700 border border-candidate-female-200/50"
                             }`}
                           >
                             {hobby}
@@ -213,8 +213,8 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
         <div
           className={`absolute bottom-0 left-0 right-0 h-0.5 ${
             isMale
-              ? "bg-gradient-to-r from-purple-500 to-amber-400"
-              : "bg-gradient-to-r from-amber-500 to-purple-400"
+              ? "bg-gradient-to-r from-candidate-male-500 to-candidate-female-400"
+              : "bg-gradient-to-r from-candidate-female-500 to-candidate-male-400"
           } opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30`}
         />
       </motion.div>

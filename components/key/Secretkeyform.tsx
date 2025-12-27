@@ -32,7 +32,7 @@ export function KeyInputForm() {
       transition={{ duration: 0.5 }}
     >
       <Card className="bg-gradient-to-br from-white to-gray-50/50 border-2 border-gray-200/50 rounded-2xl shadow-xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 pb-4">
+        <CardHeader className="bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 pb-4">
           <CardTitle className="flex items-center justify-center gap-3 text-xl md:text-2xl font-bold text-white">
             <Key className="w-5 h-5 md:w-6 md:h-6" />
             <span>Enter Your Key</span>
@@ -52,7 +52,7 @@ export function KeyInputForm() {
                   value={key}
                   onChange={(e) => setKey(e.target.value)}
                   placeholder="Enter your secret key"
-                  className="pl-10 h-12 text-base border-2 focus:border-purple-400 focus:ring-purple-400"
+                  className="pl-10 h-12 text-base border-2 focus:border-candidate-male-400 focus:ring-candidate-male-400"
                   required
                 />
               </div>
@@ -60,7 +60,7 @@ export function KeyInputForm() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 hover:from-purple-700 hover:via-amber-600 hover:to-purple-700 text-white text-base font-semibold py-6 rounded-xl transition-all duration-300 shadow-lg"
+                className="w-full bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 hover:from-candidate-male-700 hover:via-candidate-female-600 hover:to-candidate-male-700 text-white text-base font-semibold py-6 rounded-xl transition-all duration-300 shadow-lg"
                 disabled={isLoading}
               >
                 {isLoading ? (

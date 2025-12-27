@@ -80,22 +80,22 @@ export function KeyStatus({ status }: KeyStatusProps) {
               {/* Voting Status */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                  <Vote className="w-5 h-5 text-purple-600" />
+                  <Vote className="w-5 h-5 text-candidate-male-600" />
                   First Round Voting Status
                 </h3>
                 <div className="space-y-3">
                   <div
-                    className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-purple-50 to-purple-100/50 border border-purple-200"
+                    className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-candidate-male-50 to-candidate-male-100/50 border border-candidate-male-200"
                     title="Green check means you can vote, red X means already voted"
                   >
-                    <span className="font-medium text-purple-700">Male Vote</span>
+                    <span className="font-medium text-candidate-male-700">Male Vote</span>
                     <StatusIcon isActive={status.maleVoteFirstRound} />
                   </div>
                   <div
-                    className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200"
+                    className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-candidate-female-50 to-candidate-female-100/50 border border-candidate-female-200"
                     title="Green check means you can vote, red X means already voted"
                   >
-                    <span className="font-medium text-amber-700">Female Vote</span>
+                    <span className="font-medium text-candidate-female-700">Female Vote</span>
                     <StatusIcon isActive={status.femaleVoteFirstRound} />
                   </div>
                 </div>

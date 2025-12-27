@@ -180,8 +180,8 @@ function AuthenticatedRedirect() {
       className="flex flex-col items-center gap-4"
     >
       <div className="relative">
-        <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-        <div className="absolute inset-0 w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+        <Loader2 className="w-10 h-10 animate-spin text-candidate-male-600" />
+        <div className="absolute inset-0 w-10 h-10 border-4 border-candidate-male-200 border-t-candidate-male-600 rounded-full animate-spin"></div>
       </div>
       <p className="text-sm text-gray-600 font-medium">Redirecting to dashboard...</p>
     </motion.div>

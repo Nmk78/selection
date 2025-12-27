@@ -87,7 +87,7 @@ export default function RoundManager() {
       case "secondVotingClosed":
         return <ShieldBan className="w-12 h-12 text-red-500" />;
       case "result":
-        return <Crown className="w-12 h-12 text-purple-500" />;
+        return <Crown className="w-12 h-12 text-candidate-male-500" />;
     }
   };
 

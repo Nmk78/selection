@@ -34,7 +34,7 @@ function CandidateCard({
   return (
     <Link
       href={`/candidate/${candidate.slug || candidate._id}`}
-      className="group relative flex items-center gap-2 md:gap-3 lg:gap-4 p-2 md:p-3 lg:p-4 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/50 hover:border-purple-300/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] flex-shrink-0"
+      className="group relative flex items-center gap-2 md:gap-3 lg:gap-4 p-2 md:p-3 lg:p-4 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/50 hover:border-candidate-male-300/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] flex-shrink-0"
     >
       <div className="relative w-10 h-10 md:w-14 md:h-14 lg:w-20 lg:h-20 min-w-10 md:min-w-14 lg:min-w-20 rounded-full overflow-hidden border-2 border-white shadow-md">
         <Image
@@ -49,14 +49,14 @@ function CandidateCard({
         <h3
           className={`font-semibold text-xs md:text-sm lg:text-base truncate ${
             isMale
-              ? "bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent"
-              : "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
+              ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-800 bg-clip-text text-transparent"
+              : "bg-gradient-to-r from-candidate-female-600 to-candidate-female-800 bg-clip-text text-transparent"
           }`}
         >
           {candidate.name}
         </h3>
         <div className="flex items-center gap-1 md:gap-2 lg:gap-2 mt-0.5">
-          <GraduationCap className={`w-3 h-3 md:w-4 md:h-4 lg:w-4 lg:h-4 ${isMale ? "text-purple-500" : "text-amber-500"}`} />
+          <GraduationCap className={`w-3 h-3 md:w-4 md:h-4 lg:w-4 lg:h-4 ${isMale ? "text-candidate-male-500" : "text-candidate-female-500"}`} />
           <p className="text-xs md:text-sm lg:text-sm text-gray-600 truncate">{candidate.major}</p>
         </div>
       </div>
@@ -64,8 +64,8 @@ function CandidateCard({
       <div
         className={`absolute inset-0 rounded-xl opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${
           isMale
-            ? "bg-gradient-to-r from-purple-500 to-purple-700"
-            : "bg-gradient-to-r from-amber-500 to-amber-700"
+            ? "bg-gradient-to-r from-candidate-male-500 to-candidate-male-700"
+            : "bg-gradient-to-r from-candidate-female-500 to-candidate-female-700"
         }`}
       />
     </Link>
@@ -218,12 +218,12 @@ function LeaderboardTable({
                           <div
                             className={`w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 rounded-full my-auto flex items-center justify-center font-bold text-sm md:text-base lg:text-lg shadow-lg ${
                               rank === 1
-                                ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white"
+                                ? "bg-gradient-to-br from-gold-400 to-gold-600 text-white"
                                 : rank === 2
-                                ? "bg-gradient-to-br from-green-200 to-green-400 text-white"
+                                ? "bg-gradient-to-br from-gray-200 to-gray-400 text-white"
                                 : rank === 3
-                                ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white"
-                                : "bg-gradient-to-br from-purple-100 to-purple-200 text-purple-700"
+                                ? "bg-gradient-to-br from-candidate-male-300 to-candidate-male-500 text-white"
+                                : "bg-gradient-to-br from-candidate-male-100 to-candidate-male-200 text-candidate-male-700"
                             }`}
                           >
                             {rank}
@@ -278,7 +278,7 @@ export default function BoardContent() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-12 h-12 animate-spin text-purple-600" />
+        <Loader2 className="w-12 h-12 animate-spin text-candidate-male-600" />
         <p className="mt-4 text-gray-500">Loading leaderboard...</p>
       </div>
     );
@@ -302,8 +302,8 @@ export default function BoardContent() {
             </CardHeader>
             <CardContent className="p-8 text-center">
               <div className="flex justify-center mb-4">
-                <div className="p-4 rounded-full bg-gradient-to-br from-purple-100 to-amber-100">
-                  <Crown className="w-12 h-12 text-purple-600" />
+                <div className="p-4 rounded-full bg-gradient-to-br from-candidate-male-100 to-candidate-female-100">
+                  <Crown className="w-12 h-12 text-candidate-male-600" />
                 </div>
               </div>
               <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">

@@ -75,11 +75,11 @@ export default function VotingPolicy() {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center gap-3 mb-2">
-            <ScrollText className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
-            <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent">
+            <ScrollText className="w-6 h-6 md:w-8 md:h-8 text-candidate-male-600" />
+            <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-candidate-male-600 via-candidate-female-600 to-candidate-male-600 bg-clip-text text-transparent">
               Voting Policy
             </h1>
-            <Crown className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />
+            <Crown className="w-6 h-6 md:w-8 md:h-8 text-candidate-female-600" />
           </div>
           <p className="text-sm md:text-base text-gray-600 mt-2">
             Understand how the selection process works
@@ -87,7 +87,7 @@ export default function VotingPolicy() {
         </motion.div>
 
         <Card className="mb-6 rounded-2xl shadow-xl border-2 border-gray-200/50 bg-gradient-to-br from-white to-gray-50/30 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 pb-4">
+          <CardHeader className="bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 pb-4">
             <CardTitle className="flex items-center justify-center gap-3 text-xl md:text-2xl font-bold text-white">
               <Sparkles className="w-5 h-5 md:w-6 md:h-6 animate-pulse" />
               <span>Selection Process</span>
@@ -112,19 +112,19 @@ export default function VotingPolicy() {
                         : currentStep === 1
                         ? "bg-gradient-to-br from-green-100 to-green-200"
                         : currentStep === 2
-                        ? "bg-gradient-to-br from-purple-100 to-purple-200"
+                        ? "bg-gradient-to-br from-candidate-male-100 to-candidate-male-200"
                         : currentStep === 3
-                        ? "bg-gradient-to-br from-amber-100 to-amber-200"
+                        ? "bg-gradient-to-br from-candidate-female-100 to-candidate-female-200"
                         : "bg-gradient-to-br from-pink-100 to-pink-200"
                     }`}
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <div className="text-purple-700">
+                    <div className="text-candidate-male-700">
                       {policySteps[currentStep].icon}
                     </div>
                   </motion.div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+                  <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-candidate-male-600 to-candidate-female-600 bg-clip-text text-transparent">
                     {policySteps[currentStep].title}
                   </h2>
                   <p className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed">
@@ -138,7 +138,7 @@ export default function VotingPolicy() {
               <Button
                 onClick={prevStep}
                 variant="outline"
-                className="flex items-center gap-2 border-2 hover:bg-purple-50 hover:border-purple-300"
+                className="flex items-center gap-2 border-2 hover:bg-candidate-male-50 hover:border-candidate-male-300"
               >
                 <ChevronLeft className="w-4 h-4" /> Previous
               </Button>
@@ -149,7 +149,7 @@ export default function VotingPolicy() {
                     onClick={() => setCurrentStep(index)}
                     className={`w-3 h-3 rounded-full transition-all ${
                       index === currentStep
-                        ? 'bg-gradient-to-r from-purple-600 to-amber-600'
+                        ? 'bg-gradient-to-r from-candidate-male-600 to-candidate-female-600'
                         : 'bg-gray-300'
                     }`}
                     animate={{
@@ -162,7 +162,7 @@ export default function VotingPolicy() {
               <Button
                 onClick={nextStep}
                 variant="outline"
-                className="flex items-center gap-2 border-2 hover:bg-purple-50 hover:border-purple-300"
+                className="flex items-center gap-2 border-2 hover:bg-candidate-male-50 hover:border-candidate-male-300"
               >
                 Next <ChevronRight className="w-4 h-4" />
               </Button>
@@ -171,7 +171,7 @@ export default function VotingPolicy() {
         </Card>
 
         <Card className="mb-6 rounded-2xl shadow-xl border-2 border-gray-200/50 bg-gradient-to-br from-white to-gray-50/30 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 pb-4">
+          <CardHeader className="bg-gradient-to-r from-candidate-male-600 via-candidate-female-500 to-candidate-male-600 pb-4">
             <CardTitle className="flex items-center justify-center gap-3 text-xl md:text-2xl font-bold text-white">
               <Calculator className="w-5 h-5 md:w-6 md:h-6" />
               <span>Vote Calculation Demo</span>
@@ -189,7 +189,7 @@ export default function VotingPolicy() {
                   value={regularVotes}
                   onChange={(e) => setRegularVotes(Number(e.target.value))}
                   min={0}
-                  className="h-12 text-base border-2 focus:border-purple-400"
+                  className="h-12 text-base border-2 focus:border-candidate-male-400"
                 />
               </div>
               <div>
@@ -203,7 +203,7 @@ export default function VotingPolicy() {
                   onChange={(e) => setDressingScore(Number(e.target.value))}
                   min={1}
                   max={10}
-                  className="h-12 text-base border-2 focus:border-purple-400"
+                  className="h-12 text-base border-2 focus:border-candidate-male-400"
                 />
               </div>
               <div>
@@ -217,7 +217,7 @@ export default function VotingPolicy() {
                   onChange={(e) => setPerformanceScore(Number(e.target.value))}
                   min={1}
                   max={10}
-                  className="h-12 text-base border-2 focus:border-purple-400"
+                  className="h-12 text-base border-2 focus:border-candidate-male-400"
                 />
               </div>
               <div>
@@ -231,7 +231,7 @@ export default function VotingPolicy() {
                   onChange={(e) => setQaScore(Number(e.target.value))}
                   min={1}
                   max={10}
-                  className="h-12 text-base border-2 focus:border-purple-400"
+                  className="h-12 text-base border-2 focus:border-candidate-male-400"
                 />
               </div>
               <div>
@@ -244,17 +244,17 @@ export default function VotingPolicy() {
                   value={numJudges}
                   onChange={(e) => setNumJudges(Number(e.target.value))}
                   min={1}
-                  className="h-12 text-base border-2 focus:border-purple-400"
+                  className="h-12 text-base border-2 focus:border-candidate-male-400"
                 />
               </div>
             </div>
             <motion.div
-              className="text-2xl md:text-3xl font-bold text-center p-6 bg-gradient-to-r from-purple-100 via-amber-100 to-purple-100 rounded-xl border-2 border-purple-200"
+              className="text-2xl md:text-3xl font-bold text-center p-6 bg-gradient-to-r from-candidate-male-100 via-candidate-female-100 to-candidate-male-100 rounded-xl border-2 border-candidate-male-200"
               animate={{ scale: [1, 1.02, 1] }}
               transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
             >
               <span className="text-gray-700 mr-2">Final Score:</span>
-              <span className="bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-candidate-male-600 to-candidate-female-600 bg-clip-text text-transparent">
                 {calculateFinalScore().toFixed(2)}
               </span>
             </motion.div>
