@@ -68,7 +68,7 @@ export default function YearArchivePage() {
           </h1>
           <p className="text-xl text-gray-700 mb-6">Archive not found</p>
           <p className="text-gray-600 mb-8">
-            The archive you're looking for doesn't exist or has been removed.
+            The archive you&rsquo;re looking for doesn&rsquo;t exist or has been removed.
           </p>
           <Link
             href="/"
