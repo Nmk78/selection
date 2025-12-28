@@ -22,11 +22,14 @@ import {
 
 interface CandidateDetailPageProps {
   archiveId: string;
-  id: string;
+  slug: string;
 }
 
-export function ArchiveCandidateDetailPage({ archiveId, id }: CandidateDetailPageProps) {
-  const queryResult = useQuery(api.archive.getArchivedCandidateById, { candidateId: id as Id<"candidates"> });
+export function ArchiveCandidateDetailPage({ archiveId, slug }: CandidateDetailPageProps) {
+  const queryResult = useQuery(api.archive.getArchivedCandidateBySlug, { 
+    slug,
+    metadataSlug: archiveId
+  });
   
   // Handle loading state
   if (queryResult === undefined) {
@@ -88,7 +91,7 @@ export function ArchiveCandidateDetailPage({ archiveId, id }: CandidateDetailPag
           content={`Get to know ${candidateData.name}'s achievements, hobbies, and background.`}
         />
         <meta property="og:image" content={candidateData.profileImage} />
-        <meta property="og:url" content={`http://localhost:3000/archive/${archiveId}/candidate/${id}`} />
+        <meta property="og:url" content={`http://localhost:3000/archive/${archiveId}/${slug}`} />
         <meta name="keywords" content={`candidate, ${candidateData.major}, ${candidateData.name}`} />
       </Head>
 
@@ -111,17 +114,15 @@ export function ArchiveCandidateDetailPage({ archiveId, id }: CandidateDetailPag
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-script mb-2 text-white drop-shadow-lg">
                   {candidateData.name}
                 </h1>
-                {candidateData.title && (
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-white mb-3 drop-shadow-md">
-                    {candidateData.title}
-                  </h2>
-                )}
+
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                  <Badge variant="secondary" className="text-xs sm:text-sm bg-white bg-opacity-20 text-white">
-                    {candidateData.gender?.toUpperCase()}
-                  </Badge>
-                  <Badge variant="secondary" className="text-xs sm:text-sm bg-white bg-opacity-20 text-white">
-                    Room {candidateData.room}
+                  {candidateData.title && (
+                    <Badge variant="secondary" className={`text-md sm:text-sm bg-white bg-opacity-20 text-white ${candidateData.gender === "male" ? "bg-candidate-male-600 hover:text-candidate-male-700" : "bg-candidate-female-600 hover:text-candidate-female-700"}`}>
+                      {candidateData.title}
+                    </Badge>
+                  )}
+                  <Badge variant="secondary" className="text-xs sm:text-sm bg-white bg-opacity-20 text-gray-700">
+                    {candidateData.room}
                   </Badge>
                 </div>
               </div>

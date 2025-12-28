@@ -3,14 +3,17 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { ArchiveCandidateDetailPage } from "@/components/ArchiveCandidateDetails";
 
 export default function CandidatePage() {
-  const { archiveId, id } = useParams();
-  const candidateId = id as Id<"candidates">;
+  const { slug, candidateSlug } = useParams();
+  const metadataSlug = String(slug);
+  const candidateSlugStr = String(candidateSlug);
 
-  const data = useQuery(api.archive.getArchivedCandidateById, { candidateId });
+  const data = useQuery(api.archive.getArchivedCandidateBySlug, { 
+    slug: candidateSlugStr,
+    metadataSlug: metadataSlug
+  });
 
   // Handle loading state
   if (data === undefined) {
@@ -37,9 +40,10 @@ export default function CandidatePage() {
   // Pass the fetched candidate details to the `ArchiveCandidateDetailPage`
   return (
     <ArchiveCandidateDetailPage
-      archiveId={String(archiveId)}
-      id={String(id)}
+      archiveId={metadataSlug}
+      slug={candidateSlugStr}
       // candidateDetails={data.data}
     />
   );
 }
+

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
+import { generateSlug } from "./help";
 
 // Get all metadata ordered by updatedAt
 export const getAll = query({
@@ -28,6 +29,17 @@ export const getById = query({
   args: { id: v.id("metadata") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
+  },
+});
+
+// Get metadata by slug
+export const getBySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("metadata")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .first();
   },
 });
 
@@ -60,10 +72,23 @@ export const create = mutation({
       await ctx.db.patch(meta._id, { active: false, updatedAt: Date.now() });
     }
 
+    // Generate a unique slug
+    const baseSlug = generateSlug(args.title);
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Check for existing metadata with the same slug
+    const allMetadata = await ctx.db.query("metadata").collect();
+    while (allMetadata.some((m) => m.slug === slug)) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
     // Create new metadata
     const now = Date.now();
     const id = await ctx.db.insert("metadata", {
       title: args.title,
+      slug: slug,
       description: args.description,
       maleForSecondRound: args.maleForSecondRound,
       femaleForSecondRound: args.femaleForSecondRound,
@@ -98,6 +123,7 @@ export const edit = mutation({
       _creationTime?: number;
       leaderBoardCandidates?: number | undefined;
       title?: string;
+      slug?: string;
       active?: boolean;
       description?: string;
       maleForSecondRound?: number;
@@ -117,7 +143,19 @@ export const edit = mutation({
       updatedAt: Date.now(),
     };
 
-    if (args.title !== undefined) updateData.title = args.title;
+    if (args.title !== undefined) {
+      updateData.title = args.title;
+      // Regenerate slug if title changes
+      const baseSlug = generateSlug(args.title);
+      let slug = baseSlug;
+      let counter = 1;
+      const allMetadata = await ctx.db.query("metadata").collect();
+      while (allMetadata.some((m) => m.slug === slug && m._id !== args.id)) {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+      updateData.slug = slug;
+    }
     if (args.description !== undefined)
       updateData.description = args.description;
     if (args.maleForSecondRound !== undefined)

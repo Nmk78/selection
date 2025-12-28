@@ -146,19 +146,21 @@ export const getWithStatsForLeaderboard = query({
       return [];
     }
 
-    const maleCandidates = await ctx.db
+    // Get ALL candidates by gender (not just top N yet)
+    const allMaleCandidates = await ctx.db
       .query("candidates")
       .withIndex("by_roomId_gender", (q) =>
         q.eq("roomId", activeMetadata._id).eq("gender", "male")
       )
-      .take(activeMetadata.leaderBoardCandidates);
+      .collect();
 
-    const femaleCandidates = await ctx.db
+    const allFemaleCandidates = await ctx.db
       .query("candidates")
       .withIndex("by_roomId_gender", (q) =>
         q.eq("roomId", activeMetadata._id).eq("gender", "female")
       )
-      .take(activeMetadata.leaderBoardCandidates);
+      .collect();
+
     const votes = await ctx.db
       .query("votes")
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
@@ -166,7 +168,8 @@ export const getWithStatsForLeaderboard = query({
 
     const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
 
-    const candidatesWithStats = [...maleCandidates, ...femaleCandidates].map((candidate) => {
+    // Calculate stats for all male candidates
+    const malesWithStats = allMaleCandidates.map((candidate) => {
       const vote = voteMap.get(candidate._id);
       const totalVotes = vote?.totalVotes ?? 0;
       const totalRating = vote?.totalRating ?? 0;
@@ -179,8 +182,31 @@ export const getWithStatsForLeaderboard = query({
       };
     });
 
-    // Sort by combinedScore descending
-    return candidatesWithStats.sort(
+    // Calculate stats for all female candidates
+    const femalesWithStats = allFemaleCandidates.map((candidate) => {
+      const vote = voteMap.get(candidate._id);
+      const totalVotes = vote?.totalVotes ?? 0;
+      const totalRating = vote?.totalRating ?? 0;
+      return {
+        ...candidate,
+        id: candidate._id,
+        totalVotes,
+        totalRating,
+        combinedScore: totalVotes + totalRating,
+      };
+    });
+
+    // Sort by combinedScore descending and take top N from each gender
+    const topMales = malesWithStats
+      .sort((a, b) => b.combinedScore - a.combinedScore)
+      .slice(0, activeMetadata.leaderBoardCandidates);
+
+    const topFemales = femalesWithStats
+      .sort((a, b) => b.combinedScore - a.combinedScore)
+      .slice(0, activeMetadata.leaderBoardCandidates);
+
+    // Combine and sort by combinedScore descending
+    return [...topMales, ...topFemales].sort(
       (a, b) => b.combinedScore - a.combinedScore
     );
   },

@@ -19,6 +19,7 @@ export default defineSchema({
 
   metadata: defineTable({
     title: v.string(),
+    slug: v.optional(v.string()),
     active: v.boolean(),
     description: v.string(),
     maleForSecondRound: v.number(),
@@ -35,7 +36,9 @@ export default defineSchema({
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_active", ["active"]),
+  })
+    .index("by_active", ["active"])
+    .index("by_slug", ["slug"]),
 
   candidates: defineTable({
     roomId: v.id("metadata"),
