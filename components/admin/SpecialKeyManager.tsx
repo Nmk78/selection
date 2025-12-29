@@ -95,7 +95,7 @@ export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
   };
 
   return (
-    <Card className="md:col-span-2 row-span-3 md:row-span-4 border-2 shadow-lg overflow-hidden flex flex-col">
+    <Card className="col-span-1 md:col-span-2 row-span-3 md:row-span-4 border-2 shadow-lg overflow-hidden flex flex-col w-full min-h-[400px] md:min-h-0">
       <CardHeader className="bg-gradient-to-r py-3 pb-0 flex-shrink-0">
         <CardTitle className="w-full py-0 flex justify-between items-center">
           <div className="flex flex-col items-start gap-3 min-w-0">
@@ -179,8 +179,8 @@ export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
             <CardContent className="p-4 relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12 blur-xl pointer-events-none" />
-              <div className="relative flex items-center justify-between z-10">
-                <div className="flex items-center gap-2 min-w-0">
+              <div className="flex flex-row items-center justify-between z-10 mb-1">
+                <div className="flex flex-row items-center gap-2 min-w-0">
                   <Key className="w-5 h-5 text-candidate-male-600 flex-shrink-0" />
                   <p className="text-xl font-bold text-candidate-male-600 truncate">
                     Total Keys
@@ -188,7 +188,7 @@ export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-3xl text-candidate-male-600 font-bold">
+                  <span className="text-2xl text-candidate-male-600 font-bold">
                     {specialKeys.length}
                   </span>
                 </div>

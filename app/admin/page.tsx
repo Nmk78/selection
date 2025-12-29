@@ -126,7 +126,7 @@ function AdminContent() {
   }
 
   return (
-    <div className="container max-w-7xl min-h-[82vh] h-full max-h-[85vh] mx-auto p-4 select-none">
+    <div className="container max-w-7xl min-h-[82vh] h-full max-h-[85vh] mx-auto p-4 select-none overflow-y-auto">
       {/* <AnnouncementsBanner /> */}
       <div className="h-full flex flex-col md:flex-none md:grid grid-cols-1 md:grid-cols-7 md:grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)] w-full">
         <Card className="col-span-1 row-span-3 md:col-span-4 md:row-span-4 pb-0">
