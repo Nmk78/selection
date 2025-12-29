@@ -11,9 +11,7 @@ import {
   UserPlus,
   Trash2,
   Check,
-  Mail,
-  Shield,
-  User,
+  Mail
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Id } from "@/convex/_generated/dataModel";

@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { StickyBanner } from "@/components/ui/sticky-banner";
-import { Crown, Megaphone } from "lucide-react";
+import { Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AnnouncementType = "info" | "important" | "warning" | "success";

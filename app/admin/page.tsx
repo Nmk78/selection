@@ -12,7 +12,6 @@ import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
 import InviteManager from "@/components/admin/InviteManager";
 import AnnouncementsManager from "@/components/admin/AnnouncementsManager";
 import AnnouncementForm from "@/components/admin/AnnouncementForm";
-import AnnouncementsBanner from "@/components/AnnouncementsBanner";
 import { Eye, EyeOff, Loader2, X, AlertTriangle, Plus } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
