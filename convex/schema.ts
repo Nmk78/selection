@@ -107,4 +107,28 @@ export default defineSchema({
     usedAt: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_email", ["email"]),
+
+  // Announcements table
+  announcements: defineTable({
+    message: v.string(),
+    type: v.union(
+      v.literal("info"),
+      v.literal("important"),
+        v.literal("warning"),
+        v.literal("success")
+    ),
+    active: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_active", ["active"]),
+
+  // Announcement history table
+  announcementHistory: defineTable({
+    announcementId: v.id("announcements"),
+    action: v.union(v.literal("activated"), v.literal("deactivated")),
+    userId: v.id("users"),
+    timestamp: v.number(),
+  })
+    .index("by_announcementId", ["announcementId"])
+    .index("by_announcementId_timestamp", ["announcementId", "timestamp"]),
 });

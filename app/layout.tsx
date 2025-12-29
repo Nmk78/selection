@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import ConvexClientProvider from "./ConvexClientProvider";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import AnnouncementsBanner from "@/components/AnnouncementsBanner";
 
 import "./globals.css";
 // import "@/app/themes/theme-purple-pink.css";  // Add this line to switch theme
@@ -101,6 +102,7 @@ export default function RootLayout({
       >
         <ConvexClientProvider>
           <Nav />
+          <AnnouncementsBanner />
           {children}
           <Toaster />
         </ConvexClientProvider>

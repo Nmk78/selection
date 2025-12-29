@@ -10,6 +10,9 @@ import RoundManager from "@/components/admin/RoundManager";
 import SecretKeyManager from "@/components/admin/SecretKeyManager";
 import SpecialKeyManager from "@/components/admin/SpecialKeyManager";
 import InviteManager from "@/components/admin/InviteManager";
+import AnnouncementsManager from "@/components/admin/AnnouncementsManager";
+import AnnouncementForm from "@/components/admin/AnnouncementForm";
+import AnnouncementsBanner from "@/components/AnnouncementsBanner";
 import { Eye, EyeOff, Loader2, X, AlertTriangle, Plus } from "lucide-react";
 import CandidateManager from "@/components/admin/CandidateManager";
 import ArchiveManager from "@/components/admin/ArchiveManager";
@@ -45,7 +48,14 @@ function AdminContent() {
   const [editModal, setEditModal] = useState<boolean | null>(null);
   const [activeModal, setActiveModal] = useState<boolean | null>(null);
   const [metaDataModal, setmetaDataModal] = useState<boolean | null>(null);
+  const [announcementModal, setAnnouncementModal] = useState<boolean | null>(null);
   const [editingMetadata, setEditingMetadata] = useState<Metadata | null>(null);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<{
+    _id: Id<"announcements">;
+    message: string;
+    type: "info" | "important" | "warning" | "success";
+    active: boolean;
+  } | null>(null);
   const [candidateId, setCandidateId] = useState<string | null>(null);
   const [visable, setVisable] = useState<boolean>(false);
 
@@ -63,6 +73,10 @@ function AdminContent() {
   const closeMetaDataModal = () => {
     setmetaDataModal(null);
     setEditingMetadata(null);
+  };
+  const closeAnnouncementModal = () => {
+    setAnnouncementModal(null);
+    setEditingAnnouncement(null);
   };
 
   // Loading state
@@ -113,6 +127,7 @@ function AdminContent() {
 
   return (
     <div className="container max-w-7xl min-h-[82vh] h-full max-h-[85vh] mx-auto p-4 select-none">
+      {/* <AnnouncementsBanner /> */}
       <div className="h-full flex flex-col md:flex-none md:grid grid-cols-1 md:grid-cols-7 md:grid-rows-8 gap-4 auto-rows-[minmax(100px,auto)] w-full">
         <Card className="col-span-1 row-span-3 md:col-span-4 md:row-span-4 pb-0">
           <CardHeader className="flex justify-between">
@@ -145,15 +160,19 @@ function AdminContent() {
           >
             <CardHeader className="pb-3 border-b">
               <div className="flex justify-between items-center">
-                <TabsList className="grid w-auto grid-cols-2">
-                  <TabsTrigger value="candidates" className="px-4">
+                {/* <TabsList className="grid w-auto grid-cols-3"> */}
+                <TabsList className="w-full h-10 px-4 overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <TabsTrigger value="candidates" className="px-4 ml-10">
                     Candidates
                   </TabsTrigger>
                   <TabsTrigger value="invites" className="px-4">
                     Invites
                   </TabsTrigger>
+                  <TabsTrigger value="announcements" className="px-4">
+                    Announcements
+                  </TabsTrigger>
                 </TabsList>
-                <TabsContent value="candidates" className="mt-0">
+                <TabsContent value="candidates" className="mt-0 ml-4">
                   <Button
                     onClick={() => setActiveModal(true)}
                     size="sm"
@@ -162,6 +181,20 @@ function AdminContent() {
                   >
                     <Plus className="w-10 h-10 text-blue-800" />
                     {/* Add Candidate */}
+                  </Button>
+                </TabsContent>
+                <TabsContent value="announcements" className="mt-0 ml-4">
+                  <Button
+                    onClick={() => {
+                      setEditingAnnouncement(null);
+                      setAnnouncementModal(true);
+                    }}
+                    size="sm"
+                    className="bg-transparent p-0 shadow-none hover:bg-transparent"
+                    aria-label="Add new announcement"
+                  >
+                    <Plus className="w-10 h-10 text-blue-800" />
+                    {/* Add Announcement */}
                   </Button>
                 </TabsContent>
               </div>
@@ -183,6 +216,22 @@ function AdminContent() {
                 className="flex-1 mt-0 data-[state=active]:flex flex-col"
               >
                 <InviteManager />
+              </TabsContent>
+              <TabsContent
+                value="announcements"
+                className="flex-1 mt-0 data-[state=active]:flex flex-col"
+              >
+                <AnnouncementsManager
+                  onEdit={(announcement) => {
+                    setEditingAnnouncement({
+                      _id: announcement._id,
+                      message: announcement.message,
+                      type: announcement.type,
+                      active: announcement.active,
+                    });
+                    setAnnouncementModal(true);
+                  }}
+                />
               </TabsContent>
             </CardContent>
           </Tabs>
@@ -264,6 +313,27 @@ function AdminContent() {
           />
         </Modal>
       )}
+
+      {announcementModal && (
+        <Modal
+          title={editingAnnouncement ? "Edit Announcement" : "Add New Announcement"}
+          onClose={closeAnnouncementModal}
+        >
+          <AnnouncementForm
+            closeModal={closeAnnouncementModal}
+            editingId={editingAnnouncement?._id || null}
+            initialData={
+              editingAnnouncement
+                ? {
+                    message: editingAnnouncement.message,
+                    type: editingAnnouncement.type,
+                    active: editingAnnouncement.active,
+                  }
+                : null
+            }
+          />
+        </Modal>
+      )}
     </div>
   );
 }
@@ -335,10 +405,10 @@ function Modal({ title, onClose, children }: ModalProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2 }}
-        className="bg-white rounded-xl max-w-3xl w-full shadow-2xl"
+        className="bg-white rounded-xl w-fit max-w-3xl w-full shadow-2xl border border-candidate-male-500"
       >
-        <div className="flex justify-between items-center px-6 py-4 border-b">
-          <h2 className="text-xl font-semibold text-Cprimary">{title}</h2>
+        <div className="flex justify-between items-center px-6 py-4">
+          <h2 className="text-xl font-semibold text-candidate-male-500">{title}</h2>
           <Button
             variant="ghost"
             size="icon"

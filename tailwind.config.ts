@@ -11,6 +11,10 @@ export default {
     extend: {
       backgroundImage: {
         "custom-gradient": "linear-gradient(to right, #037d90, #feb47b)",
+        "announcement-important": "linear-gradient(to right, hsl(var(--red-500)), hsl(var(--red-600)), hsl(var(--red-700)))",
+        "announcement-warning": "linear-gradient(to right, hsl(var(--amber-400)), hsl(var(--amber-500)), hsl(var(--amber-600)))",
+        "announcement-success": "linear-gradient(to right, hsl(var(--green-400)), hsl(var(--green-500)), hsl(var(--green-600)))",
+        "announcement-info": "linear-gradient(to right, hsl(var(--blue-400)), hsl(var(--blue-500)), hsl(var(--blue-600)))",
       },
       aspectRatio: { portrait: "9/15" },
       colors: {
