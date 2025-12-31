@@ -31,7 +31,8 @@ export const voteForCandidate = mutation({
 
     const { round } = currentRoom;
 
-    if (round !== "first" && round !== "second") {
+    // if (round !== "first" && round !== "second") {
+    if (round !== "first") {
       return { success: false, message: "Voting is closed." };
     }
 
@@ -62,9 +63,10 @@ export const voteForCandidate = mutation({
     // Check if already voted for this gender in this round
     if (
       (round === "first" && gender === "male" && secretKeyRecord.firstRoundMale) ||
-      (round === "first" && gender === "female" && secretKeyRecord.firstRoundFemale) ||
-      (round === "second" && gender === "male" && secretKeyRecord.secondRoundMale) ||
-      (round === "second" && gender === "female" && secretKeyRecord.secondRoundFemale)
+      (round === "first" && gender === "female" && secretKeyRecord.firstRoundFemale) 
+      // ||
+      // (round === "second" && gender === "male" && secretKeyRecord.secondRoundMale) ||
+      // (round === "second" && gender === "female" && secretKeyRecord.secondRoundFemale)
     ) {
       return {
         success: false,

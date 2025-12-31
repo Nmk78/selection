@@ -17,7 +17,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [showGlass, setShowGlass] = useState(false);
   const [isInViewport, setIsInViewport] = useState(false);
-  console.log("🚀 ~ CandidateCard ~ isInViewport:", isInViewport)
+  console.log("🚀 ~ CandidateCard ~ isInViewport:", isInViewport);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -124,16 +124,16 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                 className="absolute bottom-0 left-0 right-0 z-10"
               >
                 {/* Glassmorphism background */}
-                <div className="relative backdrop-blur-xl bg-white/80 md:bg-white/70 border-t border-white/20 shadow-[0_-8px_32px_0_rgba(0,0,0,0.1)]">
+                <div className="relative backdrop-blur-xl bg-white/5 md:bg-white/10 border-t border-white/10 shadow-[0_-8px_32px_0_rgba(0,0,0,0.05)]">
                   {/* Liquid glass effect with gradient */}
                   <div
-                    className={`absolute inset-0 opacity-30 ${
+                    className={`absolute inset-0 opacity-20 ${
                       isMale
-                        ? "bg-gradient-to-b from-candidate-male-500/20 via-candidate-male-400/10 to-transparent"
-                        : "bg-gradient-to-b from-candidate-female-500/20 via-candidate-female-400/10 to-transparent"
+                        ? "bg-gradient-to-b from-candidate-male-500/10 via-candidate-male-400/5 to-transparent"
+                        : "bg-gradient-to-b from-candidate-female-500/10 via-candidate-female-400/5 to-transparent"
                     }`}
                   />
-                  
+
                   {/* Content */}
                   <div className="relative p-4 space-y-2.5">
                     {/* Name */}
@@ -148,30 +148,53 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                     </h2>
 
                     {/* Major */}
-                    <div className="flex items-center gap-1.5">
+                    {/* <div className="flex items-center gap-1.5">
                       <GraduationCap
                         className={`w-3.5 h-3.5 ${
-                          isMale ? "text-candidate-male-500" : "text-candidate-female-500"
+                          isMale
+                            ? "text-candidate-male-500"
+                            : "text-candidate-female-500"
                         }`}
                       />
                       <p
                         className={`text-sm font-medium ${
-                          isMale ? "text-candidate-male-700" : "text-candidate-female-700"
+                          isMale
+                            ? "text-candidate-male-700"
+                            : "text-candidate-female-700"
                         }`}
                       >
                         {candidate.major}
                       </p>
-                    </div>
+                    </div> */}
+                    <div className="flex items-center justify-between">
+                      {/* Stats - Compact */}
+                      <div className="flex items-center gap-3 text-xs text-gray-700">
+                        <span>{candidate.age} yrs</span>
+                        <span>•</span>
+                        <span>{candidate.height} cm</span>
+                        <span>•</span>
+                        <span>{candidate.weight} lb</span>
+                      </div>
 
-                    {/* Stats - Compact */}
-                    <div className="flex items-center gap-3 text-xs text-gray-700">
-                      <span>{candidate.age} yrs</span>
-                      <span>•</span>
-                      <span>{candidate.height} cm</span>
-                      <span>•</span>
-                      <span>{candidate.weight} lb</span>
+                      <div className="flex items-center gap-1.5">
+                        <GraduationCap
+                          className={`w-3.5 h-3.5 ${
+                            isMale
+                              ? "text-candidate-male-500"
+                              : "text-candidate-female-500"
+                          }`}
+                        />
+                        <p
+                          className={`text-sm font-medium ${
+                            isMale
+                              ? "text-candidate-male-700"
+                              : "text-candidate-female-700"
+                          }`}
+                        >
+                          {candidate.major}
+                        </p>
+                      </div>
                     </div>
-
                     {/* Intro */}
                     <p className="text-gray-700 text-xs line-clamp-2 leading-relaxed">
                       {candidate.intro}
@@ -223,4 +246,3 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
 };
 
 export default CandidateCard;
-

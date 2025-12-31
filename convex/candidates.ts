@@ -2,6 +2,16 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { generateSlug } from "./help";
 
+// Fisher-Yates shuffle algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 // Get all candidates for active room
 export const getAll = query({
   args: {},
@@ -53,10 +63,10 @@ export const getAll = query({
       const topMales = males.slice(0, maleForSecondRound);
       const topFemales = females.slice(0, femaleForSecondRound);
 
-      return [...topMales, ...topFemales];
+      return shuffleArray([...topMales, ...topFemales]);
     }
 
-    return candidates;
+    return shuffleArray(candidates);
   },
 });
 
