@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import HomeContent from "./HomeContent";
 
 export const metadata: Metadata = {
-  title: "PU Selection - Vote for the Best!",
+  title: "PU Selection - Be The Judge!",
   description:
     "Join the PU Selection App to vote and help select the university's King, Queen, Prince, and Princess. Participate in two exciting voting rounds to make your voice heard!",
   openGraph: {

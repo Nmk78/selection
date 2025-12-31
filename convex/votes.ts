@@ -70,7 +70,7 @@ export const voteForCandidate = mutation({
     ) {
       return {
         success: false,
-        message: "Key was already used for this gender in this round!",
+        message: "Key was already used!",
       };
     }
 

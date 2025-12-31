@@ -30,7 +30,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || "http://localhost:3000"),
   title: {
-    default: "PU Selection - Vote for the Best!",
+    default: "PU Selection - Be The Judge!",
     template: "%s | PU Selection",
   },
   description:
