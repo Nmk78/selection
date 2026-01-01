@@ -21,33 +21,33 @@ export default function SecretKeyManager() {
   const totalKeys = keysData?.success ? keysData.data.length : 0;
 
   // Calculate usage statistics
-  const stats = useMemo(() => {
-    if (!keysWithUsage?.success) {
-      return {
-        firstRoundUsed: 0,
-        firstRoundMale: 0,
-        firstRoundFemale: 0,
-        secondRoundUsed: 0,
-        secondRoundMale: 0,
-        secondRoundFemale: 0,
-      };
-    }
+  // const stats = useMemo(() => {
+  //   if (!keysWithUsage?.success) {
+  //     return {
+  //       firstRoundUsed: 0,
+  //       firstRoundMale: 0,
+  //       firstRoundFemale: 0,
+  //       secondRoundUsed: 0,
+  //       secondRoundMale: 0,
+  //       secondRoundFemale: 0,
+  //     };
+  //   }
 
-    const keys = keysWithUsage.data;
-    const firstRoundMale = keys.filter((k) => k.firstRoundMale).length;
-    const firstRoundFemale = keys.filter((k) => k.firstRoundFemale).length;
-    const secondRoundMale = keys.filter((k) => k.secondRoundMale).length;
-    const secondRoundFemale = keys.filter((k) => k.secondRoundFemale).length;
+  //   const keys = keysWithUsage.data;
+  //   const firstRoundMale = keys.filter((k) => k.firstRoundMale).length;
+  //   const firstRoundFemale = keys.filter((k) => k.firstRoundFemale).length;
+  //   const secondRoundMale = keys.filter((k) => k.secondRoundMale).length;
+  //   const secondRoundFemale = keys.filter((k) => k.secondRoundFemale).length;
 
-    return {
-      firstRoundUsed: firstRoundMale + firstRoundFemale,
-      firstRoundMale,
-      firstRoundFemale,
-      secondRoundUsed: secondRoundMale + secondRoundFemale,
-      secondRoundMale,
-      secondRoundFemale,
-    };
-  }, [keysWithUsage]);
+  //   return {
+  //     firstRoundUsed: firstRoundMale + firstRoundFemale,
+  //     firstRoundMale,
+  //     firstRoundFemale,
+  //     secondRoundUsed: secondRoundMale + secondRoundFemale,
+  //     secondRoundMale,
+  //     secondRoundFemale,
+  //   };
+  // }, [keysWithUsage]);
 
   const handleGenerateKeys = async () => {
     const amount = parseInt(keyAmount);
