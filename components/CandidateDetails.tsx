@@ -390,6 +390,7 @@ export default function CandidateDetails({
                 whileTap={{ scale: 0.95 }}
               >
                 <Button
+                  data-tutorial="vote-button"
                   className={`relative w-full md:w-auto px-8 py-6 text-lg font-semibold shadow-xl ${
                     isMale
                       ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-700 hover:from-candidate-male-700 hover:to-candidate-male-800 text-white"
@@ -444,6 +445,7 @@ export default function CandidateDetails({
                     <Input
                       id="code"
                       name="secretKey"
+                      data-tutorial="secret-key-input"
                       placeholder="Enter your secret code"
                       className="w-full h-12 text-base border-2 focus:border-candidate-male-400 focus:ring-candidate-male-400 rounded-lg"
                       required
@@ -451,6 +453,7 @@ export default function CandidateDetails({
                   </div>
                 </div>
                 <Button
+                  data-tutorial="submit-vote-button"
                   className={`w-full py-6 text-base font-semibold ${
                     isMale
                       ? "bg-gradient-to-r from-candidate-male-600 to-candidate-male-700 hover:from-candidate-male-700 hover:to-candidate-male-800 text-white"

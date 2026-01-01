@@ -6,6 +6,7 @@ import CandidateSelection from "@/components/CandidateCardContainer";
 import CarouselComponent from "@/components/Carousel";
 import Footer from "@/components/Footer";
 import LivelyBackground from "@/components/LivelyBackground";
+import VotingTutorial from "@/components/VotingTutorial";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -23,6 +24,7 @@ function HomeContentInner() {
   return (
     <div className="relative min-h-screen">
       {/* <LivelyBackground /> */}
+      <VotingTutorial />
       <div className="max-w-full px-0 sm:px-0 lg:px-4 mx-auto relative z-10">
         <div className="max-w-7xl mx-auto ">
           <div className="w-full md:rounded-xl overflow-hidden max-w-full mx-auto">

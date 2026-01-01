@@ -5,6 +5,8 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import AnnouncementsBanner from "@/components/AnnouncementsBanner";
+import { NextStepProvider } from "nextstepjs";
+import NextStepWrapper from "@/components/NextStepWrapper";
 
 import "./globals.css";
 // import "@/app/themes/theme-purple-pink.css";  // Add this line to switch theme
@@ -100,12 +102,16 @@ export default function RootLayout({
       <body
         className={`${quindelia.variable} ${geistMono.variable} ${geistSans.variable} h-screen antialiased bg-background flex flex-col items-center`}
       >
-        <ConvexClientProvider>
-          <Nav />
-          <AnnouncementsBanner />
-          {children}
-          <Toaster />
-        </ConvexClientProvider>
+        <NextStepProvider>
+          <NextStepWrapper>
+            <ConvexClientProvider>
+              <Nav />
+              <AnnouncementsBanner />
+              {children}
+              <Toaster />
+            </ConvexClientProvider>
+          </NextStepWrapper>
+        </NextStepProvider>
         <Analytics />
       </body>
     </html>
