@@ -95,7 +95,7 @@ export default function SpecialKeyManager({ userId }: { userId: Id<"users"> }) {
   };
 
   return (
-    <Card className="col-span-1 md:col-span-2 row-span-3 md:row-span-4 border-2 shadow-lg overflow-hidden flex flex-col w-full min-h-[400px] md:min-h-0">
+    <Card className="col-span-1 md:col-span-2 row-span-3 md:row-span-4 border-2 overflow-hidden flex flex-col w-full min-h-[400px] md:min-h-0">
       <CardHeader className="bg-gradient-to-r py-3 pb-0 flex-shrink-0">
         <CardTitle className="w-full py-0 flex justify-between items-center">
           <div className="flex flex-col items-start gap-3 min-w-0">
