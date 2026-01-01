@@ -234,7 +234,7 @@ export default function CandidateForm({
           return null;
         }
       }
-      //@ts-expect-error
+      // @ts-expect-error Hide red errors
       const profileRes = await profileImageUploaderRef.current.startUpload();
 
       if (!profileRes || profileRes.length === 0) {
@@ -272,7 +272,7 @@ export default function CandidateForm({
           return null;
         }
       }
-      //@ts-expect-error
+      //@ts-expect-error Hide red errors
       const carouselRes = await carouselImagesUploaderRef.current.startUpload();
 
       if (!carouselRes || carouselRes.length === 0) {

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Edit, Plus, X, Save } from "lucide-react";
+import { Loader2, Edit, Plus, X } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface AnnouncementFormProps {
