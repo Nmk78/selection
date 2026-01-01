@@ -132,7 +132,6 @@ export default function CandidateSelection({ filter = "mix" }: Props) {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        data-tutorial="candidate-grid"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8"
       >
         {candidates.map((candidate) => (

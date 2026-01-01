@@ -1,7 +1,7 @@
 "use client";
 
 import CandidateDetailsComponent from "@/components/CandidateDetails";
-import VotingTutorial from "@/components/VotingTutorial";
+
 
 interface Candidate {
   _id: string;
@@ -43,7 +43,6 @@ export default function CandidatePageClient({ candidate }: { candidate: Candidat
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <VotingTutorial />
       <div className="w-full min-h-screen bg-Cbackground px-0 py-0 sm:px-6 lg:px-8">
         <main className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center">
           <div className="w-full max-w-4xl mx-auto bg-Cbackground md:my-5 rounded-none shadow-lg">

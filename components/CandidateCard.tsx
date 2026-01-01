@@ -73,7 +73,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
   }, [isMobile]);
 
   return (
-    <Link prefetch href={`candidate/${candidate.slug}`} data-tutorial="candidate-card">
+    <Link prefetch href={`candidate/${candidate.slug}`}>
       <motion.div
         ref={cardRef}
         className="group relative h-full rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 flex flex-col border border-candidate-male-100/50"
