@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, Edit, Plus, X } from "lucide-react";
+import { Loader2, Edit, Plus, X, Save } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface AnnouncementFormProps {
@@ -49,7 +49,14 @@ export default function AnnouncementForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Message cannot be empty.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -61,8 +68,8 @@ export default function AnnouncementForm({
           active,
         });
         toast({
-          title: "Announcement Updated",
-          description: "The announcement has been updated successfully",
+          title: "Success",
+          description: "Announcement updated successfully.",
         });
       } else {
         await createAnnouncement({
@@ -71,8 +78,8 @@ export default function AnnouncementForm({
           active,
         });
         toast({
-          title: "Announcement Created",
-          description: "The announcement has been created successfully",
+          title: "Success",
+          description: "Announcement created successfully.",
         });
       }
       closeModal();
@@ -80,7 +87,9 @@ export default function AnnouncementForm({
       toast({
         title: "Error",
         description:
-          error instanceof Error ? error.message : "Failed to save announcement",
+          error instanceof Error
+            ? error.message
+            : "Failed to save announcement. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -88,86 +97,130 @@ export default function AnnouncementForm({
     }
   };
 
-  const handleCancel = () => {
-    closeModal();
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "info":
+        return "text-blue-600 bg-blue-50 border-blue-200";
+      case "important":
+        return "text-red-600 bg-red-50 border-red-200";
+      case "warning":
+        return "text-amber-600 bg-amber-50 border-amber-200";
+      case "success":
+        return "text-green-600 bg-green-50 border-green-200";
+      default:
+        return "text-gray-600 bg-gray-50 border-gray-200";
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
       <div className="space-y-2">
-        <Label htmlFor="message">Message</Label>
+        <Label htmlFor="message" className="text-sm font-medium">
+          Message <span className="text-red-500">*</span>
+        </Label>
         <Textarea
           id="message"
-          placeholder="Announcement message"
+          placeholder="Enter announcement message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={isLoading}
-          rows={4}
+          rows={5}
           required
+          className="w-full resize-none"
         />
+        <p className="text-xs text-gray-500">
+          {message.length} characters
+        </p>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="type">Type</Label>
-        <select
-          id="type"
-          value={type}
-          onChange={(e) =>
-            setType(e.target.value as "info" | "important" | "warning" | "success")
-          }
-          disabled={isLoading}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <option value="info">Info</option>
-          <option value="important">Important</option>
-          <option value="warning">Warning</option>
-          <option value="success">Success</option>
-        </select>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="active"
-            checked={active}
-            onCheckedChange={setActive}
-            disabled={isLoading}
-          />
-          <Label htmlFor="active" className="cursor-pointer">
-            Active
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="type" className="text-sm font-medium">
+            Type
           </Label>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleCancel}
+          <select
+            id="type"
+            value={type}
+            onChange={(e) =>
+              setType(e.target.value as "info" | "important" | "warning" | "success")
+            }
             disabled={isLoading}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <X className="w-4 h-4 mr-1" />
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={isLoading || !message.trim()}
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : editingId ? (
-              <>
-                <Edit className="w-4 h-4 mr-1" />
-                Update
-              </>
-            ) : (
-              <>
-                <Plus className="w-4 h-4 mr-1" />
-                Create
-              </>
-            )}
-          </Button>
+            <option value="info">Info</option>
+            <option value="important">Important</option>
+            <option value="warning">Warning</option>
+            <option value="success">Success</option>
+          </select>
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="active" className="text-sm font-medium">
+            Status
+          </Label>
+          <div className="flex items-center space-x-3 h-10 px-3 rounded-md border bg-background">
+            <Switch
+              id="active"
+              checked={active}
+              onCheckedChange={setActive}
+              disabled={isLoading}
+            />
+            <Label
+              htmlFor="active"
+              className="cursor-pointer text-sm font-normal"
+            >
+              {active ? "Active" : "Inactive"}
+            </Label>
+          </div>
+        </div>
+      </div>
+
+      {message && (
+        <div className="p-4 rounded-lg border-2">
+          <p className="text-xs font-medium text-gray-500 mb-2">Preview:</p>
+          <div
+            className={`p-3 rounded-md border ${getTypeColor(type)}`}
+          >
+            <p className="text-sm font-medium">{type.toUpperCase()}</p>
+            <p className="text-sm mt-1">{message}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-3 pt-4 border-t">
+        <Button
+          type="submit"
+          disabled={isLoading || !message.trim()}
+          className="flex-1 sm:flex-none sm:min-w-[140px]"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : editingId ? (
+            <>
+              <Edit className="w-4 h-4 mr-2" />
+              Update
+            </>
+          ) : (
+            <>
+              <Plus className="w-4 h-4 mr-2" />
+              Create
+            </>
+          )}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={closeModal}
+          disabled={isLoading}
+          className="flex-1 sm:flex-none sm:min-w-[100px]"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
       </div>
     </form>
   );
 }
-

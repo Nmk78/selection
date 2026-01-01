@@ -4,17 +4,18 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { Plus, Minus, BadgeInfo } from "lucide-react";
+import { Plus, Minus, BadgeInfo, Loader2, Save, X } from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@radix-ui/react-tooltip";
+} from "@/components/ui/tooltip";
 
 interface NumberInputWithControlsProps {
   id: string;
@@ -22,6 +23,7 @@ interface NumberInputWithControlsProps {
   value: number;
   onChange: (value: number) => void;
   minValue?: number;
+  disabled?: boolean;
 }
 
 interface MetadataFormData {
@@ -39,17 +41,25 @@ function NumberInputWithControls({
   value,
   onChange,
   minValue = 2,
+  disabled = false,
 }: NumberInputWithControlsProps) {
   const increment = () => onChange(Math.max(minValue, value + 1));
   const decrement = () => onChange(Math.max(minValue, value - 1));
 
   return (
-    <div>
-      <label htmlFor={id} className="block font-medium mb-2">
+    <div className="space-y-2">
+      <Label htmlFor={id} className="text-sm font-medium">
         {label}
-      </label>
-      <div className="flex items-center">
-        <Button type="button" variant="outline" size="icon" onClick={decrement}>
+      </Label>
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={decrement}
+          disabled={disabled || value <= minValue}
+          className="h-9 w-9"
+        >
           <Minus className="h-4 w-4" />
         </Button>
         <Input
@@ -58,9 +68,17 @@ function NumberInputWithControls({
           type="number"
           value={value}
           readOnly
-          className="mx-2 w-20 text-center"
+          disabled={disabled}
+          className="w-20 text-center"
         />
-        <Button type="button" variant="outline" size="icon" onClick={increment}>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={increment}
+          disabled={disabled}
+          className="h-9 w-9"
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -114,7 +132,7 @@ export default function MetadataForm({
 
         toast({
           title: "Success",
-          description: "Metadata updated successfully.",
+          description: "Room updated successfully.",
         });
       } else {
         // Creating new metadata
@@ -128,14 +146,18 @@ export default function MetadataForm({
 
         toast({
           title: "Success",
-          description: "Metadata saved successfully.",
+          description: "Room created successfully.",
         });
       }
       closeModal();
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save metadata.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to save room. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsPending(false);
@@ -143,11 +165,11 @@ export default function MetadataForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
-      <div>
-        <label htmlFor="title" className="block font-medium">
-          Title
-        </label>
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+      <div className="space-y-2">
+        <Label htmlFor="title" className="text-sm font-medium">
+          Title <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="title"
           name="title"
@@ -155,64 +177,76 @@ export default function MetadataForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          aria-required="true"
+          disabled={isPending}
+          placeholder="Enter room title"
+          className="w-full"
         />
       </div>
 
-      <div id="count" className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border">
         <NumberInputWithControls
           id="maleForSecondRound"
           label="Male Count"
           value={maleForSecondRound}
           onChange={setMaleForSecondRound}
+          disabled={isPending}
         />
         <NumberInputWithControls
           id="femaleForSecondRound"
           label="Female Count"
           value={femaleForSecondRound}
           onChange={setFemaleForSecondRound}
+          disabled={isPending}
         />
-        <div className="mt-auto">
+        <div className="flex items-end">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
-                {" "}
-                <BadgeInfo className="w-8 h-8 text-blue-600" />
+              <TooltipTrigger asChild>
+                <div className="cursor-help">
+                  <BadgeInfo className="w-6 h-6 text-blue-600" />
+                </div>
               </TooltipTrigger>
-              <TooltipContent className="border-2 p-2 rounded-md bg-white">
-                <p>Bring to next round</p>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">
+                  Number of candidates to advance to the second round
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       </div>
 
-      <div id="leaderboard" className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg border">
         <NumberInputWithControls
           id="leaderboardCandidate"
           label="Leaderboard Top"
           value={candidatesForLeaderboard}
           onChange={setCandidatesForLeaderboard}
           minValue={1}
+          disabled={isPending}
         />
-        <div className="col-span-2 mt-auto">
+        <div className="col-span-2 flex items-end">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
-                {" "}
-                <BadgeInfo className="w-8 h-8 text-blue-600" />
+              <TooltipTrigger asChild>
+                <div className="cursor-help">
+                  <BadgeInfo className="w-6 h-6 text-blue-600" />
+                </div>
               </TooltipTrigger>
-              <TooltipContent className="border-2 p-2 rounded-md bg-white">
-                <p>Number of top candidates to show on leaderboard</p>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">
+                  Number of top candidates to display on the leaderboard
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       </div>
-      <div>
-        <label htmlFor="description" className="block font-medium">
-          Description
-        </label>
+
+      <div className="space-y-2">
+        <Label htmlFor="description" className="text-sm font-medium">
+          Description <span className="text-red-500">*</span>
+        </Label>
         <Textarea
           id="description"
           name="description"
@@ -220,13 +254,41 @@ export default function MetadataForm({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
-          aria-required="true"
+          disabled={isPending}
+          placeholder="Enter room description"
+          className="w-full resize-none"
         />
       </div>
 
-      <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Saving..." : initialData ? "Update Metadata" : "Save Metadata"}
-      </Button>
+      <div className="flex gap-3 pt-4 border-t">
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="flex-1 sm:flex-none sm:min-w-[140px]"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              {initialData ? "Update Room" : "Create Room"}
+            </>
+          )}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={closeModal}
+          disabled={isPending}
+          className="flex-1 sm:flex-none sm:min-w-[100px]"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }

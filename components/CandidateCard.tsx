@@ -86,7 +86,7 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
       >
         {/* Image Section - Portrait Ratio */}
         <div className="relative aspect-[3/4] w-full overflow-hidden">
-          <div className="relative w-full h-full">
+          <div className={`relative w-full h-full transition-transform duration-500 ease-out ${showGlass ? '-translate-y-[10%]' : 'translate-y-0'}`}>
             <Image
               src={candidate.profileImage}
               alt={candidate.name}
@@ -124,10 +124,10 @@ const CandidateCard = ({ candidate }: { candidate: Candidate }) => {
                 className="absolute bottom-0 left-0 right-0 z-10"
               >
                 {/* Glassmorphism background */}
-                <div className="relative backdrop-blur-xl bg-white/5 md:bg-white/10 border-t border-white/10 shadow-[0_-8px_32px_0_rgba(0,0,0,0.05)]">
+                <div className="relative backdrop-blur-xl bg-white/80 md:bg-white/70 border-t border-white/20 shadow-[0_-8px_32px_0_rgba(0,0,0,0.1)]">
                   {/* Liquid glass effect with gradient */}
                   <div
-                    className={`absolute inset-0 opacity-20 ${
+                    className={`absolute inset-0 opacity-30 ${
                       isMale
                         ? "bg-gradient-to-b from-candidate-male-500/10 via-candidate-male-400/5 to-transparent"
                         : "bg-gradient-to-b from-candidate-female-500/10 via-candidate-female-400/5 to-transparent"
