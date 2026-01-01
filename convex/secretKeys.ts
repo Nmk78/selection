@@ -249,8 +249,8 @@ export const generateAndInsert = mutation({
 
     // URL-safe characters: alphanumeric (0-9, a-z)
     // Using lowercase for consistency with how keys are stored
-    const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-    const keyLength = 3;
+    const chars = "23456789abcdefghjkmnpqrstuvwxyz";
+    const keyLength = 4;
     const maxAttempts = args.amount * 100; // Prevent infinite loops
 
     const generatedKeys: string[] = [];
