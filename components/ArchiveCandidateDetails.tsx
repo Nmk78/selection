@@ -1,7 +1,5 @@
 "use client";
 
-import Head from "next/head"; // Import Head for metadata management
-
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Image from "next/image";
@@ -75,25 +73,32 @@ export function ArchiveCandidateDetailPage({ archiveId, slug }: CandidateDetailP
     );
   }
 
+  // Structured data for SEO (JSON-LD)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: candidateData.name,
+    description: candidateData.intro || `Meet ${candidateData.name}, a ${candidateData.major} student.`,
+    image: candidateData.profileImage || `${baseUrl}/user.png`,
+    jobTitle: candidateData.title || (candidateData.gender === "male" ? "King/Prince Candidate" : "Queen/Princess Candidate"),
+    affiliation: {
+      "@type": "Organization",
+      name: "PU Selection",
+    },
+    url: `${baseUrl}/archive/${archiveId}/${slug}`,
+    alumniOf: {
+      "@type": "EducationalOrganization",
+      name: candidateData.room || "Polytechnic University Myeik",
+    },
+  };
+
   return (
     <>
-      {/* Metadata */}
-      <Head>
-        <title>{candidateData.name} - Candidate Profile</title>
-        <meta
-          name="description"
-          content={`Explore the profile of ${candidateData.name}, a candidate from the ${candidateData.major} major.`}
-        />
-        <meta property="og:title" content={`${candidateData.name} - Candidate Profile`} />
-        <meta
-          property="og:description"
-          content={`Get to know ${candidateData.name}'s achievements, hobbies, and background.`}
-        />
-        <meta property="og:image" content={candidateData.profileImage} />
-        <meta property="og:url" content={`http://localhost:3000/archive/${archiveId}/${slug}`} />
-        <meta name="keywords" content={`candidate, ${candidateData.major}, ${candidateData.name}`} />
-      </Head>
-
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Page Content */}
       <div className="min-h-[75vh] w-full bg-gradient-to-b from-romantic-bg to-romantic-secondary py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">

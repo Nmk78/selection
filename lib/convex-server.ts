@@ -22,3 +22,16 @@ export async function getAllCandidates() {
   }
 }
 
+export async function getArchivedCandidateBySlug(slug: string, metadataSlug: string) {
+  try {
+    const result = await client.query(api.archive.getArchivedCandidateBySlug, { 
+      slug, 
+      metadataSlug 
+    });
+    return result?.success ? result.data : null;
+  } catch (error) {
+    console.error("Error fetching archived candidate:", error);
+    return null;
+  }
+}
+
