@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { calculateCandidateScores } from "./scoreCalculation";
 
 // Get all archived (non-active) rooms
 export const getArchiveMetadatas = query({
@@ -82,22 +83,13 @@ export const getCandidatesWithStatsAndTitles = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", args.roomId))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        slug: candidate.slug,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-        title: null as string | null,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((candidate) => ({
+      ...candidate,
+      id: candidate._id,
+      slug: candidate.slug,
+      title: null as string | null,
+    }));
 
     // Sort by combinedScore
     const sorted = candidatesWithStats.sort(
@@ -159,22 +151,13 @@ export const getCandidatesWithStatsAndTitlesBySlug = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", metadata._id))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        slug: candidate.slug,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-        title: null as string | null,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((candidate) => ({
+      ...candidate,
+      id: candidate._id,
+      slug: candidate.slug,
+      title: null as string | null,
+    }));
 
     // Sort by combinedScore
     const sorted = candidatesWithStats.sort(
@@ -237,18 +220,12 @@ export const getArchivedCandidateById = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", candidate.roomId))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = allCandidates.map((c) => {
-      const vote = voteMap.get(c._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        id: c._id,
-        gender: c.gender,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(allCandidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((c) => ({
+      id: c._id,
+      gender: c.gender,
+      combinedScore: c.combinedScore,
+    }));
 
     const sorted = candidatesWithStats.sort(
       (a, b) => b.combinedScore - a.combinedScore
@@ -337,18 +314,12 @@ export const getArchivedCandidateBySlug = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", candidate.roomId))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = allCandidates.map((c) => {
-      const vote = voteMap.get(c._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        id: c._id,
-        gender: c.gender,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(allCandidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((c) => ({
+      id: c._id,
+      gender: c.gender,
+      combinedScore: c.combinedScore,
+    }));
 
     const sorted = candidatesWithStats.sort(
       (a, b) => b.combinedScore - a.combinedScore

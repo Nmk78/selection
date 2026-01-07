@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { generateSlug } from "./help";
+import { calculateCandidateScores } from "./scoreCalculation";
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -39,19 +40,7 @@ export const getAll = query({
         .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
         .collect();
 
-      const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-      const candidatesWithStats = candidates.map((candidate) => {
-        const vote = voteMap.get(candidate._id);
-        const totalVotes = vote?.totalVotes ?? 0;
-        const totalRating = vote?.totalRating ?? 0;
-        return {
-          ...candidate,
-          totalVotes,
-          totalRating,
-          combinedScore: totalVotes + totalRating,
-        };
-      });
+      const candidatesWithStats = calculateCandidateScores(candidates, votes);
 
       const sorted = candidatesWithStats.sort(
         (a, b) => b.combinedScore - a.combinedScore
@@ -122,23 +111,16 @@ export const getWithStats = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
+    const candidatesWithStats = calculateCandidateScores(candidates, votes);
 
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    // Add id field for compatibility
+    const candidatesWithId = candidatesWithStats.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     // Sort by combinedScore descending
-    return candidatesWithStats.sort(
+    return candidatesWithId.sort(
       (a, b) => b.combinedScore - a.combinedScore
     );
   },
@@ -176,35 +158,19 @@ export const getWithStatsForLeaderboard = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
     // Calculate stats for all male candidates
-    const malesWithStats = allMaleCandidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const malesWithStatsRaw = calculateCandidateScores(allMaleCandidates, votes);
+    const malesWithStats = malesWithStatsRaw.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     // Calculate stats for all female candidates
-    const femalesWithStats = allFemaleCandidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const femalesWithStatsRaw = calculateCandidateScores(allFemaleCandidates, votes);
+    const femalesWithStats = femalesWithStatsRaw.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     // Sort by combinedScore descending and take top N from each gender
     const topMales = malesWithStats
@@ -237,20 +203,11 @@ export const getWithStatsByRoomId = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", args.roomId))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     // Sort by combinedScore descending
     return candidatesWithStats.sort(
@@ -282,20 +239,11 @@ export const getTopCandidates = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     // Sort by combinedScore descending
     const sorted = candidatesWithStats.sort(
@@ -328,20 +276,11 @@ export const getTopCandidatesByRoomId = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", args.roomId))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     const sorted = candidatesWithStats.sort(
       (a, b) => b.combinedScore - a.combinedScore
@@ -384,20 +323,11 @@ export const getForSecondRound = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
-      return {
-        ...candidate,
-        id: candidate._id,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
-      };
-    });
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((c) => ({
+      ...c,
+      id: c._id,
+    }));
 
     const sorted = candidatesWithStats.sort(
       (a, b) => b.combinedScore - a.combinedScore
@@ -443,12 +373,8 @@ export const getForJudge = query({
       .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
       .collect();
 
-    const voteMap = new Map(votes.map((v) => [v.candidateId, v]));
-
-    const candidatesWithStats = candidates.map((candidate) => {
-      const vote = voteMap.get(candidate._id);
-      const totalVotes = vote?.totalVotes ?? 0;
-      const totalRating = vote?.totalRating ?? 0;
+    const candidatesWithStatsRaw = calculateCandidateScores(candidates, votes);
+    const candidatesWithStats = candidatesWithStatsRaw.map((candidate) => {
       return {
         id: candidate._id,
         name: candidate.name,
@@ -461,9 +387,9 @@ export const getForJudge = query({
         age: candidate.age,
         weight: candidate.weight,
         hobbies: candidate.hobbies,
-        totalVotes,
-        totalRating,
-        combinedScore: totalVotes + totalRating,
+        totalVotes: candidate.totalVotes,
+        totalRating: candidate.totalRating,
+        combinedScore: candidate.combinedScore,
       };
     });
 

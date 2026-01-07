@@ -3,14 +3,6 @@ import { mutation, query } from "./_generated/server";
 
 
 
-//////////////////////
-// 1️⃣ Normal Votes (Student Votes) — 50%
-
-// Each student vote counts as 1 point in the first round.
-
-// 2️⃣ Judge Ratings — 50%
-
-
 ///////////////////
 // Vote for a candidate
 export const voteForCandidate = mutation({
@@ -128,6 +120,8 @@ export const voteForCandidate = mutation({
 });
 
 // Add ratings from judge
+// Ratings are stored as raw values (0-30 per judge, where 30 = perfect score from 3 categories × 10 each)
+// Normalization and weighting (60% votes, 40% ratings) are handled by calculateCandidateScores helper function
 export const addRatings = mutation({
   args: {
     ratings: v.array(
@@ -180,15 +174,8 @@ export const addRatings = mutation({
       };
     }
 
-    // Count total special keys for scaling
-    const totalSpecialKeys = await ctx.db
-      .query("specialSecretKeys")
-      .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
-      .collect();
-
-    const keyCount = totalSpecialKeys.length;
-
-    // Process ratings
+    // Process ratings - store raw ratings (0-30 per judge)
+    // Normalization is handled by calculateCandidateScores helper function
     for (const { candidateId, rating } of args.ratings) {
       if (rating <= 0) continue;
 
@@ -200,18 +187,20 @@ export const addRatings = mutation({
         .collect();
 
       const existingVote = existingVotes[0];
-      const scaledRating = Math.round(rating / (keyCount / 2 || 1));
+
+      // Store raw rating - normalization handled by calculateCandidateScores
+      const rawRating = rating;
 
       if (existingVote) {
         await ctx.db.patch(existingVote._id, {
-          totalRating: existingVote.totalRating + scaledRating,
+          totalRating: existingVote.totalRating + rawRating,
         });
       } else {
         await ctx.db.insert("votes", {
           roomId: activeMetadata._id,
           candidateId,
           totalVotes: 0,
-          totalRating: scaledRating,
+          totalRating: rawRating,
         });
       }
     }
