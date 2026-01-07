@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true, //Should be open when vercel limit reset
+    unoptimized: false, //Should be open when vercel limit reset
     remotePatterns: [
       {
         protocol: "https",
