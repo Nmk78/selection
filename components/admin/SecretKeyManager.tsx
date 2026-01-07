@@ -16,7 +16,7 @@ export default function SecretKeyManager() {
 
   const generateKeys = useMutation(api.secretKeys.generateAndInsert);
   const keysData = useQuery(api.secretKeys.getAll);
-  const keysWithUsage = useQuery(api.secretKeys.getAllWithUsage);
+  // const keysWithUsage = useQuery(api.secretKeys.getAllWithUsage);
 
   const totalKeys = keysData?.success ? keysData.data.length : 0;
 
