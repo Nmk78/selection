@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { LoaderCircle, Key, Sparkles, Crown } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -12,12 +12,17 @@ import { Card, CardContent } from "@/components/ui/card";
 
 function CheckContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const key = searchParams.get("key") || "";
 
   const status = useQuery(
     api.secretKeys.validate,
     key ? { key } : "skip"
   );
+
+  const handleReset = () => {
+    router.push("/check");
+  };
 
   if (key && status === undefined) {
     return (
@@ -72,7 +77,7 @@ function CheckContent() {
           </div>
         </div>
         {(!key || !status) && <KeyInputForm />}
-        {key && status && <KeyStatus status={status} />}
+        {key && status && <KeyStatus status={status} onReset={handleReset} />}
       </motion.div>
     </div>
   );

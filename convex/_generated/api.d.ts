@@ -16,6 +16,7 @@ import type * as help from "../help.js";
 import type * as http from "../http.js";
 import type * as metadata from "../metadata.js";
 import type * as migration from "../migration.js";
+import type * as scoreCalculation from "../scoreCalculation.js";
 import type * as secretKeys from "../secretKeys.js";
 import type * as users from "../users.js";
 import type * as votes from "../votes.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   metadata: typeof metadata;
   migration: typeof migration;
+  scoreCalculation: typeof scoreCalculation;
   secretKeys: typeof secretKeys;
   users: typeof users;
   votes: typeof votes;

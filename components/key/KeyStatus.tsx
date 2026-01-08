@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, Shield, Vote } from "lucide-react";
+import { CheckCircle, XCircle, Shield, Vote, ArrowLeft } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface KeyStatusProps {
   status: {
@@ -17,9 +18,10 @@ interface KeyStatusProps {
     maleVoteSecondRound?: boolean;
     femaleVoteSecondRound?: boolean;
   };
+  onReset?: () => void;
 }
 
-export function KeyStatus({ status }: KeyStatusProps) {
+export function KeyStatus({ status, onReset }: KeyStatusProps) {
   const StatusIcon = ({ isActive }: { isActive: boolean | undefined }) =>
     isActive ? (
       <XCircle className="w-5 h-5 text-red-500" />
@@ -108,6 +110,20 @@ export function KeyStatus({ status }: KeyStatusProps) {
                   you have already voted.
                 </p>
               </div>
+
+              {/* Reset Button */}
+              {onReset && (
+                <div className="pt-4">
+                  <Button
+                    onClick={onReset}
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2 border-2 hover:bg-gray-50"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Check Another Key
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8">
@@ -118,6 +134,16 @@ export function KeyStatus({ status }: KeyStatusProps) {
               <p className="text-sm text-gray-600 mt-2 text-center">
                 Please check your key and try again.
               </p>
+              {onReset && (
+                <Button
+                  onClick={onReset}
+                  variant="outline"
+                  className="mt-6 flex items-center justify-center gap-2 border-2 hover:bg-gray-50"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Try Another Key
+                </Button>
+              )}
             </div>
           )}
         </CardContent>

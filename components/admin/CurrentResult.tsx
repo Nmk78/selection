@@ -85,10 +85,10 @@ export default function CurrentResults({ visible }: CurrentResultsProps) {
                     {candidate.totalVotes}
                   </TableCell>
                   <TableCell colSpan={1} className="text-center">
-                    {candidate.totalRating}
+                    {candidate.totalRating.toFixed(0)}
                   </TableCell>
                   <TableCell colSpan={1} className="text-center">
-                    {candidate.combinedScore}
+                    {candidate.combinedScore.toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}
