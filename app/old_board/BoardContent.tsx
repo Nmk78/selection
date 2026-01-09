@@ -265,13 +265,8 @@ export default function BoardContent() {
   const candidates: LeaderboardCandidate[] = candidatesQuery || [];
   const isLoading = candidatesQuery === undefined || metadata === undefined;
 
-  const round = metadata?.round ?? null;
+  const round = 'AAA';
   const allowedRounds: Array<"first" | "firstVotingClosed" | "secondPreview" | "second" | "secondVotingClosed"> = [
-    "first",
-    "firstVotingClosed",
-    "secondPreview",
-    "second",
-    "secondVotingClosed",
   ];
   const isRoundAllowed = round && allowedRounds.includes(round as typeof allowedRounds[number]);
 
