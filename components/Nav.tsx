@@ -11,9 +11,7 @@ import {
   X,
   Archive,
   TicketCheck,
-  ScrollText, Sparkles,
-  ChartSpline,
-  Trophy,
+  ScrollText, Sparkles, Trophy,
   Gavel
 } from "lucide-react";
 import { Authenticated, useQuery } from "convex/react";
