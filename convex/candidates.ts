@@ -32,28 +32,28 @@ export const getAll = query({
       .collect();
 
     // If it's second round, only return top N males and females
-    if (activeMetadata.round === "second") {
-      const { maleForSecondRound, femaleForSecondRound } = activeMetadata;
+    // if (activeMetadata.round === "second") {
+    //   const { maleForSecondRound, femaleForSecondRound } = activeMetadata;
 
-      const votes = await ctx.db
-        .query("votes")
-        .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
-        .collect();
+    //   const votes = await ctx.db
+    //     .query("votes")
+    //     .withIndex("by_roomId", (q) => q.eq("roomId", activeMetadata._id))
+    //     .collect();
 
-      const candidatesWithStats = calculateCandidateScores(candidates, votes);
+    //   const candidatesWithStats = calculateCandidateScores(candidates, votes);
 
-      const sorted = candidatesWithStats.sort(
-        (a, b) => b.combinedScore - a.combinedScore
-      );
+    //   const sorted = candidatesWithStats.sort(
+    //     (a, b) => b.combinedScore - a.combinedScore
+    //   );
 
-      const males = sorted.filter((c) => c.gender === "male");
-      const females = sorted.filter((c) => c.gender === "female");
+    //   const males = sorted.filter((c) => c.gender === "male");
+    //   const females = sorted.filter((c) => c.gender === "female");
 
-      const topMales = males.slice(0, maleForSecondRound);
-      const topFemales = females.slice(0, femaleForSecondRound);
+    //   const topMales = males.slice(0, maleForSecondRound);
+    //   const topFemales = females.slice(0, femaleForSecondRound);
 
-      return shuffleArray([...topMales, ...topFemales]);
-    }
+    //   return shuffleArray([...topMales, ...topFemales]);
+    // }
 
     return shuffleArray(candidates);
   },

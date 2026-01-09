@@ -59,13 +59,13 @@ export default function Nav() {
       disabled: !showResults,
       disabledMessage: "Available when results are published",
     },
-    {
-      href: "/judge",
-      icon: <Gavel className="w-4 h-4" />,
-      label: "Judge",
-      disabled: !showJudge,
-      disabledMessage: "Available only second round",
-    },
+    // {
+    //   href: "/judge",
+    //   icon: <Gavel className="w-4 h-4" />,
+    //   label: "Judge",
+    //   disabled: !showJudge,
+    //   disabledMessage: "Available only second round",
+    // },
   ];
 
   const transformedArchives =
