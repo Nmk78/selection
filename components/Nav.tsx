@@ -55,13 +55,6 @@ export default function Nav() {
       label: "Policy",
     },
     {
-      href: "/board",
-      icon: <ChartSpline className="w-4 h-4" />,
-      label: "Board",
-      disabled: !showLeaderBoard,
-      disabledMessage: "Available after first voting round",
-    },
-    {
       href: "/results",
       icon: <Trophy className="w-4 h-4" />,
       label: "Results",
