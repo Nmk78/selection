@@ -38,7 +38,7 @@ export default function Nav() {
   const round = metadata?.round;
   const showResults = round === "result";
   const showJudge = round === "secondPreview" || round === "second";
-  const showLeaderBoard = round === "first" || round === "second";
+  // const showLeaderBoard = round === "first" || round === "second";
 
   const baseMenuItems = [
     { href: "/", icon: <Home className="w-4 h-4" />, label: "Home" },
