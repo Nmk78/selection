@@ -36,7 +36,7 @@ export default function Nav() {
 
   const round = metadata?.round;
   const showResults = round === "result";
-  const showJudge = round === "secondPreview" || round === "second";
+  // const showJudge = round === "secondPreview" || round === "second";
   // const showLeaderBoard = round === "first" || round === "second";
 
   const baseMenuItems = [
